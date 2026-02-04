@@ -1,29 +1,30 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import {
-  Phone,
-  Mail,
-  MapPin,
-  Clock,
-  Send,
-  CheckCircle,
-  Calendar,
-  User,
-  GraduationCap,
+import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+
+import { 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Clock, 
+  Send, 
+  CheckCircle, 
+  Calendar, 
+  User, 
+  GraduationCap, 
   List,
   ChevronRight,
-  MessageCircle,
-} from "lucide-react";
+  MessageCircle
+} from 'lucide-react';
 
 const WhatsAppIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    width="20"
-    height="20"
-    stroke="currentColor"
-    strokeWidth="2"
-    fill="none"
-    strokeLinecap="round"
+  <svg 
+    viewBox="0 0 24 24" 
+    width="20" 
+    height="20" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    fill="none" 
+    strokeLinecap="round" 
     strokeLinejoin="round"
   >
     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
@@ -31,43 +32,49 @@ const WhatsAppIcon = () => (
 );
 
 const Contact = () => {
+
+  useEffect(() => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}, []);
+
+
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    subject: "",
-    category: "",
-    educationLevel: "",
-    targetCountry: "",
-    message: "",
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    category: '',
+    educationLevel: '',
+    targetCountry: '',
+    message: '',
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const categories = [
-    "Relationships",
-    "Career Guidance",
-    "Educational",
-    "Mental Health",
+    'Relationships',
+    'Career Guidance',
+    'Educational',
+    'Mental Health',
   ];
 
   const educationLevels = [
-    "High School",
-    "Undergraduate",
-    "Graduate",
-    "Postgraduate",
-    "PhD",
+    'High School',
+    'Undergraduate',
+    'Graduate',
+    'Postgraduate',
+    'PhD'
   ];
 
   const targetCountries = [
-    "USA",
-    "UK",
-    "Canada",
-    "Australia",
-    "Germany",
-    "Singapore",
-    "Other",
+    'USA',
+    'UK',
+    'Canada',
+    'Australia',
+    'Germany',
+    'Singapore',
+    'Other'
   ];
 
   const handleChange = (e) => {
@@ -80,23 +87,23 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
-
+    
     // Simulate API call
     setTimeout(() => {
-      console.log("Form submitted:", formData);
+      console.log('Form submitted:', formData);
       setIsSubmitted(true);
       setIsLoading(false);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        subject: "",
-        category: "",
-        educationLevel: "",
-        targetCountry: "",
-        message: "",
+      setFormData({ 
+        name: '', 
+        email: '', 
+        phone: '', 
+        subject: '', 
+        category: '',
+        educationLevel: '', 
+        targetCountry: '', 
+        message: '' 
       });
-
+      
       // Reset success message after 3 seconds
       setTimeout(() => setIsSubmitted(false), 3000);
     }, 1500);
@@ -105,99 +112,46 @@ const Contact = () => {
   const contactInfo = [
     {
       icon: <Phone className="w-5 h-5" />,
-      title: "Call Us",
-      info: "+91 98765 43210",
-      subinfo: "Mon-Sat, 9AM to 6PM",
-      color: "bg-blue-50 border-blue-100",
-      iconColor: "text-blue-600",
+      title: 'Call Us',
+      info: '+91 98765 43210',
+      subinfo: 'Mon-Sat, 9AM to 6PM',
+      color: 'bg-blue-50 border-blue-100',
+      iconColor: 'text-blue-600'
     },
     {
       icon: <Mail className="w-5 h-5" />,
-      title: "Email Us",
-      info: "contact@careerguide.com",
-      subinfo: "Response within 24 hours",
-      color: "bg-green-50 border-green-100",
-      iconColor: "text-green-600",
+      title: 'Email Us',
+      info: 'contact@careerguide.com',
+      subinfo: 'Response within 24 hours',
+      color: 'bg-green-50 border-green-100',
+      iconColor: 'text-green-600'
     },
     {
       icon: <MapPin className="w-5 h-5" />,
-      title: "Visit Office",
-      info: "123 Education Street",
-      subinfo: "Knowledge City, Delhi 110001",
-      color: "bg-purple-50 border-purple-100",
-      iconColor: "text-purple-600",
+      title: 'Visit Office',
+      info: '123 Education Street',
+      subinfo: 'Knowledge City, Delhi 110001',
+      color: 'bg-purple-50 border-purple-100',
+      iconColor: 'text-purple-600'
     },
     {
       icon: <Clock className="w-5 h-5" />,
-      title: "Working Hours",
-      info: "Monday - Saturday",
-      subinfo: "9:00 AM - 6:00 PM",
-      color: "bg-orange-50 border-orange-100",
-      iconColor: "text-orange-600",
+      title: 'Working Hours',
+      info: 'Monday - Saturday',
+      subinfo: '9:00 AM - 6:00 PM',
+      color: 'bg-orange-50 border-orange-100',
+      iconColor: 'text-orange-600'
     },
   ];
 
   const quickLinks = [
-    {
-      label: "Book Free Consultation",
-      href: "#",
-      icon: <Calendar className="w-5 h-5" />,
-    },
-    {
-      label: "Chat on WhatsApp",
-      href: "https://wa.me/919876543210",
-      icon: <WhatsAppIcon />,
-    },
-    {
-      label: "Meet Our Counselors",
-      href: "#",
-      icon: <User className="w-5 h-5" />,
-    },
+    { label: 'Book Free Consultation', href: '#', icon: <Calendar className="w-5 h-5" /> },
+    { label: 'Chat on WhatsApp', href: 'https://wa.me/919876543210', icon: <WhatsAppIcon /> },
+    { label: 'Meet Our Counselors', href: '#', icon: <User className="w-5 h-5" /> }
   ];
 
   return (
     <div className="overflow-hidden font-sans">
-      {/* Hero Section */}
-      <section className="relative min-h-[40vh] flex items-center bg-gradient-to-br from-gray-900 via-black to-gray-800 pt-20">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 opacity-5">
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                backgroundSize: "30px 30px",
-              }}
-            ></div>
-          </div>
-        </div>
-
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl mx-auto text-center text-white">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
-                <Send className="w-4 h-4 text-blue-400" />
-                <span className="text-sm font-medium text-white/90">
-                  Contact Us
-                </span>
-              </div>
-
-              <h1 className="text-5xl md:text-6xl font-bold mb-6">
-                Let's Connect
-              </h1>
-
-              <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
-                Have questions about your academic journey? Our expert
-                counselors are ready to guide you toward your dream college.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
       {/* Main Content */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-6">
@@ -217,18 +171,14 @@ const Contact = () => {
                     className={`${info.color} border rounded-2xl p-6 hover:shadow-md transition-all duration-300`}
                   >
                     <div className="flex items-start gap-4">
-                      <div
-                        className={`p-3 rounded-xl ${info.color.replace("50", "100")}`}
-                      >
-                        <div className={info.iconColor}>{info.icon}</div>
+                      <div className={`p-3 rounded-xl ${info.color.replace('50', '100')}`}>
+                        <div className={info.iconColor}>
+                          {info.icon}
+                        </div>
                       </div>
                       <div>
-                        <h3 className="font-bold text-gray-900 mb-2">
-                          {info.title}
-                        </h3>
-                        <p className="text-gray-700 font-medium mb-1">
-                          {info.info}
-                        </p>
+                        <h3 className="font-bold text-gray-900 mb-2">{info.title}</h3>
+                        <p className="text-gray-700 font-medium mb-1">{info.info}</p>
                         <p className="text-sm text-gray-500">{info.subinfo}</p>
                       </div>
                     </div>
@@ -236,42 +186,7 @@ const Contact = () => {
                 ))}
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="bg-gray-50 rounded-2xl p-6 border border-gray-100"
-              >
-                <h3 className="text-xl font-bold text-gray-900 mb-6">
-                  Quick Actions
-                </h3>
-                <div className="space-y-4">
-                  {quickLinks.map((link, idx) => (
-                    <a
-                      key={idx}
-                      href={link.href}
-                      target={link.href.includes("http") ? "_blank" : "_self"}
-                      rel={
-                        link.href.includes("http") ? "noopener noreferrer" : ""
-                      }
-                      className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all duration-300 group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="text-blue-600 group-hover:text-blue-700 transition-colors">
-                          {link.icon}
-                        </div>
-                        <span className="font-medium text-gray-800 group-hover:text-blue-700 transition-colors">
-                          {link.label}
-                        </span>
-                      </div>
-                      <div className="text-gray-400 group-hover:text-blue-600 transition-colors">
-                        <ChevronRight className="w-5 h-5" />
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </motion.div>
+             
             </div>
 
             {/* Right Column - Contact Form */}
@@ -284,14 +199,13 @@ const Contact = () => {
               >
                 <div className="mb-8">
                   <div className="inline-block px-4 py-2 rounded-full bg-blue-50 text-blue-600 font-medium mb-4">
-                    Send a Message
+                    Book session with Experts
                   </div>
                   <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                    Get Personalized Guidance
+                    Get in Touch with Our Experts
                   </h2>
                   <p className="text-gray-600">
-                    Fill out the form below and our admission experts will get
-                    back to you within 24 hours.
+                    Fill out the form below and our admission experts will get back to you within 24 hours.
                   </p>
                 </div>
 
@@ -303,12 +217,8 @@ const Contact = () => {
                   >
                     <CheckCircle className="text-green-600 w-5 h-5" />
                     <div>
-                      <p className="font-medium text-green-800">
-                        Message sent successfully!
-                      </p>
-                      <p className="text-sm text-green-600">
-                        We'll get back to you within 24 hours.
-                      </p>
+                      <p className="font-medium text-green-800">Message sent successfully!</p>
+                      <p className="text-sm text-green-600">We'll get back to you within 24 hours.</p>
                     </div>
                   </motion.div>
                 )}
@@ -388,9 +298,7 @@ const Contact = () => {
                         >
                           <option value="">Select Category</option>
                           {categories.map((cat) => (
-                            <option key={cat} value={cat}>
-                              {cat}
-                            </option>
+                            <option key={cat} value={cat}>{cat}</option>
                           ))}
                         </select>
                       </div>
@@ -426,9 +334,7 @@ const Contact = () => {
                         >
                           <option value="">Select level</option>
                           {educationLevels.map((level) => (
-                            <option key={level} value={level}>
-                              {level}
-                            </option>
+                            <option key={level} value={level}>{level}</option>
                           ))}
                         </select>
                       </div>
@@ -449,16 +355,14 @@ const Contact = () => {
                         >
                           <option value="">Select country</option>
                           {targetCountries.map((country) => (
-                            <option key={country} value={country}>
-                              {country}
-                            </option>
+                            <option key={country} value={country}>{country}</option>
                           ))}
                         </select>
                       </div>
                     </div>
-                    <div>
+                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Enter your city
+                       Enter your city
                       </label>
                       <div className="relative">
                         <input
@@ -496,23 +400,23 @@ const Contact = () => {
                       disabled={isLoading}
                       className={`flex items-center gap-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${
                         isLoading
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-lg hover:shadow-blue-500/25"
+                          ? 'bg-gray-400 cursor-not-allowed'
+                          : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-lg hover:shadow-blue-500/25'
                       } text-white`}
                     >
                       {isLoading ? (
                         <>
                           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          Sending...
+                          booking session...
                         </>
                       ) : (
                         <>
                           <Send className="w-4 h-4" />
-                          Send Message
+                          Book Session
                         </>
                       )}
                     </button>
-
+                    
                     <p className="text-sm text-gray-500">
                       * Required fields. We respect your privacy.
                     </p>
@@ -548,26 +452,21 @@ const Contact = () => {
             <div className="grid md:grid-cols-2 gap-6">
               {[
                 {
-                  question:
-                    "How soon will I hear back after submitting my inquiry?",
-                  answer:
-                    "We respond to all inquiries within 24 hours on business days.",
+                  question: "How soon will I hear back after submitting my inquiry?",
+                  answer: "We respond to all inquiries within 24 hours on business days."
                 },
                 {
                   question: "Do you offer free initial consultations?",
-                  answer:
-                    "Yes, we offer a free 45-minute strategy session with our experts.",
+                  answer: "Yes, we offer a free 45-minute strategy session with our experts."
                 },
                 {
                   question: "What information should I prepare?",
-                  answer:
-                    "It helps to have your academic transcripts and target goals ready.",
+                  answer: "It helps to have your academic transcripts and target goals ready."
                 },
                 {
                   question: "Do you assist with visa applications?",
-                  answer:
-                    "Yes, we provide comprehensive support for documentation and preparation.",
-                },
+                  answer: "Yes, we provide comprehensive support for documentation and preparation."
+                }
               ].map((faq, idx) => (
                 <motion.div
                   key={idx}
@@ -577,9 +476,7 @@ const Contact = () => {
                   transition={{ delay: idx * 0.1 }}
                   className="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-md transition-all duration-300"
                 >
-                  <h3 className="font-bold text-gray-900 mb-3">
-                    {faq.question}
-                  </h3>
+                  <h3 className="font-bold text-gray-900 mb-3">{faq.question}</h3>
                   <p className="text-gray-600">{faq.answer}</p>
                 </motion.div>
               ))}
@@ -599,19 +496,19 @@ const Contact = () => {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
                 <Calendar className="w-4 h-4 text-blue-400" />
-                <span className="font-medium">
-                  Ready to Start Your Journey?
-                </span>
+                <span className="font-medium">Ready to Start Your Journey?</span>
               </div>
-
+              
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
                 Book a Free Strategy Session
               </h2>
-
+              
               <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-                Get personalized guidance from our experts and create a roadmap
-                to your dream college.
+                Get personalized guidance from our experts and create 
+                a roadmap to your dream college.
               </p>
+              
+            
             </motion.div>
           </div>
         </div>

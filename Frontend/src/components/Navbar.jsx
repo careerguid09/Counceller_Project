@@ -275,23 +275,9 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    {
-      name: "Services",
-      path: "/services",
-      submenu: [
-        { name: "College Selection", path: "/services/college-selection" },
-        { name: "Career Counseling", path: "/services/career-counseling" },
-        {
-          name: "Application Assistance",
-          path: "/services/application-assistance",
-        },
-        { name: "Test Preparation", path: "/services/test-prep" },
-        { name: "Interview Coaching", path: "/services/interview-coaching" },
-      ],
-    },
-    { name: "Blog", path: "/blog" },
-    { name: "Contact", path: "/contact" },
+    { name: "About Us ?", path: "/about" },
+    { name: "Blogs", path: "/blog" },
+    { name: "Contact Us ", path: "/contact" },
   ];
 
   return (
