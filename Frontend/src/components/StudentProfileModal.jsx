@@ -217,7 +217,7 @@ const StudentProfileModal = ({ student, onClose }) => {
                 </div>
               </div>
               
-              {/* Progress Notes */}
+            
               <div className="bg-gradient-to-br from-gray-50 to-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm">
                 <h3 className="font-bold text-gray-800 mb-6 text-xl flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
