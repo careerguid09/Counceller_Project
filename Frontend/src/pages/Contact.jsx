@@ -26,20 +26,20 @@ const Contact = () => {
     name: '',
     email: '',
     phone: '',
+    city: '',
     service: '',
     message: '',
   });
+
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const services = [
-    'Career Counseling',
-    'Relationship Therapy',
-    'Mental Wellness',
-    'Educational Guidance',
-    'Life Coaching',
-    'Executive Mentoring'
+    'Career Counselors',
+    'Relationship Counselors',
+    'Mental Health Counselors',
+    'Educational Counselors',
   ];
 
   const handleChange = (e) => {
@@ -49,25 +49,45 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    setTimeout(() => {
-      console.log('Form submitted:', formData);
+    try {
+      const response = await fetch("http://localhost:5000/api/clients", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      // success
       setIsSubmitted(true);
-      setIsLoading(false);
       setFormData({
-        name: '',
+        fullName: '',
         email: '',
         phone: '',
-        service: '',
-        message: ''
+        city: '',
+        category: '',
+        message: '',
       });
 
       setTimeout(() => setIsSubmitted(false), 3000);
-    }, 1000);
+    } catch (error) {
+      console.error("Form submit error:", error);
+      alert("Failed to submit form. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -261,8 +281,8 @@ const Contact = () => {
                         </label>
                         <input
                           type="text"
-                          name="name"
-                          value={formData.name}
+                          name="fullName"
+                          value={formData.fullName}
                           onChange={handleChange}
                           required
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -321,8 +341,8 @@ const Contact = () => {
                           Service Interested In *
                         </label>
                         <select
-                          name="service"
-                          value={formData.service}
+                          name="category"
+                          value={formData.category}
                           onChange={handleChange}
                           required
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -373,8 +393,8 @@ const Contact = () => {
                         type="submit"
                         disabled={isLoading}
                         className={`flex items-center justify-center px-8 py-4 rounded-lg font-semibold transition-all ${isLoading
-                            ? 'bg-gray-400 cursor-not-allowed'
-                            : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg'
+                          ? 'bg-gray-400 cursor-not-allowed'
+                          : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg'
                           } text-white`}
                       >
                         {isLoading ? (

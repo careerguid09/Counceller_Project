@@ -4,7 +4,6 @@ const Client = require("../models/Client");
 exports.createClient = async (req, res) => {
   try {
     const client = await Client.create(req.body);
-
     res.status(201).json({
       message: "Form submitted successfully",
       clientId: client._id,

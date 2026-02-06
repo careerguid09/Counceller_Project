@@ -28,32 +28,53 @@ const CounselorLoginModal = ({ isOpen, onClose, onLogin }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
 
-    try {
-      // Demo validation - in real app, API call karna hoga
-      if (formData.email === "counselor@example.com" && formData.password === "password123") {
-        onLogin({
-          id: 1,
-          name: "John Doe",
-          email: formData.email,
-          specialization: "Career Counseling",
-          isVerified: true,
-        });
-        onClose();
-      } else {
-        setError("Invalid email or password. Demo: counselor@example.com / password123");
-      }
-    } catch (err) {
-      setError("Login failed. Please try again.");
-    } finally {
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
+
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: formData.email,
+        password: formData.password,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.message || "Login failed");
       setLoading(false);
+      return;
     }
-  };
+
+    localStorage.setItem("counselorToken", data.token);
+
+    const counselorProfile = {
+      email: formData.email,
+      role: "counselor",
+    };
+
+    onLogin(counselorProfile);
+    onClose();
+    navigate("/counselors/dashboard/relationship");
+
+    
+  } catch (err) {
+    setError("Server error. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (!isOpen) return null;
 
@@ -239,13 +260,31 @@ const Navbar = () => {
   };
 
   // Handle counselor logout
-  const handleCounselorLogout = () => {
+ const handleCounselorLogout = async () => {
+  try {
+    const token = localStorage.getItem("counselorToken");
+
+    if (token) {
+      await fetch("http://localhost:5000/api/auth/logout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
+  } catch (err) {
+    console.error("Logout failed", err);
+  } finally {
+    // ✅ Always clean client
+    localStorage.removeItem("counselorToken");
+    localStorage.removeItem("counselorProfile");
     setIsCounselorLoggedIn(false);
     setCounselorProfile(null);
     setCounselorsOpen(false);
-    localStorage.removeItem("counselorProfile");
     navigate("/");
-  };
+  }
+};
+
 
   // Handle For Counselors click - opens login modal or dropdown based on login status
   const handleForCounselorsClick = (e) => {
