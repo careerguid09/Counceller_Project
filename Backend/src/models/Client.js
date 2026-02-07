@@ -37,7 +37,7 @@ const clientSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["new", "contacted", "in-progress", "closed"],
+      enum: ["new", "in-progress", "completed"],
       default: "new",
     },
   },

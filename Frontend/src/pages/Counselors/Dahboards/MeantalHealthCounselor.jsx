@@ -1,145 +1,12 @@
-import React, { useState, useMemo } from "react";
-import { 
-  Users, Calendar, MessageSquare, TrendingUp, Star, Clock, 
-  Brain, Activity, ShieldAlert, FileText, Search, MapPin, Filter, 
-  CheckCircle2, Phone, Mail, BookOpen, Award, ShieldCheck, X, 
+import React, { useState, useMemo, useEffect } from "react";
+import {
+  Users, Calendar, MessageSquare, TrendingUp, Star, Clock,
+  Brain, Activity, ShieldAlert, FileText, Search, MapPin, Filter,
+  CheckCircle2, Phone, Mail, BookOpen, Award, ShieldCheck, X,
   Coffee, MoreVertical, Stethoscope
 } from "lucide-react";
 
-// --- MENTAL HEALTH COUNSELOR DATA ---
-const CLIENT_DATA = [
-  { 
-    id: 1, 
-    name: "Arjun Singh", 
-    location: "Mumbai, MH", 
-    status: "upcoming", 
-    type: "CBT Therapy", 
-    time: "10:00 AM", 
-    date: "Today", 
-    duration: "60 min", 
-    condition: "Anxiety Disorder", 
-    severity: "Moderate",
-    email: "arjun.singh@example.com",
-    phone: "+91 98765 43331",
-    emergencyContact: "+91 98765 43332",
-    age: "32",
-    occupation: "Software Engineer",
-    sessionsCompleted: 8,
-    progressScore: "75%",
-    medications: ["Escitalopram 10mg", "Propranolol PRN"],
-    therapistNotes: "Responding well to CBT. Showing improvement in panic response.",
-    preferredContact: "Phone & Secure Portal",
-    crisisPlan: "Contact emergency contact, use grounding techniques",
-    upcomingActions: [
-      { title: "Medication Review", date: "Dec 22, 2024", priority: "High" },
-      { title: "Family Session", date: "Dec 28, 2024", priority: "Medium" }
-    ]
-  },
-  { 
-    id: 2, 
-    name: "Priya Patel", 
-    location: "Ahmedabad, GJ", 
-    status: "completed", 
-    type: "DBT Session", 
-    time: "02:30 PM", 
-    date: "Yesterday", 
-    duration: "45 min", 
-    condition: "Depression", 
-    severity: "High",
-    email: "priya.patel@example.com",
-    phone: "+91 98765 43333",
-    emergencyContact: "+91 98765 43334",
-    age: "28",
-    occupation: "Marketing Manager",
-    sessionsCompleted: 12,
-    progressScore: "65%",
-    medications: ["Sertraline 50mg", "Trazodone 50mg"],
-    therapistNotes: "Severe depression with suicidal ideation. Needs continued monitoring.",
-    preferredContact: "Secure Portal Only",
-    crisisPlan: "Immediate hospitalization protocol, contact family",
-    upcomingActions: [
-      { title: "Safety Plan Update", date: "Jan 5, 2025", priority: "Urgent" }
-    ]
-  },
-  { 
-    id: 3, 
-    name: "Rahul Verma", 
-    location: "Delhi, DL", 
-    status: "upcoming", 
-    type: "Trauma Therapy", 
-    time: "04:00 PM", 
-    date: "Today", 
-    duration: "90 min", 
-    condition: "PTSD", 
-    severity: "Moderate",
-    email: "rahul.verma@example.com",
-    phone: "+91 98765 43335",
-    emergencyContact: "+91 98765 43336",
-    age: "35",
-    occupation: "Journalist",
-    sessionsCompleted: 6,
-    progressScore: "80%",
-    medications: ["Prazosin 2mg", "Propranolol 20mg"],
-    therapistNotes: "Responding well to EMDR therapy. Flashbacks reduced by 40%.",
-    preferredContact: "Video Sessions",
-    crisisPlan: "Use coping cards, contact therapist",
-    upcomingActions: [
-      { title: "EMDR Session", date: "Dec 23, 2024", priority: "High" }
-    ]
-  },
-  { 
-    id: 4, 
-    name: "Sonia Kapoor", 
-    location: "Pune, MH", 
-    status: "upcoming", 
-    type: "Wellness Check", 
-    time: "11:00 AM", 
-    date: "Tomorrow", 
-    duration: "30 min", 
-    condition: "Bipolar Support", 
-    severity: "Low",
-    email: "sonia.kapoor@example.com",
-    phone: "+91 98765 43337",
-    emergencyContact: "+91 98765 43338",
-    age: "42",
-    occupation: "Teacher",
-    sessionsCompleted: 4,
-    progressScore: "90%",
-    medications: ["Lithium 300mg", "Quetiapine 25mg"],
-    therapistNotes: "Stable on current medication. Monitoring for manic episodes.",
-    preferredContact: "Email & WhatsApp",
-    crisisPlan: "Contact psychiatrist, mood charting",
-    upcomingActions: [
-      { title: "Medication Check", date: "Jan 10, 2025", priority: "Medium" }
-    ]
-  },
-  { 
-    id: 5, 
-    name: "Meena Sharma", 
-    location: "Hyderabad, TS", 
-    status: "completed", 
-    type: "Mindfulness", 
-    time: "09:00 AM", 
-    date: "2 days ago", 
-    duration: "60 min", 
-    condition: "Work Stress", 
-    severity: "Low",
-    email: "meena.sharma@example.com",
-    phone: "+91 98765 43339",
-    emergencyContact: "+91 98765 43340",
-    age: "29",
-    occupation: "Project Manager",
-    sessionsCompleted: 3,
-    progressScore: "85%",
-    medications: ["None"],
-    therapistNotes: "Learning stress management techniques. Good progress with mindfulness.",
-    preferredContact: "Phone",
-    crisisPlan: "Breathing exercises, contact HR",
-    upcomingActions: [
-      { title: "Follow-up Session", date: "Jan 15, 2025", priority: "Low" }
-    ]
-  },
-];
+
 
 // Stat Card Component
 const StatCard = ({ label, value, icon: Icon, change, sub }) => (
@@ -160,6 +27,23 @@ const StatCard = ({ label, value, icon: Icon, change, sub }) => (
   </div>
 );
 
+const formatDateTime = (dateString) => {
+  if (!dateString) return "—";
+
+  const date = new Date(dateString);
+
+  return date.toLocaleString("en-IN", {
+    weekday: "long",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
+
 // Client Profile Modal Component
 const ClientProfileModal = ({ client, onClose }) => {
   if (!client) return null;
@@ -167,191 +51,138 @@ const ClientProfileModal = ({ client, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
       <div className="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-lg bg-indigo-50 flex items-center justify-center">
-              <div className="text-xl font-bold text-indigo-700">
-                {client.name.split(' ').map(n => n[0]).join('')}
-              </div>
+              <span className="text-xl font-bold text-indigo-700">
+                {client.fullName?.split(" ").map(n => n[0]).join("")}
+              </span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{client.name}</h1>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm text-gray-500 flex items-center gap-1">
-                  <MapPin size={14} />
-                  {client.location}
-                </span>
-                <span className={`text-xs px-2 py-1 rounded ${
-                  client.severity === 'Critical' ? 'bg-red-100 text-red-700' :
-                  client.severity === 'High' ? 'bg-orange-100 text-orange-700' :
-                  client.severity === 'Moderate' ? 'bg-amber-100 text-amber-700' :
-                  'bg-emerald-100 text-emerald-700'
-                }`}>
-                  {client.severity}
-                </span>
-              </div>
+              <h1 className="text-2xl font-bold text-gray-900">{client.fullName}</h1>
+              <p className="text-sm text-gray-500 flex items-center gap-1">
+                <MapPin size={14} /> {client.city || "—"}
+              </p>
             </div>
           </div>
-          <button 
-            onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100"
-          >
+
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100">
             <X size={24} />
           </button>
         </div>
 
         {/* Content */}
         <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column */}
+
+          {/* LEFT */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Clinical Info */}
+
+            {/* Client Overview */}
             <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Clinical Details</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Client Overview</h3>
+
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Condition</p>
-                  <p className="font-medium text-gray-900">{client.condition}</p>
+                <div>
+                  <p className="text-sm text-gray-500">Full Name</p>
+                  <p className="font-medium text-gray-900">{client.fullName}</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Age & Occupation</p>
-                  <p className="font-medium text-gray-900">{client.age} • {client.occupation}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Sessions Completed</p>
-                  <p className="font-medium text-gray-900">{client.sessionsCompleted}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Progress Score</p>
-                  <p className="font-medium text-emerald-600">{client.progressScore}</p>
+
+                <div>
+                  <p className="text-sm text-gray-500">Current Status</p>
+                  <span className={`inline-block mt-1 px-3 py-1 rounded text-xs font-medium ${client.status === "new"
+                      ? "bg-blue-100 text-blue-700"
+                      : client.status === "in-progress"
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-emerald-100 text-emerald-700"
+                    }`}>
+                    {client.status.replace("-", " ")}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Contact Info */}
+            {/* Contact */}
             <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact & Emergency</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
+
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Mail size={18} className="text-gray-400" />
                   <span className="text-gray-900">{client.email}</span>
                 </div>
+
                 <div className="flex items-center gap-3">
                   <Phone size={18} className="text-gray-400" />
-                  <span className="text-gray-900">{client.phone}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <ShieldAlert size={18} className="text-red-500" />
-                  <span className="text-gray-900">Emergency: {client.emergencyContact}</span>
+                  <span className="text-gray-900">{client.phone || "Not provided"}</span>
                 </div>
               </div>
             </div>
 
-            {/* Treatment */}
+            {/* Care Plan (Dummy but useful) */}
             <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Treatment Details</h3>
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <p className="text-gray-600">Current Medications</p>
-                  <div className="flex flex-wrap gap-2">
-                    {client.medications.map((med, index) => (
-                      <span key={index} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-                        {med}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="p-4 bg-white rounded-lg border border-gray-200">
-                  <p className="text-gray-700">
-                    <span className="font-bold">Therapist Notes:</span> {client.therapistNotes}
-                  </p>
-                </div>
-                <div className="p-4 bg-red-50 rounded-lg border border-red-100">
-                  <p className="text-gray-700">
-                    <span className="font-bold">Crisis Plan:</span> {client.crisisPlan}
-                  </p>
-                </div>
-              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Care Plan Summary</h3>
+
+              <p className="text-gray-700 leading-relaxed">
+                This client is currently enrolled in a structured mental wellness program focused on
+                emotional regulation, consistency, and long-term psychological resilience.
+              </p>
+
+              <ul className="mt-4 space-y-2 text-sm text-gray-600 list-disc list-inside">
+                <li>Regular check-ins based on current status</li>
+                <li>Adaptive care intensity as progress evolves</li>
+                <li>Secure documentation and privacy-first handling</li>
+              </ul>
             </div>
           </div>
 
-          {/* Right Column */}
+          {/* RIGHT */}
           <div className="space-y-6">
-            {/* Session Details */}
+
+            {/* Engagement */}
             <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Session Details</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Date</span>
-                  <span className="font-medium">{client.date}</span>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Engagement Metrics</h3>
+
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Profile Created</span>
+                  <span className="font-medium">
+                    {formatDateTime(client.createdAt)}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Time</span>
-                  <span className="font-medium">{client.time}</span>
+
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Last Interaction</span>
+                  <span className="font-medium">Within 7 days</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Duration</span>
-                  <span className="font-medium">{client.duration}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Therapy Type</span>
-                  <span className="font-medium">{client.type}</span>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Engagement Level</span>
+                  <span className="font-medium text-indigo-600">Good</span>
                 </div>
               </div>
             </div>
 
-            {/* Progress */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress Metrics</h3>
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Treatment Progress</span>
-                    <span className="font-medium text-indigo-600">{client.progressScore}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-indigo-500 h-2 rounded-full" 
-                      style={{ width: client.progressScore }}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-gray-600">Preferred Contact</span>
-                  <p className="font-medium">{client.preferredContact}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Upcoming Actions */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Actions</h3>
-              <div className="space-y-3">
-                {client.upcomingActions.map((action, index) => (
-                  <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium text-gray-900">{action.title}</span>
-                      <span className={`text-xs px-2 py-1 rounded ${
-                        action.priority === 'Urgent' ? 'bg-red-100 text-red-700' :
-                        action.priority === 'High' ? 'bg-amber-100 text-amber-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}>
-                        {action.priority}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500">{action.date}</p>
-                  </div>
-                ))}
-              </div>
+            {/* Status Guidance */}
+            <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-6">
+              <h3 className="text-sm font-semibold text-indigo-800 mb-2">
+                System Recommendation
+              </h3>
+              <p className="text-sm text-indigo-700">
+                Maintain regular follow-ups and monitor engagement based on the client’s current status.
+                Adjust care intensity if engagement changes.
+              </p>
             </div>
 
             {/* Actions */}
             <div className="space-y-2">
               <button className="w-full bg-indigo-600 text-white py-3 rounded-lg font-medium hover:bg-indigo-700">
-                Schedule Session
+                Schedule Follow-up
               </button>
               <button className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50">
-                Update Chart Notes
+                Add Internal Notes
               </button>
             </div>
           </div>
@@ -361,22 +192,53 @@ const ClientProfileModal = ({ client, onClose }) => {
   );
 };
 
+
 // Main App Component
 export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedClient, setSelectedClient] = useState(null);
+  const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/clients/category/Mental Health Counselors", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("counselorToken")}`,
+          },
+        });
+        const data = await res.json();
+        setClients(data.clients || []);
+      } catch (err) {
+        console.error("Failed to fetch clients", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClients();
+  }, []);
+
+
 
   // Filter clients
   const filteredClients = useMemo(() => {
-    return CLIENT_DATA.filter((client) => {
-      const matchesSearch = client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          client.condition.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          client.location.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === "all" || client.status === statusFilter;
+    return clients.filter((client) => {
+      const matchesSearch =
+        client.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        client.city.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesStatus =
+        statusFilter === "all" || client.status === statusFilter;
+
       return matchesSearch && matchesStatus;
     });
-  }, [searchQuery, statusFilter]);
+  }, [clients, searchQuery, statusFilter]);
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -447,7 +309,7 @@ export default function App() {
                 <h2 className="text-xl font-bold text-gray-900">Patient Management</h2>
                 <p className="text-gray-500 mt-1">Manage therapy sessions and client progress</p>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -459,114 +321,71 @@ export default function App() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                
+
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => setStatusFilter("all")}
-                    className={`px-4 py-2 rounded-lg font-medium ${
-                      statusFilter === "all" ? "bg-indigo-600 text-white" : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    All
-                  </button>
-                  <button
-                    onClick={() => setStatusFilter("upcoming")}
-                    className={`px-4 py-2 rounded-lg font-medium ${
-                      statusFilter === "upcoming" ? "bg-indigo-100 text-indigo-700" : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    Upcoming
-                  </button>
-                  <button
-                    onClick={() => setStatusFilter("completed")}
-                    className={`px-4 py-2 rounded-lg font-medium ${
-                      statusFilter === "completed" ? "bg-emerald-100 text-emerald-700" : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    Completed
-                  </button>
+                  {["all", "new", "in-progress", "completed"].map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => setStatusFilter(status)}
+                      className={`px-4 py-2 rounded-lg font-medium capitalize ${statusFilter === status
+                        ? "bg-indigo-600 text-white"
+                        : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        }`}
+                    >
+                      {status.replace("-", " ")}
+                    </button>
+                  ))}
                 </div>
+
               </div>
             </div>
           </div>
+          {loading && (
+            <div className="text-center py-10 text-gray-500">
+              Loading clients...
+            </div>
+          )}
+
 
           {/* Clients Grid */}
           <div className="p-6">
             {filteredClients.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredClients.map((client) => (
-                  <div 
-                    key={client.id} 
-                    className="border border-gray-200 rounded-lg hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer bg-white"
+                  <div
+                    key={client._id}
                     onClick={() => setSelectedClient(client)}
+                    className="border border-gray-200 rounded-lg hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer bg-white"
                   >
-                    <div className="p-5">
-                      {/* Header */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center">
-                            <div className="font-medium text-indigo-700">
-                              {client.name.split(' ').map(n => n[0]).join('')}
-                            </div>
-                          </div>
-                          <div>
-                            <h3 className="font-bold text-gray-900">{client.name}</h3>
-                            <p className="text-sm text-gray-500 flex items-center gap-1">
-                              <MapPin size={12} />
-                              {client.location}
-                            </p>
-                          </div>
+                    <div className="p-5 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-bold text-gray-900">{client.fullName}</h3>
+                          <p className="text-sm text-gray-500">{client.email}</p>
+                          <p className="text-sm text-gray-400">{client.city}</p>
                         </div>
-                        <span className={`text-xs font-medium px-2 py-1 rounded ${
-                          client.status === 'upcoming' ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'
-                        }`}>
-                          {client.status === 'upcoming' ? 'Upcoming' : 'Completed'}
+                        <span
+                          className={`text-xs px-2 py-1 rounded font-medium ${client.status === "new"
+                            ? "bg-blue-100 text-blue-700"
+                            : client.status === "in-progress"
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-emerald-100 text-emerald-700"
+                            }`}
+                        >
+                          {client.status.replace("-", " ")}
                         </span>
                       </div>
 
-                      {/* Details */}
-                      <div className="space-y-3 mb-4">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500">Condition</span>
-                          <span className="font-medium">{client.condition}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500">Severity</span>
-                          <span className={`font-medium ${
-                            client.severity === 'Critical' ? 'text-red-600' :
-                            client.severity === 'High' ? 'text-orange-600' :
-                            client.severity === 'Moderate' ? 'text-amber-600' :
-                            'text-emerald-600'
-                          }`}>
-                            {client.severity}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500">Next Session</span>
-                          <span className="font-medium">{client.date} • {client.time}</span>
-                        </div>
-                      </div>
+                      <p className="text-sm text-gray-600">
+                        Ongoing mental health support plan focused on emotional resilience and long-term well-being.
+                      </p>
 
-                      {/* Progress */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500">Progress</span>
-                          <span className="font-medium text-emerald-600">{client.progressScore}</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
-                          <div 
-                            className="bg-indigo-500 h-1.5 rounded-full" 
-                            style={{ width: client.progressScore }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* View Button */}
-                      <button className="w-full mt-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-sm">
+                      <button className="w-full mt-2 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium">
                         View Full Profile
                       </button>
                     </div>
                   </div>
+
                 ))}
               </div>
             ) : (
@@ -591,8 +410,8 @@ export default function App() {
               Evidence-based care for a resilient mindset
             </h2>
             <p className="text-gray-600 leading-relaxed">
-              Our clinical approach integrates Cognitive Behavioral Therapy (CBT) with trauma-informed 
-              mindfulness practices. We don't just manage symptoms; we partner with clients to navigate 
+              Our clinical approach integrates Cognitive Behavioral Therapy (CBT) with trauma-informed
+              mindfulness practices. We don't just manage symptoms; we partner with clients to navigate
               complex emotional landscapes, fostering self-regulation and sustainable mental well-being.
             </p>
           </div>

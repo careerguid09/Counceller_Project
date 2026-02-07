@@ -1,135 +1,24 @@
-import React, { useState, useMemo } from "react";
-import { 
-  Users, Calendar, MessageSquare, TrendingUp, Star, Clock, 
-  GraduationCap, Trophy, FileText, Search, MapPin, Filter, 
+import React, { useState, useMemo, useEffect } from "react";
+import {
+  Users, Calendar, MessageSquare, TrendingUp, Star, Clock,
+  GraduationCap, Trophy, FileText, Search, MapPin, Filter,
   CheckCircle2, Phone, Mail, BookOpen, Award, Globe, ShieldCheck,
   X, ChevronRight, School, Target, Coffee, MoreVertical
 } from "lucide-react";
 
-// --- EDUCATIONAL COUNSELOR DATA ---
-const STUDENT_DATA = [
-  { 
-    id: 1, 
-    name: "Arjun Sharma", 
-    location: "New Delhi, DL", 
-    status: "upcoming", 
-    type: "College Selection", 
-    time: "10:00 AM", 
-    date: "Today", 
-    duration: "45 min", 
-    grade: "12th Science", 
-    target: "JEE Advanced",
-    email: "arjun.sharma@example.com",
-    phone: "+91 98765 43210",
-    parentContact: "+91 98765 43211",
-    sessionsCompleted: 8,
-    testScore: "85%",
-    profileStrength: "9.2/10",
-    targetCountries: "USA, UK, Canada",
-    preferredContact: "WhatsApp & Email",
-    notes: "Showing consistent improvement in quantitative sections. Needs focus on essay writing.",
-    upcomingDeadlines: [
-      { title: "SAT Registration", date: "Dec 20, 2024", priority: "Urgent" },
-      { title: "Stanford Application", date: "Jan 5, 2025", priority: "High" }
-    ]
-  },
-  { 
-    id: 2, 
-    name: "Neha Patel", 
-    location: "Ahmedabad, GJ", 
-    status: "completed", 
-    type: "Career Guidance", 
-    time: "02:30 PM", 
-    date: "Yesterday", 
-    duration: "60 min", 
-    grade: "11th Commerce", 
-    target: "SAT/TOEFL",
-    email: "neha.patel@example.com",
-    phone: "+91 98765 43212",
-    parentContact: "+91 98765 43213",
-    sessionsCompleted: 12,
-    testScore: "92%",
-    profileStrength: "9.5/10",
-    targetCountries: "USA, Australia",
-    preferredContact: "Email",
-    notes: "Excellent communication skills. Strong candidate for business schools.",
-    upcomingDeadlines: [
-      { title: "TOEFL Exam", date: "Jan 15, 2025", priority: "Medium" }
-    ]
-  },
-  { 
-    id: 3, 
-    name: "Rohan Kumar", 
-    location: "Patna, BR", 
-    status: "upcoming", 
-    type: "Application Review", 
-    time: "04:00 PM", 
-    date: "Today", 
-    duration: "30 min", 
-    grade: "12th Humanities", 
-    target: "CUET",
-    email: "rohan.kumar@example.com",
-    phone: "+91 98765 43214",
-    parentContact: "+91 98765 43215",
-    sessionsCompleted: 5,
-    testScore: "78%",
-    profileStrength: "8.5/10",
-    targetCountries: "India",
-    preferredContact: "Phone & WhatsApp",
-    notes: "Strong in humanities, needs guidance on college selection.",
-    upcomingDeadlines: [
-      { title: "CUET Registration", date: "Feb 1, 2025", priority: "High" }
-    ]
-  },
-  { 
-    id: 4, 
-    name: "Kavya Verma", 
-    location: "Lucknow, UP", 
-    status: "upcoming", 
-    type: "Test Preparation", 
-    time: "06:00 PM", 
-    date: "Tomorrow", 
-    duration: "60 min", 
-    grade: "10th", 
-    target: "Board Exams",
-    email: "kavya.verma@example.com",
-    phone: "+91 98765 43216",
-    parentContact: "+91 98765 43217",
-    sessionsCompleted: 3,
-    testScore: "88%",
-    profileStrength: "8.8/10",
-    targetCountries: "India",
-    preferredContact: "WhatsApp",
-    notes: "Early stage counseling. Building foundation for science stream.",
-    upcomingDeadlines: [
-      { title: "School Pre-Boards", date: "Nov 30, 2024", priority: "Medium" }
-    ]
-  },
-  { 
-    id: 5, 
-    name: "Vikas Mehta", 
-    location: "Mumbai, MH", 
-    status: "completed", 
-    type: "University Shortlisting", 
-    time: "11:00 AM", 
-    date: "2 days ago", 
-    duration: "45 min", 
-    grade: "12th Science", 
-    target: "NEET",
-    email: "vikas.mehta@example.com",
-    phone: "+91 98765 43218",
-    parentContact: "+91 98765 43219",
-    sessionsCompleted: 15,
-    testScore: "95%",
-    profileStrength: "9.8/10",
-    targetCountries: "India",
-    preferredContact: "Email & WhatsApp",
-    notes: "Top performer. Aiming for AIIMS. Needs guidance on backup medical colleges.",
-    upcomingDeadlines: [
-      { title: "NEET Application", date: "Mar 10, 2025", priority: "Urgent" }
-    ]
-  },
-];
+const formatDateTime = (dateString) => {
+  if (!dateString) return "—";
+
+  return new Date(dateString).toLocaleString("en-IN", {
+    weekday: "long",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
 
 // Stat Card Component
 const StatCard = ({ label, value, icon: Icon, change, sub }) => (
@@ -150,6 +39,9 @@ const StatCard = ({ label, value, icon: Icon, change, sub }) => (
   </div>
 );
 
+
+
+
 // Student Profile Modal Component
 const StudentProfileModal = ({ student, onClose }) => {
   if (!student) return null;
@@ -159,28 +51,26 @@ const StudentProfileModal = ({ student, onClose }) => {
       <div className="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-lg bg-emerald-50 flex items-center justify-center">
-              <div className="text-xl font-bold text-emerald-700">
-                {student.name.split(' ').map(n => n[0]).join('')}
-              </div>
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{student.name}</h1>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm text-gray-500 flex items-center gap-1">
-                  <MapPin size={14} />
-                  {student.location}
-                </span>
-                <span className={`text-xs px-2 py-1 rounded ${
-                  student.status === 'upcoming' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{student.fullName}</h1>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-sm text-gray-500 flex items-center gap-1">
+                <MapPin size={14} />
+                {student.city}
+              </span>
+              <span className="text-xs px-2 py-1 rounded bg-indigo-100 text-indigo-700">
+                {student.category}
+              </span>
+              <span className={`text-xs px-2 py-1 rounded ${student.status === "In-progress"
+                ? "bg-blue-100 text-blue-700"
+                : "bg-emerald-100 text-emerald-700"
                 }`}>
-                  {student.status === 'upcoming' ? 'Upcoming' : 'Completed'}
-                </span>
-              </div>
+                {student.status}
+              </span>
             </div>
           </div>
-          <button 
+
+          <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-gray-100"
           >
@@ -192,140 +82,113 @@ const StudentProfileModal = ({ student, onClose }) => {
         <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Academic Info */}
+            {/* Basic Info */}
             <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Academic Details</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Current Grade</p>
-                  <p className="font-medium text-gray-900">{student.grade}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Target Exam</p>
-                  <p className="font-medium text-gray-900">{student.target}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Sessions Completed</p>
-                  <p className="font-medium text-gray-900">{student.sessionsCompleted}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Test Score</p>
-                  <p className="font-medium text-emerald-600">{student.testScore}</p>
-                </div>
-              </div>
-            </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Client Information
+              </h3>
 
-            {/* Contact Info */}
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Mail size={18} className="text-gray-400" />
                   <span className="text-gray-900">{student.email}</span>
                 </div>
+
                 <div className="flex items-center gap-3">
                   <Phone size={18} className="text-gray-400" />
                   <span className="text-gray-900">{student.phone}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Users size={18} className="text-gray-400" />
-                  <span className="text-gray-900">Parent: {student.parentContact}</span>
+
+                <div className="pt-4 border-t border-gray-200">
+                  <p className="text-sm text-gray-500 mb-1">Client Message</p>
+                  <p className="text-gray-800 bg-white p-4 rounded-lg border">
+                    {student.message || "No message provided by the client."}
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Notes */}
+            {/* Counselor Notes (Dummy but useful) */}
             <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Counselor Notes</h3>
-              <div className="p-4 bg-white rounded-lg border border-gray-200">
-                <p className="text-gray-700">{student.notes}</p>
-              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Counselor Notes
+              </h3>
+
+              <ul className="space-y-2 text-gray-700 list-disc list-inside">
+                <li>Initial inquiry reviewed</li>
+                <li>Client appears genuinely motivated</li>
+                <li>Recommended first consultation session</li>
+              </ul>
             </div>
           </div>
+
 
           {/* Right Column */}
           <div className="space-y-6">
             {/* Session Details */}
             <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Session Details</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Record Details
+              </h3>
+
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Date</span>
-                  <span className="font-medium">{student.date}</span>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Created On</span>
+                  <span className="font-medium">
+                    {formatDateTime(student.createdAt)}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Time</span>
-                  <span className="font-medium">{student.time}</span>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Current Status</span>
+                  <span className="font-medium">{student.status}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Duration</span>
-                  <span className="font-medium">{student.duration}</span>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Category</span>
+                  <span className="font-medium">{student.category}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Type</span>
-                  <span className="font-medium">{student.type}</span>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600">City</span>
+                  <span className="font-medium">{student.city}</span>
                 </div>
               </div>
             </div>
 
-            {/* Progress */}
+
+
+            {/* Progress Metrics */}
             <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress Metrics</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Engagement Overview
+              </h3>
+
               <div className="space-y-4">
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Profile Strength</span>
-                    <span className="font-medium">{student.profileStrength}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-emerald-500 h-2 rounded-full" 
-                      style={{ width: `${parseFloat(student.profileStrength) * 10}%` }}
-                    />
-                  </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Response Quality</span>
+                  <span className="font-medium text-blue-600">High</span>
                 </div>
-                <div className="space-y-1">
-                  <span className="text-gray-600">Target Countries</span>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {student.targetCountries.split(', ').map((country, index) => (
-                      <span key={index} className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs">
-                        {country}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Upcoming Deadlines */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Deadlines</h3>
-              <div className="space-y-3">
-                {student.upcomingDeadlines.map((deadline, index) => (
-                  <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium text-gray-900">{deadline.title}</span>
-                      <span className={`text-xs px-2 py-1 rounded ${
-                        deadline.priority === 'Urgent' ? 'bg-red-100 text-red-700' :
-                        deadline.priority === 'High' ? 'bg-amber-100 text-amber-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}>
-                        {deadline.priority}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500">{deadline.date}</p>
-                  </div>
-                ))}
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Follow-up Required</span>
+                  <span className="font-medium text-amber-600">Yes</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Priority Level</span>
+                  <span className="font-medium text-red-600">Medium</span>
+                </div>
               </div>
             </div>
 
             {/* Actions */}
             <div className="space-y-2">
-              <button className="w-full bg-emerald-600 text-white py-3 rounded-lg font-medium hover:bg-emerald-700">
+              <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700">
                 Schedule Next Session
               </button>
               <button className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50">
-                Send Progress Update
+                Send Career Resources
               </button>
             </div>
           </div>
@@ -337,20 +200,54 @@ const StudentProfileModal = ({ student, onClose }) => {
 
 // Main App Component
 export default function App() {
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedStudent, setSelectedStudent] = useState(null);
 
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const token = localStorage.getItem("counselorToken");
+
+        const res = await fetch(
+          "http://localhost:5000/api/clients/category/Educational Counselors",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = await res.json();
+        setStudents(data.clients || []);
+      } catch (error) {
+        console.error("Failed to fetch students", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
+
   // Filter students
   const filteredStudents = useMemo(() => {
-    return STUDENT_DATA.filter((student) => {
-      const matchesSearch = student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          student.target.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          student.location.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === "all" || student.status === statusFilter;
+    return students.filter((student) => {
+      const matchesSearch =
+        student.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        student.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        student.city.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesStatus =
+        statusFilter === "all" || student.status === statusFilter;
+
       return matchesSearch && matchesStatus;
     });
-  }, [searchQuery, statusFilter]);
+  }, [students, searchQuery, statusFilter]);
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -421,7 +318,7 @@ export default function App() {
                 <h2 className="text-xl font-bold text-gray-900">Student Management</h2>
                 <p className="text-gray-500 mt-1">Manage counseling sessions and student profiles</p>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -433,107 +330,73 @@ export default function App() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                
+
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => setStatusFilter("all")}
-                    className={`px-4 py-2 rounded-lg font-medium ${
-                      statusFilter === "all" ? "bg-emerald-600 text-white" : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    All
-                  </button>
-                  <button
-                    onClick={() => setStatusFilter("upcoming")}
-                    className={`px-4 py-2 rounded-lg font-medium ${
-                      statusFilter === "upcoming" ? "bg-emerald-100 text-emerald-700" : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    Upcoming
-                  </button>
-                  <button
-                    onClick={() => setStatusFilter("completed")}
-                    className={`px-4 py-2 rounded-lg font-medium ${
-                      statusFilter === "completed" ? "bg-blue-100 text-blue-700" : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    Completed
-                  </button>
+                  {["all", "new", "in-progress", "completed"].map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => setStatusFilter(status)}
+                      className={`px-4 py-2 rounded-lg font-medium capitalize ${statusFilter === status
+                        ? "bg-emerald-600 text-white"
+                        : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        }`}
+                    >
+                      {status.replace("-", " ")}
+                    </button>
+                  ))}
                 </div>
+
               </div>
             </div>
           </div>
+
+
+          {loading && (
+            <div className="text-center py-10 text-gray-500">
+              Loading clients...
+            </div>
+          )}
 
           {/* Students Grid */}
           <div className="p-6">
             {filteredStudents.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredStudents.map((student) => (
-                  <div 
-                    key={student.id} 
+                  <div
+                    key={student._id}
                     className="border border-gray-200 rounded-lg hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer bg-white"
                     onClick={() => setSelectedStudent(student)}
                   >
-                    <div className="p-5">
+                    <div className="p-5 space-y-4">
                       {/* Header */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
-                            <div className="font-medium text-emerald-700">
-                              {student.name.split(' ').map(n => n[0]).join('')}
-                            </div>
-                          </div>
-                          <div>
-                            <h3 className="font-bold text-gray-900">{student.name}</h3>
-                            <p className="text-sm text-gray-500 flex items-center gap-1">
-                              <MapPin size={12} />
-                              {student.location}
-                            </p>
-                          </div>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-bold text-gray-900">{student.fullName}</h3>
+                          <p className="text-sm text-gray-500">{student.email}</p>
+                          <p className="text-xs text-gray-400 mt-1">{student.city}</p>
                         </div>
-                        <span className={`text-xs font-medium px-2 py-1 rounded ${
-                          student.status === 'upcoming' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
-                        }`}>
-                          {student.status === 'upcoming' ? 'Upcoming' : 'Completed'}
+
+                        <span className={`text-xs px-2 py-1 rounded capitalize ${student.status === "completed"
+                          ? "bg-blue-100 text-blue-700"
+                          : student.status === "in-progress"
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-emerald-100 text-emerald-700"
+                          }`}>
+                          {student.status.replace("-", " ")}
                         </span>
                       </div>
 
-                      {/* Details */}
-                      <div className="space-y-3 mb-4">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500">Grade</span>
-                          <span className="font-medium">{student.grade}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500">Target</span>
-                          <span className="font-medium">{student.target}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500">Next Session</span>
-                          <span className="font-medium">{student.date} • {student.time}</span>
-                        </div>
-                      </div>
+                      {/* Dummy helpful text */}
+                      <p className="text-sm text-gray-600">
+                        Student is actively engaged in counseling sessions. Profile and goals are being reviewed for optimal academic planning.
+                      </p>
 
-                      {/* Progress */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500">Test Score</span>
-                          <span className="font-medium text-emerald-600">{student.testScore}</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
-                          <div 
-                            className="bg-emerald-500 h-1.5 rounded-full" 
-                            style={{ width: student.testScore }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* View Button */}
-                      <button className="w-full mt-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-sm">
-                        View Full Profile
+                      <button className="w-full py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-sm">
+                        View Profile
                       </button>
                     </div>
                   </div>
+
                 ))}
               </div>
             ) : (
@@ -558,8 +421,8 @@ export default function App() {
               Empowering students through holistic academic strategy
             </h2>
             <p className="text-gray-600 leading-relaxed">
-              We believe every student has a unique academic fingerprint. Our counseling goes beyond 
-              university placement to identify the intersection of innate talent, academic rigor, 
+              We believe every student has a unique academic fingerprint. Our counseling goes beyond
+              university placement to identify the intersection of innate talent, academic rigor,
               and future market demands to build lifelong career foundations.
             </p>
           </div>

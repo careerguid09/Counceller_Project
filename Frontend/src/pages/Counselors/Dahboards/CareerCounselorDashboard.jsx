@@ -1,140 +1,28 @@
 import React, { useState, useMemo } from "react";
-import { 
-  Users, Briefcase, Calendar, MessageSquare, TrendingUp, Star, Clock, 
-  GraduationCap, Trophy, FileText, Search, MapPin, Filter, CheckCircle2, 
+import { useEffect } from "react";
+
+import {
+  Users, Briefcase, Calendar, MessageSquare, TrendingUp, Star, Clock,
+  GraduationCap, Trophy, FileText, Search, MapPin, Filter, CheckCircle2,
   Phone, Mail, BookOpen, Award, Globe, ShieldCheck, X, ChevronRight,
   Coffee, MoreVertical, Target
 } from "lucide-react";
 
-// --- CAREER COUNSELOR DATA ---
-const CLIENTS_DATA = [
-  { 
-    id: 1, 
-    name: "Aarav Mehta", 
-    location: "Bangalore, KA", 
-    status: "upcoming", 
-    type: "Career Assessment", 
-    time: "10:30 AM", 
-    date: "Today", 
-    duration: "45 min", 
-    industry: "Software Tech",
-    email: "aarav.mehta@example.com",
-    phone: "+91 98765 43221",
-    experience: "3 years",
-    currentRole: "Software Engineer",
-    targetRole: "Senior Developer",
-    currentSalary: "₹12 LPA",
-    targetSalary: "₹18 LPA",
-    sessionsCompleted: 4,
-    skillGaps: ["System Design", "Team Leadership"],
-    preferredContact: "Email & WhatsApp",
-    notes: "Strong technical skills, needs guidance on career progression.",
-    upcomingActions: [
-      { title: "Mock Interview", date: "Dec 20, 2024", priority: "High" },
-      { title: "Resume Update", date: "Dec 25, 2024", priority: "Medium" }
-    ]
-  },
-  { 
-    id: 2, 
-    name: "Priya Sharma", 
-    location: "Mumbai, MH", 
-    status: "completed", 
-    type: "Resume Review", 
-    time: "09:00 AM", 
-    date: "Yesterday", 
-    duration: "60 min", 
-    industry: "Marketing",
-    email: "priya.sharma@example.com",
-    phone: "+91 98765 43222",
-    experience: "5 years",
-    currentRole: "Marketing Manager",
-    targetRole: "Head of Marketing",
-    currentSalary: "₹18 LPA",
-    targetSalary: "₹25 LPA",
-    sessionsCompleted: 6,
-    skillGaps: ["Digital Strategy", "Budget Management"],
-    preferredContact: "Phone",
-    notes: "Excellent creative skills, needs to strengthen analytical abilities.",
-    upcomingActions: [
-      { title: "Strategy Presentation", date: "Jan 5, 2025", priority: "Urgent" }
-    ]
-  },
-  { 
-    id: 3, 
-    name: "Raj Patel", 
-    location: "Ahmedabad, GJ", 
-    status: "upcoming", 
-    type: "Interview Prep", 
-    time: "04:30 PM", 
-    date: "Today", 
-    duration: "30 min", 
-    industry: "Finance",
-    email: "raj.patel@example.com",
-    phone: "+91 98765 43223",
-    experience: "7 years",
-    currentRole: "Financial Analyst",
-    targetRole: "Finance Manager",
-    currentSalary: "₹15 LPA",
-    targetSalary: "₹22 LPA",
-    sessionsCompleted: 3,
-    skillGaps: ["Financial Modeling", "Team Management"],
-    preferredContact: "WhatsApp",
-    notes: "Strong analytical skills, needs interview practice for leadership roles.",
-    upcomingActions: [
-      { title: "Interview with HDFC", date: "Dec 22, 2024", priority: "Urgent" }
-    ]
-  },
-  { 
-    id: 4, 
-    name: "Sneha Reddy", 
-    location: "Hyderabad, TS", 
-    status: "upcoming", 
-    type: "Executive Coaching", 
-    time: "06:00 PM", 
-    date: "Tomorrow", 
-    duration: "60 min", 
-    industry: "Healthcare",
-    email: "sneha.reddy@example.com",
-    phone: "+91 98765 43224",
-    experience: "10 years",
-    currentRole: "Hospital Administrator",
-    targetRole: "Healthcare Consultant",
-    currentSalary: "₹20 LPA",
-    targetSalary: "₹30 LPA",
-    sessionsCompleted: 8,
-    skillGaps: ["Consulting Skills", "Client Acquisition"],
-    preferredContact: "Email",
-    notes: "Experienced professional seeking transition to consulting.",
-    upcomingActions: [
-      { title: "Consulting Proposal", date: "Jan 10, 2025", priority: "High" }
-    ]
-  },
-  { 
-    id: 5, 
-    name: "Vikram Singh", 
-    location: "Delhi, DL", 
-    status: "completed", 
-    type: "Skill Gap Analysis", 
-    time: "02:00 PM", 
-    date: "2 days ago", 
-    duration: "50 min", 
-    industry: "Data Science",
-    email: "vikram.singh@example.com",
-    phone: "+91 98765 43225",
-    experience: "4 years",
-    currentRole: "Data Analyst",
-    targetRole: "Data Scientist",
-    currentSalary: "₹14 LPA",
-    targetSalary: "₹20 LPA",
-    sessionsCompleted: 5,
-    skillGaps: ["Machine Learning", "Python Advanced"],
-    preferredContact: "Email & Phone",
-    notes: "Quick learner, needs to build portfolio with real-world projects.",
-    upcomingActions: [
-      { title: "ML Certification", date: "Feb 1, 2025", priority: "Medium" }
-    ]
-  },
-];
+
+
+const formatDateTime = (dateString) => {
+  const date = new Date(dateString);
+
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
 
 // Stat Card Component
 const StatCard = ({ label, value, icon: Icon, change, sub }) => (
@@ -167,25 +55,31 @@ const ClientProfileModal = ({ client, onClose }) => {
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-lg bg-blue-50 flex items-center justify-center">
               <div className="text-xl font-bold text-blue-700">
-                {client.name.split(' ').map(n => n[0]).join('')}
+                {client.fullName.split(' ').map(n => n[0]).join('')}
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{client.name}</h1>
-              <div className="flex items-center gap-2 mt-1">
+              <h1 className="text-2xl font-bold text-gray-900">{client.fullName}</h1>
+
+              <div className="flex flex-wrap items-center gap-2 mt-1">
                 <span className="text-sm text-gray-500 flex items-center gap-1">
                   <MapPin size={14} />
-                  {client.location}
+                  {client.location || "—"}
                 </span>
-                <span className={`text-xs px-2 py-1 rounded ${
-                  client.status === 'upcoming' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
-                }`}>
-                  {client.status === 'upcoming' ? 'Upcoming' : 'Completed'}
+
+                <span
+                  className={`text-xs px-2 py-1 rounded ${client.status === "In-progress"
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-emerald-100 text-emerald-700"
+                    }`}
+                >
+                  {client.status}
                 </span>
               </div>
             </div>
+
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-gray-100"
           >
@@ -197,145 +91,105 @@ const ClientProfileModal = ({ client, onClose }) => {
         <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Career Info */}
+            {/* Client Information */}
             <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Career Details</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Industry</p>
-                  <p className="font-medium text-gray-900">{client.industry}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Experience</p>
-                  <p className="font-medium text-gray-900">{client.experience}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Current Role</p>
-                  <p className="font-medium text-gray-900">{client.currentRole}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Target Role</p>
-                  <p className="font-medium text-gray-900">{client.targetRole}</p>
-                </div>
-              </div>
-            </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Client Information
+              </h3>
 
-            {/* Contact & Financial */}
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact & Financial Info</h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Mail size={18} className="text-gray-400" />
                   <span className="text-gray-900">{client.email}</span>
                 </div>
+
                 <div className="flex items-center gap-3">
                   <Phone size={18} className="text-gray-400" />
                   <span className="text-gray-900">{client.phone}</span>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-gray-500">Current Salary</p>
-                    <p className="font-medium text-gray-900">{client.currentSalary}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-gray-500">Target Salary</p>
-                    <p className="font-medium text-blue-600">{client.targetSalary}</p>
-                  </div>
+
+                <div className="pt-4 border-t border-gray-200">
+                  <p className="text-sm text-gray-500 mb-1">Client Message</p>
+                  <p className="text-gray-800 bg-white p-4 rounded-lg border">
+                    {client.message || "Client has not shared a detailed message yet."}
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Progress Notes */}
+            {/* Counselor Notes (Dummy but useful) */}
             <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress & Notes</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Sessions Completed</span>
-                  <span className="font-bold text-gray-900">{client.sessionsCompleted}</span>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-gray-600">Skill Gaps Identified</p>
-                  <div className="flex flex-wrap gap-2">
-                    {client.skillGaps.map((skill, index) => (
-                      <span key={index} className="px-3 py-1 bg-red-50 text-red-700 rounded-full text-sm">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="p-4 bg-white rounded-lg border border-gray-200">
-                  <p className="text-gray-700">{client.notes}</p>
-                </div>
-              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Counselor Notes
+              </h3>
+
+              <ul className="space-y-2 text-gray-700 list-disc list-inside">
+                <li>Initial career goals discussion completed</li>
+                <li>Client exploring multiple career paths</li>
+                <li>Recommended structured career planning sessions</li>
+              </ul>
             </div>
           </div>
+
 
           {/* Right Column */}
           <div className="space-y-6">
             {/* Session Details */}
             <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Session Details</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Record Details
+              </h3>
+
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Date</span>
-                  <span className="font-medium">{client.date}</span>
+                  <span className="text-gray-600">Created On</span>
+                  <span className="font-medium">
+                    {formatDateTime(client.createdAt)}
+                  </span>
                 </div>
+
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Time</span>
-                  <span className="font-medium">{client.time}</span>
+                  <span className="text-gray-600">Status</span>
+                  <span className="font-medium">{client.status}</span>
                 </div>
+
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Duration</span>
-                  <span className="font-medium">{client.duration}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Type</span>
-                  <span className="font-medium">{client.type}</span>
+                  <span className="text-gray-600">Category</span>
+                  <span className="font-medium">
+                    {client.category || "Career Counseling"}
+                  </span>
                 </div>
               </div>
             </div>
+
+
 
             {/* Progress Metrics */}
             <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress Metrics</h3>
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Readiness Score</span>
-                    <span className="font-medium text-blue-600">78%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '78%' }} />
-                  </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Engagement Overview
+              </h3>
+
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Career Readiness</span>
+                  <span className="font-medium text-blue-600">Moderate</span>
                 </div>
-                <div className="space-y-1">
-                  <span className="text-gray-600">Preferred Contact</span>
-                  <p className="font-medium">{client.preferredContact}</p>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Follow-up Needed</span>
+                  <span className="font-medium text-amber-600">Yes</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Priority Level</span>
+                  <span className="font-medium text-emerald-600">Normal</span>
                 </div>
               </div>
             </div>
 
-            {/* Upcoming Actions */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Actions</h3>
-              <div className="space-y-3">
-                {client.upcomingActions.map((action, index) => (
-                  <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium text-gray-900">{action.title}</span>
-                      <span className={`text-xs px-2 py-1 rounded ${
-                        action.priority === 'Urgent' ? 'bg-red-100 text-red-700' :
-                        action.priority === 'High' ? 'bg-amber-100 text-amber-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}>
-                        {action.priority}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500">{action.date}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+
+
 
             {/* Actions */}
             <div className="space-y-2">
@@ -355,20 +209,54 @@ const ClientProfileModal = ({ client, onClose }) => {
 
 // Main App Component
 export default function App() {
+  const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedClient, setSelectedClient] = useState(null);
 
+
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const token = localStorage.getItem("counselorToken");
+
+        const res = await fetch("http://localhost:5000/api/clients/category/Career Counselors", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        setClients(data.clients || []);
+      } catch (error) {
+        console.error("Failed to fetch clients", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClients();
+  }, []);
+
+
+
   // Filter clients
   const filteredClients = useMemo(() => {
-    return CLIENTS_DATA.filter((client) => {
-      const matchesSearch = client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          client.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          client.location.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === "all" || client.status === statusFilter;
+    return clients.filter((client) => {
+      const matchesSearch =
+        client.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        client.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        client.city?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesStatus =
+        statusFilter === "all" || client.status === statusFilter;
+
       return matchesSearch && matchesStatus;
     });
-  }, [searchQuery, statusFilter]);
+  }, [clients, searchQuery, statusFilter]);
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -439,7 +327,7 @@ export default function App() {
                 <h2 className="text-xl font-bold text-gray-900">Client Management</h2>
                 <p className="text-gray-500 mt-1">Manage counseling sessions and client progress</p>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -451,105 +339,102 @@ export default function App() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                
+
                 <div className="flex gap-2">
                   <button
                     onClick={() => setStatusFilter("all")}
-                    className={`px-4 py-2 rounded-lg font-medium ${
-                      statusFilter === "all" ? "bg-blue-600 text-white" : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
+                    className={`px-4 py-2 rounded-lg font-medium ${statusFilter === "all"
+                      ? "bg-blue-600 text-white"
+                      : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                      }`}
                   >
                     All
                   </button>
+
                   <button
-                    onClick={() => setStatusFilter("upcoming")}
-                    className={`px-4 py-2 rounded-lg font-medium ${
-                      statusFilter === "upcoming" ? "bg-blue-100 text-blue-700" : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
+                    onClick={() => setStatusFilter("new")}
+                    className={`px-4 py-2 rounded-lg font-medium ${statusFilter === "new"
+                      ? "bg-blue-100 text-blue-700"
+                      : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                      }`}
                   >
-                    Upcoming
+                    New
                   </button>
+
+                  <button
+                    onClick={() => setStatusFilter("in-progress")}
+                    className={`px-4 py-2 rounded-lg font-medium ${statusFilter === "in-progress"
+                      ? "bg-amber-100 text-amber-700"
+                      : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                      }`}
+                  >
+                    In-Progress
+                  </button>
+
                   <button
                     onClick={() => setStatusFilter("completed")}
-                    className={`px-4 py-2 rounded-lg font-medium ${
-                      statusFilter === "completed" ? "bg-emerald-100 text-emerald-700" : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
+                    className={`px-4 py-2 rounded-lg font-medium ${statusFilter === "completed"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                      }`}
                   >
                     Completed
                   </button>
+
                 </div>
               </div>
             </div>
           </div>
+          {loading && (
+            <div className="text-center py-10 text-gray-500">
+              Loading clients...
+            </div>
+          )}
+
 
           {/* Clients Grid */}
           <div className="p-6">
             {filteredClients.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredClients.map((client) => (
-                  <div 
-                    key={client.id} 
+                  <div
+                    key={client._id}
                     className="border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all cursor-pointer bg-white"
                     onClick={() => setSelectedClient(client)}
                   >
                     <div className="p-5">
                       {/* Header */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                            <div className="font-medium text-blue-700">
-                              {client.name.split(' ').map(n => n[0]).join('')}
-                            </div>
-                          </div>
+                      <div className="p-5">
+                        <div className="flex items-start justify-between mb-4">
                           <div>
-                            <h3 className="font-bold text-gray-900">{client.name}</h3>
-                            <p className="text-sm text-gray-500 flex items-center gap-1">
-                              <MapPin size={12} />
-                              {client.location}
+                            <h3 className="font-bold text-gray-900 text-lg">
+                              {client.fullName}
+                            </h3>
+                            <p className="text-sm text-gray-500">{client.email}</p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              {client.city}, India
                             </p>
                           </div>
-                        </div>
-                        <span className={`text-xs font-medium px-2 py-1 rounded ${
-                          client.status === 'upcoming' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
-                        }`}>
-                          {client.status === 'upcoming' ? 'Upcoming' : 'Completed'}
-                        </span>
-                      </div>
 
-                      {/* Details */}
-                      <div className="space-y-3 mb-4">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500">Industry</span>
-                          <span className="font-medium">{client.industry}</span>
+                          <span className={`text-xs font-medium px-2 py-1 rounded ${client.status === "new"
+                            ? "bg-blue-100 text-blue-700"
+                            : client.status === "in-progress"
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-emerald-100 text-emerald-700"
+                            }`}>
+                            {client.status}
+                          </span>
                         </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500">Experience</span>
-                          <span className="font-medium">{client.experience}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500">Next Session</span>
-                          <span className="font-medium">{client.date} • {client.time}</span>
-                        </div>
-                      </div>
 
-                      {/* Progress */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500">Sessions</span>
-                          <span className="font-medium text-blue-600">{client.sessionsCompleted}</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
-                          <div 
-                            className="bg-blue-500 h-1.5 rounded-full" 
-                            style={{ width: `${(client.sessionsCompleted / 10) * 100}%` }}
-                          />
-                        </div>
-                      </div>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Client is actively seeking career guidance and personalized roadmap
+                          aligned with current market opportunities.
+                        </p>
 
-                      {/* View Button */}
-                      <button className="w-full mt-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-sm">
-                        View Full Profile
-                      </button>
+                        <button className="w-full py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-sm">
+                          View Full Profile
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -576,8 +461,8 @@ export default function App() {
               Bridging the gap between potential and professional success
             </h2>
             <p className="text-gray-600 leading-relaxed">
-              Our career advising model combines data-driven market insights with personalized 
-              psychological profiling. We don't just find jobs; we architect sustainable professional 
+              Our career advising model combines data-driven market insights with personalized
+              psychological profiling. We don't just find jobs; we architect sustainable professional
               journeys that align with long-term goals and societal impact.
             </p>
           </div>

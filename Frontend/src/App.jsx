@@ -13,7 +13,6 @@ import CareerCounselorDashboard from "./pages/Counselors/Dahboards/CareerCounsel
 
 import MentalhealthcounselorDashboard from "./pages/Counselors/Dahboards/MeantalHealthCounselor";
 
-import StudentcounselorDashboard from "./pages/Counselors/Dahboards/StudentCounselorDashboard";
 import ProtectedCounselorRoute from "./components/ProtectedCounselorRoute";
 
 
