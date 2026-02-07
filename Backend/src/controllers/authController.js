@@ -25,7 +25,7 @@ exports.loginCounselor = async (req, res) => {
     const token = jwt.sign(
       { id: counselor._id, role: "counselor" },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     res.status(200).json({
@@ -37,8 +37,6 @@ exports.loginCounselor = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
 
 // const createCounselor = async () => {
 //   const hashedPassword = await bcrypt.hash("admin123", 10);
@@ -52,5 +50,3 @@ exports.loginCounselor = async (req, res) => {
 // };
 
 // createCounselor();
-
-

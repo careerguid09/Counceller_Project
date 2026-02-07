@@ -1,6 +1,6 @@
 const Client = require("../models/Client");
 
-// PUBLIC – client submits form
+
 exports.createClient = async (req, res) => {
   try {
     const client = await Client.create(req.body);
@@ -15,7 +15,8 @@ exports.createClient = async (req, res) => {
   }
 };
 
-// PROTECTED – counselors view all clients
+
+
 exports.getAllClients = async (req, res) => {
   try {
     const clients = await Client.find().sort({ createdAt: -1 });
