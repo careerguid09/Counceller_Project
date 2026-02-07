@@ -660,7 +660,7 @@ const Contact = () => {
         const data = await response.json();
         throw new Error(data.message || "Something went wrong");
       }
-
+      
       setIsSubmitted(true);
       setFormData({
         fullName: '', email: '', phone: '', dob: '', age: '',

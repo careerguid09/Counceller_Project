@@ -23,7 +23,6 @@ import {
   Sparkles
 } from "lucide-react";
 
-// --- Categories Data ---
 const categories = [
   {
     id: "relationship",
@@ -1068,9 +1067,6 @@ export default function App() {
           </div>
         </motion.div>
       </section>
-
-  
-
     </div>
   );
 }
