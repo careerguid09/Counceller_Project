@@ -1,6 +1,5 @@
 const Client = require("../models/Client");
 
-
 exports.createClient = async (req, res) => {
   try {
     const client = await Client.create(req.body);
@@ -13,8 +12,6 @@ exports.createClient = async (req, res) => {
     res.status(500).json({ message: "Failed to submit form" });
   }
 };
-
-
 
 exports.getAllClients = async (req, res) => {
   try {

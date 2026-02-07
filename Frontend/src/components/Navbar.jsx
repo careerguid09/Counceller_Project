@@ -37,7 +37,7 @@ const CounselorLoginModal = ({ isOpen, onClose, onLogin }) => {
   setError("");
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
+    const res = await fetch("http://localhost:5000/api/counselor/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -163,7 +163,7 @@ const CounselorLoginModal = ({ isOpen, onClose, onLogin }) => {
             </div>
 
             <div className="text-xs text-gray-500 text-center pt-4">
-              <p>Demo credentials: counselor@example.com / password123</p>
+              <p>Demo credentials: counselor@example.com / Counselor@123#Secure</p>
             </div>
           </form>
         </div>
@@ -265,7 +265,7 @@ const Navbar = () => {
     const token = localStorage.getItem("counselorToken");
 
     if (token) {
-      await fetch("http://localhost:5000/api/auth/logout", {
+      await fetch("http://localhost:5000/api/counselor/logout", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

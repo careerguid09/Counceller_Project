@@ -1,27 +1,27 @@
 require("dotenv").config();
 const app = require("./src/app");
-const morgan = require('morgan');
+const morgan = require("morgan");
+const connectDB = require("./src/config/db"); // ✅ Add this
 
 const PORT = process.env.PORT || 5000;
 
-// Morgan logging middleware
-app.use(morgan(':method :url :status :response-time ms - :date[clf]'));
+connectDB();
+
+app.use(morgan(":method :url :status :response-time ms - :date[clf]"));
 
 // Start server
 app.listen(PORT, () => {
   console.log(`
-  🚀 Server started successfully!
-  🌐 URL: http://localhost:${PORT}
+   Server started successfully!
+  URL: http://localhost:${PORT}
   
-  📧 Career Form Endpoint: POST http://localhost:${PORT}/api/career
+   MongoDB Connected!
+   Counselor Login: POST http://localhost:${PORT}/api/counselor/login
   
-  📋 Required Fields:
-    1. name
-    2. email
-    3. mobileNumber
-    4. city
-    5. problem
+   Login Credentials:
+     Email: counselor@company.com
+     Password:Counselor@123#Secure
   
-  🔍 Test with: GET http://localhost:${PORT}
+   Test with: GET http://localhost:${PORT}
   `);
 });
