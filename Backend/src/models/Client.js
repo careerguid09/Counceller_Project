@@ -25,21 +25,6 @@ const clientSchema = new mongoose.Schema(
       required: true,
     },
 
-    subject: {
-      type: String,
-      default: "",
-    },
-
-    educationLevel: {
-      type: String,
-      default: "",
-    },
-
-    targetCountry: {
-      type: String,
-      default: "",
-    },
-
     city: {
       type: String,
       default: "",

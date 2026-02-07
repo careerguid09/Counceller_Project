@@ -5,11 +5,10 @@ const jwt = require("jsonwebtoken");
 exports.loginCounselor = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     if (!email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
-
+   
     const counselor = await Counselor.findOne({ email });
 
     if (!counselor) {
@@ -38,6 +37,19 @@ exports.loginCounselor = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
+=======
+exports.logoutCounselor = async (req, res) => {
+  try {
+    return res.status(200).json({
+      message: "Logout successful",
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+>>>>>>> 072bc27cd1ca928274f75df9ced8c1ed8b4920f7
 // const createCounselor = async () => {
 //   const hashedPassword = await bcrypt.hash("admin123", 10);
 
@@ -46,7 +58,7 @@ exports.loginCounselor = async (req, res) => {
 //     password: hashedPassword,
 //   });
 
-//   console.log("Counselor created");
+//   console.log("Counselor created");  
 // };
 
 // createCounselor();

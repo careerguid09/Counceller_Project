@@ -1,15 +1,30 @@
 const express = require("express");
+<<<<<<< HEAD
 const cors = require("cors"); // Add CORS for frontend connection
+=======
+const cors = require("cors");
+>>>>>>> 072bc27cd1ca928274f75df9ced8c1ed8b4920f7
 const authRoutes = require("./routes/authRoutes");
 const clientRoutes = require("./routes/clientRoutes");
 const formRoutes = require("./routes/formRoutes");
 
 const app = express();
 
+<<<<<<< HEAD
 // Middleware
 app.use(cors()); // Allow frontend to connect
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+=======
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+>>>>>>> 072bc27cd1ca928274f75df9ced8c1ed8b4920f7
 
 // Routes
 app.use("/api/auth", authRoutes);
