@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 
+<<<<<<< HEAD
 
 const formatDateTime = (dateString) => {
   const date = new Date(dateString);
@@ -23,6 +24,136 @@ const formatDateTime = (dateString) => {
   });
 };
 
+=======
+const CLIENTS_DATA = [
+  { 
+    id: 1, 
+    name: "Aarav Mehta", 
+    location: "Bangalore, KA", 
+    status: "upcoming", 
+    type: "Career Assessment", 
+    time: "10:30 AM", 
+    date: "Today", 
+    duration: "45 min", 
+    industry: "Software Tech",
+    email: "aarav.mehta@example.com",
+    phone: "+91 98765 43221",
+    experience: "3 years",
+    currentRole: "Software Engineer",
+    targetRole: "Senior Developer",
+    currentSalary: "₹12 LPA",
+    targetSalary: "₹18 LPA",
+    sessionsCompleted: 4,
+    skillGaps: ["System Design", "Team Leadership"],
+    preferredContact: "Email & WhatsApp",
+    notes: "Strong technical skills, needs guidance on career progression.",
+    upcomingActions: [
+      { title: "Mock Interview", date: "Dec 20, 2024", priority: "High" },
+      { title: "Resume Update", date: "Dec 25, 2024", priority: "Medium" }
+    ]
+  },
+  { 
+    id: 2, 
+    name: "Priya Sharma", 
+    location: "Mumbai, MH", 
+    status: "completed", 
+    type: "Resume Review", 
+    time: "09:00 AM", 
+    date: "Yesterday", 
+    duration: "60 min", 
+    industry: "Marketing",
+    email: "priya.sharma@example.com",
+    phone: "+91 98765 43222",
+    experience: "5 years",
+    currentRole: "Marketing Manager",
+    targetRole: "Head of Marketing",
+    currentSalary: "₹18 LPA",
+    targetSalary: "₹25 LPA",
+    sessionsCompleted: 6,
+    skillGaps: ["Digital Strategy", "Budget Management"],
+    preferredContact: "Phone",
+    notes: "Excellent creative skills, needs to strengthen analytical abilities.",
+    upcomingActions: [
+      { title: "Strategy Presentation", date: "Jan 5, 2025", priority: "Urgent" }
+    ]
+  },
+  { 
+    id: 3, 
+    name: "Raj Patel", 
+    location: "Ahmedabad, GJ", 
+    status: "upcoming", 
+    type: "Interview Prep", 
+    time: "04:30 PM", 
+    date: "Today", 
+    duration: "30 min", 
+    industry: "Finance",
+    email: "raj.patel@example.com",
+    phone: "+91 98765 43223",
+    experience: "7 years",
+    currentRole: "Financial Analyst",
+    targetRole: "Finance Manager",
+    currentSalary: "₹15 LPA",
+    targetSalary: "₹22 LPA",
+    sessionsCompleted: 3,
+    skillGaps: ["Financial Modeling", "Team Management"],
+    preferredContact: "WhatsApp",
+    notes: "Strong analytical skills, needs interview practice for leadership roles.",
+    upcomingActions: [
+      { title: "Interview with HDFC", date: "Dec 22, 2024", priority: "Urgent" }
+    ]
+  },
+  { 
+    id: 4, 
+    name: "Sneha Reddy", 
+    location: "Hyderabad, TS", 
+    status: "upcoming", 
+    type: "Executive Coaching", 
+    time: "06:00 PM", 
+    date: "Tomorrow", 
+    duration: "60 min", 
+    industry: "Healthcare",
+    email: "sneha.reddy@example.com",
+    phone: "+91 98765 43224",
+    experience: "10 years",
+    currentRole: "Hospital Administrator",
+    targetRole: "Healthcare Consultant",
+    currentSalary: "₹20 LPA",
+    targetSalary: "₹30 LPA",
+    sessionsCompleted: 8,
+    skillGaps: ["Consulting Skills", "Client Acquisition"],
+    preferredContact: "Email",
+    notes: "Experienced professional seeking transition to consulting.",
+    upcomingActions: [
+      { title: "Consulting Proposal", date: "Jan 10, 2025", priority: "High" }
+    ]
+  },
+  { 
+    id: 5, 
+    name: "Vikram Singh", 
+    location: "Delhi, DL", 
+    status: "completed", 
+    type: "Skill Gap Analysis", 
+    time: "02:00 PM", 
+    date: "2 days ago", 
+    duration: "50 min", 
+    industry: "Data Science",
+    email: "vikram.singh@example.com",
+    phone: "+91 98765 43225",
+    experience: "4 years",
+    currentRole: "Data Analyst",
+    targetRole: "Data Scientist",
+    currentSalary: "₹14 LPA",
+    targetSalary: "₹20 LPA",
+    sessionsCompleted: 5,
+    skillGaps: ["Machine Learning", "Python Advanced"],
+    preferredContact: "Email & Phone",
+    notes: "Quick learner, needs to build portfolio with real-world projects.",
+    upcomingActions: [
+      { title: "ML Certification", date: "Feb 1, 2025", priority: "Medium" }
+    ]
+  },
+];
+>>>>>>> 416f4c42ae91d12c47227445b44922d2e80bfc6c
 
 // Stat Card Component
 const StatCard = ({ label, value, icon: Icon, change, sub }) => (
@@ -263,27 +394,6 @@ export default function App() {
       {/* Modal */}
       {selectedClient && <ClientProfileModal client={selectedClient} onClose={() => setSelectedClient(null)} />}
 
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-6">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Dr. Dev Sharma</h1>
-              <p className="text-gray-500 mt-1">Career Counselor • CareerPath Pro</p>
-            </div>
-            <div className="mt-4 sm:mt-0 flex items-center gap-3">
-              <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
-                <Coffee size={18} className="inline mr-2" />
-                Take Break
-              </button>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
-                <Calendar size={18} className="inline mr-2" />
-                Add Session
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

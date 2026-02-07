@@ -17,6 +17,7 @@ import {
   FaSignInAlt,
   FaSignOutAlt,
   FaUserCircle,
+  FaTachometerAlt,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -30,51 +31,48 @@ const CounselorLoginModal = ({ isOpen, onClose, onLogin }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
+    try {
+      const res = await fetch("http://localhost:5000/api/counselor/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-  try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Login failed");
+        setLoading(false);
+        return;
+      }
+
+      localStorage.setItem("counselorToken", data.token);
+
+      const counselorProfile = {
         email: formData.email,
-        password: formData.password,
-      }),
-    });
+        role: "counselor",
+        name: data.counselor?.name || formData.email.split("@")[0],
+      };
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      setError(data.message || "Login failed");
+      onLogin(counselorProfile);
+      onClose();
+      navigate("/counselors/dashboard"); // DIRECT DASHBOARD PE JAYEGA
+    } catch (err) {
+      setError("Server error. Please try again.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    localStorage.setItem("counselorToken", data.token);
-
-    const counselorProfile = {
-      email: formData.email,
-      role: "counselor",
-    };
-
-    onLogin(counselorProfile);
-    onClose();
-    navigate("/counselors/dashboard/relationship");
-
-    
-  } catch (err) {
-    setError("Server error. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   if (!isOpen) return null;
 
@@ -163,7 +161,7 @@ const CounselorLoginModal = ({ isOpen, onClose, onLogin }) => {
             </div>
 
             <div className="text-xs text-gray-500 text-center pt-4">
-              <p>Demo credentials: counselor@example.com / password123</p>
+              <p>Demo credentials: counselor@example.com / Counselor@123#Secure</p>
             </div>
           </form>
         </div>
@@ -172,13 +170,10 @@ const CounselorLoginModal = ({ isOpen, onClose, onLogin }) => {
   );
 };
 
-// Main Navbar Component
+// Main Navbar Component - SIMPLE VERSION (NO CATEGORIES IN DROPDOWN)
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [servicesOpen, setServicesOpen] = useState(false);
-  const [counselorsOpen, setCounselorsOpen] = useState(false);
-  const [mobileCounselorsOpen, setMobileCounselorsOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isCounselorLoggedIn, setIsCounselorLoggedIn] = useState(false);
   const [counselorProfile, setCounselorProfile] = useState(null);
@@ -188,7 +183,9 @@ const Navbar = () => {
   // Check if counselor is already logged in
   useEffect(() => {
     const savedCounselor = localStorage.getItem("counselorProfile");
-    if (savedCounselor) {
+    const token = localStorage.getItem("counselorToken");
+    
+    if (savedCounselor && token) {
       setCounselorProfile(JSON.parse(savedCounselor));
       setIsCounselorLoggedIn(true);
     }
@@ -207,104 +204,50 @@ const Navbar = () => {
   // Close mobile menu on route change
   useEffect(() => {
     setIsOpen(false);
-    setServicesOpen(false);
-    setCounselorsOpen(false);
-    setMobileCounselorsOpen(false);
   }, [location]);
-
-  // Counselor categories with icons and descriptions
-  const counselorCategories = [
-    {
-      id: 1,
-      name: "Relationship Counselors",
-      icon: <FaUserFriends />,
-      path: "/counselors/dashboard/relationship",
-      description: "Marriage, Family & Relationship Experts",
-      color: "text-pink-600",
-      bgColor: "bg-pink-50",
-    },
-    {
-      id: 2,
-      name: "Career Counselors",
-      icon: <FaBriefcaseMedical />,
-      path: "/counselors/dashboard/career",
-      description: "Career Guidance & Professional Development",
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-    },
-    {
-      id: 3,
-      name: "Educational Counselors",
-      icon: <FaGraduationCap />,
-      path: "/Counselors/EducationalCounselorDashboard",
-      description: "Academic Planning & College Admissions",
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-    },
-    {
-      id: 4,
-      name: "Mental Health Counselors",
-      icon: <FaBrain />,
-      path: "/counselors/dashboard/mental-health",
-      description: "Therapy & Psychological Support",
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-    },
-  ];
 
   // Handle counselor login
   const handleCounselorLogin = (profile) => {
     setCounselorProfile(profile);
     setIsCounselorLoggedIn(true);
     localStorage.setItem("counselorProfile", JSON.stringify(profile));
+    navigate("/counselors/dashboard"); // DIRECT TO DASHBOARD
   };
 
   // Handle counselor logout
- const handleCounselorLogout = async () => {
-  try {
-    const token = localStorage.getItem("counselorToken");
+  const handleCounselorLogout = async () => {
+    try {
+      const token = localStorage.getItem("counselorToken");
 
-    if (token) {
-      await fetch("http://localhost:5000/api/auth/logout", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      if (token) {
+        await fetch("http://localhost:5000/api/counselor/logout", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+    } catch (err) {
+      console.error("Logout failed", err);
+    } finally {
+      localStorage.removeItem("counselorToken");
+      localStorage.removeItem("counselorProfile");
+      setIsCounselorLoggedIn(false);
+      setCounselorProfile(null);
+      navigate("/");
     }
-  } catch (err) {
-    console.error("Logout failed", err);
-  } finally {
-    // ✅ Always clean client
-    localStorage.removeItem("counselorToken");
-    localStorage.removeItem("counselorProfile");
-    setIsCounselorLoggedIn(false);
-    setCounselorProfile(null);
-    setCounselorsOpen(false);
-    navigate("/");
-  }
-};
+  };
 
-
-  // Handle For Counselors click - opens login modal or dropdown based on login status
+  // Handle For Counselors click
   const handleForCounselorsClick = (e) => {
     e.preventDefault();
     
     if (!isCounselorLoggedIn) {
       setShowLoginModal(true);
-      setCounselorsOpen(false);
     } else {
-      setCounselorsOpen(!counselorsOpen);
-      setServicesOpen(false);
+      // Logged in: Go to dashboard
+      navigate("/counselors/dashboard");
     }
-  };
-
-  // Handle counselor category selection
-  const handleCounselorSelect = (category) => {
-    setCounselorsOpen(false);
-    setMobileCounselorsOpen(false);
-    setIsOpen(false);
-    navigate(category.path);
   };
 
   // Handle Book Session click
@@ -314,9 +257,9 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "About Us ?", path: "/about" },
+    { name: "About Us", path: "/about" },
     { name: "Blogs", path: "/blog" },
-    { name: "Contact Us ", path: "/contact" },
+    { name: "Contact Us", path: "/contact" },
   ];
 
   return (
@@ -359,182 +302,65 @@ const Navbar = () => {
             <div className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => (
                 <div key={link.name} className="relative group">
-                  {link.submenu ? (
-                    <>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        onClick={() => {
-                          setServicesOpen(!servicesOpen);
-                          setCounselorsOpen(false);
-                        }}
-                        className="flex items-center px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors rounded-lg group"
-                      >
-                        <span>{link.name}</span>
-                        <motion.div
-                          animate={{ rotate: servicesOpen ? 180 : 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <FaChevronDown className="ml-1 text-xs" />
-                        </motion.div>
-                      </motion.button>
-
-                      {/* Services Dropdown */}
-                      <AnimatePresence>
-                        {servicesOpen && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 10 }}
-                            className="absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50"
-                          >
-                            {link.submenu.map((subItem, idx) => (
-                              <motion.div
-                                key={subItem.name}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: idx * 0.05 }}
-                              >
-                                <Link
-                                  to={subItem.path}
-                                  className="block px-5 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50/50 transition-colors font-medium group/item"
-                                  onClick={() => setServicesOpen(false)}
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 opacity-0 group-hover/item:opacity-100 transition-opacity" />
-                                    <span>{subItem.name}</span>
-                                  </div>
-                                </Link>
-                              </motion.div>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </>
-                  ) : (
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <Link
+                      to={link.path}
+                      className={`relative px-4 py-2 font-medium rounded-lg transition-colors ${
+                        location.pathname === link.path
+                          ? "text-blue-600"
+                          : "text-gray-700 hover:text-blue-600"
+                      }`}
                     >
-                      <Link
-                        to={link.path}
-                        className={`relative px-4 py-2 font-medium rounded-lg transition-colors ${
-                          location.pathname === link.path
-                            ? "text-blue-600"
-                            : "text-gray-700 hover:text-blue-600"
-                        }`}
-                      >
-                        {link.name}
-                        {location.pathname === link.path && (
-                          <motion.div
-                            layoutId="underline"
-                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full"
-                          />
-                        )}
-                      </Link>
-                    </motion.div>
-                  )}
+                      {link.name}
+                      {location.pathname === link.path && (
+                        <motion.div
+                          layoutId="underline"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full"
+                        />
+                      )}
+                    </Link>
+                  </motion.div>
                 </div>
               ))}
 
-              {/* For Counselors Button */}
-              <div className="relative">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  onClick={handleForCounselorsClick}
-                  className="flex items-center px-4 py-2 text-gray-700 hover:text-purple-600 font-medium transition-colors rounded-lg"
-                >
-                  {isCounselorLoggedIn ? (
-                    <>
-                      <FaUserCircle className="mr-2 text-purple-600" />
-                      <span className="text-purple-600">Counselor</span>
-                    </>
-                  ) : (
-                    <>
-                      <FaChalkboardTeacher className="mr-2" />
-                      <span>For Counselors</span>
-                    </>
-                  )}
-                  <motion.div
-                    animate={{ rotate: counselorsOpen ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <FaChevronDown className="ml-1 text-xs" />
-                  </motion.div>
-                </motion.button>
-
-                {/* Counselors Dropdown - Only shows if logged in */}
-                <AnimatePresence>
-                  {counselorsOpen && isCounselorLoggedIn && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 py-3 z-50"
+              {/* For Counselors Button - SIMPLE: Only Dashboard/Logout */}
+              <div className="relative ml-2">
+            
+                {isCounselorLoggedIn ? (
+                  <div className="flex items-center gap-2">
+                    {/* Dashboard Button */}
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      onClick={() => navigate("/counselors/dashboard")}
+                      className="flex items-center px-4 py-2 bg-purple-50 text-purple-600 font-medium rounded-lg hover:bg-purple-100 transition-colors"
                     >
-                      {/* Counselor Profile Section */}
-                      <div className="px-4 pb-3 border-b border-gray-100">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
-                            <FaUserCircle className="text-white text-lg" />
-                          </div>
-                          <div>
-                            <p className="font-bold text-gray-900">{counselorProfile?.name}</p>
-                            <p className="text-xs text-gray-500">{counselorProfile?.email}</p>
-                          </div>
-                        </div>
-                        <div className="mt-3 flex gap-2">
-                          <button
-                            onClick={() => navigate("/counselors/dashboard")}
-                            className="flex-1 py-2 bg-purple-50 text-purple-700 font-medium rounded-lg hover:bg-purple-100 transition-colors"
-                          >
-                            Dashboard
-                          </button>
-                          <button
-                            onClick={handleCounselorLogout}
-                            className="flex-1 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
-                          >
-                            <FaSignOutAlt />
-                            Logout
-                          </button>
-                        </div>
-                      </div>
+                      <FaTachometerAlt className="mr-2" />
+                      Dashboard
+                    </motion.button>
 
-                      {/* Categories Section */}
-                      <div className="px-4 mt-2 mb-2">
-                        <p className="text-sm text-gray-500 font-medium">Counselor Categories</p>
-                      </div>
-                      
-                      <div className="space-y-1 max-h-72 overflow-y-auto">
-                        {counselorCategories.map((category, idx) => (
-                          <motion.button
-                            key={category.id}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: idx * 0.03 }}
-                            onClick={() => handleCounselorSelect(category)}
-                            className="flex items-center w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors group/category"
-                          >
-                            <div className={`p-2 rounded-lg ${category.bgColor} mr-3`}>
-                              <div className={category.color}>
-                                {category.icon}
-                              </div>
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-medium text-gray-900 group-hover/category:text-purple-600">
-                                {category.name}
-                              </p>
-                              <p className="text-xs text-gray-500 mt-0.5">
-                                {category.description}
-                              </p>
-                            </div>
-                          </motion.button>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-             
+                    {/* Logout Button */}
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      onClick={handleCounselorLogout}
+                      className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      <FaSignOutAlt className="mr-2" />
+                      Logout
+                    </motion.button>
+                  </div>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    onClick={handleForCounselorsClick}
+                    className="flex items-center px-4 py-2 text-gray-700 hover:text-purple-600 font-medium transition-colors rounded-lg"
+                  >
+                    <FaChalkboardTeacher className="mr-2" />
+                    <span>For Counselors</span>
+                  </motion.button>
+                )}
+              </div>    
             </div>
 
             {/* Mobile Menu Button */}
@@ -551,7 +377,7 @@ const Navbar = () => {
             </motion.button>
           </div>
 
-          {/* Mobile Menu */}
+          {/* Mobile Menu - SIMPLIFIED */}
           <AnimatePresence>
             {isOpen && (
               <motion.div
@@ -562,156 +388,57 @@ const Navbar = () => {
               >
                 <div className="py-4 space-y-1">
                   {navLinks.map((link) => (
-                    <div key={link.name}>
-                      {link.submenu ? (
-                        <>
-                          <button
-                            onClick={() => {
-                              setServicesOpen(!servicesOpen);
-                              setMobileCounselorsOpen(false);
-                            }}
-                            className="flex items-center justify-between w-full px-4 py-3 text-gray-700 hover:text-blue-600 font-medium"
-                          >
-                            <span>{link.name}</span>
-                            <motion.div
-                              animate={{ rotate: servicesOpen ? 180 : 0 }}
-                            >
-                              <FaChevronDown className="text-xs" />
-                            </motion.div>
-                          </button>
-
-                          <AnimatePresence>
-                            {servicesOpen && (
-                              <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: "auto" }}
-                                exit={{ opacity: 0, height: 0 }}
-                                className="ml-4 space-y-1"
-                              >
-                                {link.submenu.map((subItem) => (
-                                  <Link
-                                    key={subItem.name}
-                                    to={subItem.path}
-                                    className="block px-4 py-2.5 text-gray-600 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition-colors"
-                                    onClick={() => setIsOpen(false)}
-                                  >
-                                    {subItem.name}
-                                </Link>
-                                ))}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </>
-                      ) : (
-                        <Link
-                          to={link.path}
-                          className={`block px-4 py-3 rounded-lg transition-colors ${
-                            location.pathname === link.path
-                              ? "text-blue-600 bg-blue-50/50"
-                              : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                          }`}
-                          onClick={() => setIsOpen(false)}
-                        >
-                          {link.name}
-                        </Link>
-                      )}
-                    </div>
+                    <Link
+                      key={link.name}
+                      to={link.path}
+                      className={`block px-4 py-3 rounded-lg transition-colors ${
+                        location.pathname === link.path
+                          ? "text-blue-600 bg-blue-50/50"
+                          : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                      }`}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {link.name}
+                    </Link>
                   ))}
 
                   {/* For Counselors Mobile */}
-                  <div>
-                    <button
-                      onClick={() => {
-                        if (!isCounselorLoggedIn) {
-                          setShowLoginModal(true);
-                          setIsOpen(false);
-                        } else {
-                          setMobileCounselorsOpen(!mobileCounselorsOpen);
-                          setServicesOpen(false);
-                        }
-                      }}
-                      className="flex items-center justify-between w-full px-4 py-3 text-gray-700 hover:text-purple-600 font-medium"
-                    >
-                      <div className="flex items-center gap-2">
-                        {isCounselorLoggedIn ? (
-                          <>
-                            <FaUserCircle className="text-purple-600" />
-                            <span className="text-purple-600">Counselor Dashboard</span>
-                          </>
-                        ) : (
-                          <>
-                            <FaChalkboardTeacher />
-                            <span>For Counselors</span>
-                          </>
-                        )}
-                      </div>
-                      {isCounselorLoggedIn && (
-                        <motion.div
-                          animate={{ rotate: mobileCounselorsOpen ? 180 : 0 }}
-                        >
-                          <FaChevronDown className="text-xs" />
-                        </motion.div>
-                      )}
-                    </button>
-
-                    {/* Logout button for mobile if logged in */}
-                    {isCounselorLoggedIn && !mobileCounselorsOpen && (
+                  {isCounselorLoggedIn ? (
+                    <>
                       <button
-                        onClick={handleCounselorLogout}
-                        className="flex items-center gap-2 w-full px-4 py-3 text-red-600 hover:bg-red-50 font-medium"
+                        onClick={() => {
+                          navigate("/counselors/dashboard");
+                          setIsOpen(false);
+                        }}
+                        className="flex items-center gap-2 w-full px-4 py-3 text-purple-600 hover:bg-purple-50 font-medium rounded-lg"
+                      >
+                        <FaTachometerAlt />
+                        Counselor Dashboard
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleCounselorLogout();
+                          setIsOpen(false);
+                        }}
+                        className="flex items-center gap-2 w-full px-4 py-3 text-red-600 hover:bg-red-50 font-medium rounded-lg"
                       >
                         <FaSignOutAlt />
-                        <span>Logout</span>
+                        Logout
                       </button>
-                    )}
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setShowLoginModal(true);
+                        setIsOpen(false);
+                      }}
+                      className="flex items-center gap-2 w-full px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gray-50 font-medium rounded-lg"
+                    >
+                      <FaChalkboardTeacher />
+                      For Counselors
+                    </button>
+                  )}
 
-                    <AnimatePresence>
-                      {mobileCounselorsOpen && isCounselorLoggedIn && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="ml-6 space-y-1"
-                        >
-                          {/* Counselor Profile Info */}
-                          <div className="p-3 bg-purple-50 rounded-lg mb-2">
-                            <p className="font-bold text-gray-900">{counselorProfile?.name}</p>
-                            <p className="text-xs text-gray-500">{counselorProfile?.email}</p>
-                          </div>
-
-                          {/* Dashboard Link */}
-                          <Link
-                            to="/counselors/dashboard"
-                            className="block px-4 py-2.5 text-purple-600 hover:bg-purple-50/50 rounded-lg font-medium"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            My Dashboard
-                          </Link>
-
-                          {/* Categories */}
-                          {counselorCategories.map((category) => (
-                            <button
-                              key={category.id}
-                              onClick={() => handleCounselorSelect(category)}
-                              className="flex items-center w-full px-4 py-2.5 text-gray-600 hover:text-purple-600 hover:bg-purple-50/50 rounded-lg transition-colors text-left"
-                            >
-                              <div className={`p-2 rounded-lg ${category.bgColor} mr-3`}>
-                                <div className={category.color}>
-                                  {category.icon}
-                                </div>
-                              </div>
-                              <div>
-                                <p className="font-medium">{category.name}</p>
-                                <p className="text-xs text-gray-500">{category.description}</p>
-                              </div>
-                            </button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-              
                 </div>
               </motion.div>
             )}

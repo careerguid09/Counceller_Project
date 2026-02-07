@@ -15,6 +15,11 @@ const router = express.Router();
 router.post("/", createClient);
 
 // Protected – dashboard APIs
+
+
+router.post("/", createClient);
+
+
 router.get("/", authMiddleware, getAllClients);
 
 // 1️⃣ Delete client

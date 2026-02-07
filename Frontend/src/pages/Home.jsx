@@ -75,7 +75,7 @@ const categories = [
   }
 ];
 
-// --- FAQ Data ---
+
 const faqs = [
   {
     question: "How do I choose the right counselor?",
@@ -99,7 +99,7 @@ const faqs = [
   }
 ];
 
-// --- Testimonials Data ---
+
 const testimonials = [
   {
     name: "Priya Sharma",
@@ -124,7 +124,7 @@ const testimonials = [
   }
 ];
 
-// --- Category Card Component ---
+
 const CategoryCard = ({ category, darkMode }) => (
   <motion.div
     whileHover={{ y: -8, scale: 1.02 }}
@@ -188,7 +188,7 @@ const CategoryCard = ({ category, darkMode }) => (
   </motion.div>
 );
 
-// --- FAQ Item Component ---
+
 const FAQItem = ({ faq, darkMode }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -234,7 +234,7 @@ const FAQItem = ({ faq, darkMode }) => {
   );
 };
 
-// --- Testimonial Card Component ---
+
 const TestimonialCard = ({ testimonial, darkMode }) => (
   <motion.div
     whileHover={{ scale: 1.03 }}
@@ -279,7 +279,7 @@ const TestimonialCard = ({ testimonial, darkMode }) => (
   </motion.div>
 );
 
-// --- Dark Mode Toggle Component ---
+
 const DarkModeToggle = ({ darkMode, toggleDarkMode }) => (
   <motion.button
     whileTap={{ scale: 0.95 }}
@@ -295,7 +295,7 @@ const DarkModeToggle = ({ darkMode, toggleDarkMode }) => (
   </motion.button>
 );
 
-// --- MAIN APP ---
+
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -331,7 +331,7 @@ export default function App() {
     }`}>
   
 
-      {/* Hero Section */}
+     
       <section className={`relative min-h-[90vh] flex items-center overflow-hidden ${
         darkMode 
           ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
