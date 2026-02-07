@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Blog from "./pages/Blog";
+import CounselorDashboard from "./pages/CounselorDashboard";
 
 import EducationalCounselorDashboard from "./pages/Counselors/Dahboards/EducationalCounselorDashboard";
 import RelationshipCounselorDashboard from "./pages/Counselors/Dahboards/RelationshipCounselorDashboard";
@@ -13,9 +14,7 @@ import CareerCounselorDashboard from "./pages/Counselors/Dahboards/CareerCounsel
 
 import MentalhealthcounselorDashboard from "./pages/Counselors/Dahboards/MeantalHealthCounselor";
 
-import StudentcounselorDashboard from "./pages/Counselors/Dahboards/StudentCounselorDashboard";
 import ProtectedCounselorRoute from "./components/ProtectedCounselorRoute";
-
 
 function App() {
   return (
@@ -24,13 +23,10 @@ function App() {
         <Navbar />
         <main className="flex-grow">
           <Routes>
-
-
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/blog" element={<Blog />} />
-
 
             <Route
               path="/Counselors/EducationalCounselorDashboard"
@@ -68,12 +64,11 @@ function App() {
               }
             />
 
-
-
-
-
+            <Route
+              path="/counselors/dashboard"
+              element={<CounselorDashboard />}
+            />
           </Routes>
-
         </main>
         <Footer />
       </div>
