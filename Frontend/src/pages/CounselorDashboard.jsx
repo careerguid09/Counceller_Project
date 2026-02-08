@@ -1,4 +1,4 @@
-// CounselorDashboard.jsx
+// CounselorDashboard.jsx - WITH EXCEL EXPORT FEATURE
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -19,7 +19,10 @@ import {
   FaChartLine,
   FaUserCircle,
   FaCog,
-  FaBell
+  FaBell,
+  FaFileExcel,     
+  FaDownload,       
+  FaSpinner         
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -28,6 +31,7 @@ const CounselorDashboard = () => {
   const [counselorProfile, setCounselorProfile] = useState(null);
   const [activeTab, setActiveTab] = useState("categories");
   const [todaySessions, setTodaySessions] = useState([]);
+  const [exporting, setExporting] = useState(false); //  LOADING STATE
 
   useEffect(() => {
     // Check if counselor is logged in
@@ -49,6 +53,79 @@ const CounselorDashboard = () => {
       { id: 4, client: "Sneha Gupta", time: "4:30 PM", type: "Mental Health", status: "confirmed" },
     ]);
   }, [navigate]);
+
+  // EXCEL EXPORT FUNCTION
+  const handleExportToExcel = async () => {
+    try {
+      setExporting(true);
+      const token = localStorage.getItem("counselorToken");
+      
+      if (!token) {
+        alert("Session expired. Please login again.");
+        navigate("/");
+        return;
+      }
+
+      console.log("📥 Requesting Excel export...");
+      
+      // API call to download Excel
+      const response = await fetch("http://localhost:5000/api/clients/export/excel", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Export failed (${response.status}): ${errorText}`);
+      }
+
+      // Get filename from headers or create one
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `clients_export_${new Date().toISOString().split('T')[0]}.xlsx`;
+      
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) filename = match[1];
+      }
+
+      // Convert response to blob
+      const blob = await response.blob();
+      
+      // Check if it's actually an Excel file
+      if (blob.size === 0) {
+        throw new Error("Received empty file from server");
+      }
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      
+      // Cleanup
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 100);
+
+      console.log(` Excel file "${filename}" downloaded successfully (${(blob.size / 1024).toFixed(2)} KB)`);
+      
+      // Show success notification
+      alert(` Excel file downloaded successfully!\n\nFilename: ${filename}\nSize: ${(blob.size / 1024).toFixed(2)} KB`);
+
+    } catch (error) {
+      console.error("❌ Export error:", error);
+      alert(`❌ Export failed!\n\n${error.message}\n\nPlease check console for details.`);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   // Counselor categories
   const counselorCategories = [
@@ -76,8 +153,42 @@ const CounselorDashboard = () => {
       gradient: "from-blue-500 to-cyan-500",
       stats: { clients: 62, sessions: 180, rating: 4.9 }
     },
-    
-  
+    {
+      id: 3,
+      name: "Educational Counseling",
+      icon: <FaGraduationCap />,
+      path: "/counselors/dashboard/educational",
+      description: "Academic Guidance & Study Planning",
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+      borderColor: "border-purple-200",
+      gradient: "from-purple-500 to-violet-500",
+      stats: { clients: 38, sessions: 95, rating: 4.7 }
+    },
+    {
+      id: 4,
+      name: "Mental Health Counseling",
+      icon: <FaBrain />,
+      path: "/counselors/dashboard/mental-health",
+      description: "Stress, Anxiety & Emotional Support",
+      color: "text-green-600",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-200",
+      gradient: "from-green-500 to-emerald-500",
+      stats: { clients: 52, sessions: 145, rating: 4.8 }
+    },
+    {
+      id: 5,
+      name: "Student Counseling",
+      icon: <FaUserGraduate />,
+      path: "/counselors/dashboard/student",
+      description: "Student Life & Academic Challenges",
+      color: "text-amber-600",
+      bgColor: "bg-amber-50",
+      borderColor: "border-amber-200",
+      gradient: "from-amber-500 to-yellow-500",
+      stats: { clients: 41, sessions: 110, rating: 4.6 }
+    },
     {
       id: 6,
       name: "Health & Wellness",
@@ -147,7 +258,8 @@ const CounselorDashboard = () => {
                 Select a counseling category below to manage your clients and schedule.
               </p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
+           
               <button 
                 onClick={() => setActiveTab("sessions")}
                 className="px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl transition-colors flex items-center gap-2"
@@ -158,6 +270,55 @@ const CounselorDashboard = () => {
               <button className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors">
                 Quick Actions
               </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* EXPORT DATA SECTION */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 mb-8 text-white shadow-lg"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <FaFileExcel className="text-2xl" />
+                <h3 className="text-xl font-bold">Get All Students Data </h3>
+              </div>
+              <p className="text-green-100 mb-4">
+                Download complete client information including personal details, education, counseling status, and more in Excel format.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="bg-white/20 px-3 py-1 rounded-full text-sm">Personal Details</span>
+                <span className="bg-white/20 px-3 py-1 rounded-full text-sm">Education Info</span>
+                <span className="bg-white/20 px-3 py-1 rounded-full text-sm">Contact Info</span>
+                <span className="bg-white/20 px-3 py-1 rounded-full text-sm">Status Tracking</span>
+                <span className="bg-white/20 px-3 py-1 rounded-full text-sm">Timestamps</span>
+              </div>
+            </div>
+            <div className="flex-shrink-0">
+              <button 
+                onClick={handleExportToExcel}
+                disabled={exporting}
+                className={`px-8 py-3 bg-white text-green-700 hover:bg-gray-100 font-bold rounded-xl transition-all transform hover:scale-105 flex items-center justify-center gap-3 shadow-lg ${exporting ? 'opacity-70 cursor-not-allowed' : ''}`}
+              >
+                {exporting ? (
+                  <>
+                    <FaSpinner className="animate-spin text-xl" />
+                    <span>Preparing Excel...</span>
+                  </>
+                ) : (
+                  <>
+                    <FaDownload className="text-xl" />
+                    <span>Download Excel File</span>
+                  </>
+                )}
+              </button>
+              <p className="text-green-100 text-sm text-center mt-2">
+                One-click download • Auto-formatted • Ready for analysis
+              </p>
             </div>
           </div>
         </motion.div>
@@ -276,6 +437,19 @@ const CounselorDashboard = () => {
             }`}
           >
             Recent Clients
+          </button>
+          <button
+            onClick={() => setActiveTab("export")}
+            className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
+              activeTab === "export" 
+                ? "border-green-600 text-green-600" 
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <FaFileExcel />
+              Data Export
+            </span>
           </button>
         </div>
 
@@ -406,6 +580,115 @@ const CounselorDashboard = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Data Export Tab */}
+        {activeTab === "export" && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden"
+          >
+            <div className="p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-green-50 rounded-xl">
+                  <FaFileExcel className="text-green-600 text-2xl" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">Export Client Data</h3>
+                  <p className="text-gray-600">Download complete client database in Excel format</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                  <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <FaDownload className="text-blue-600" />
+                    What's Included
+                  </h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-center gap-2 text-gray-700">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      Client personal information (Name, Email, Phone)
+                    </li>
+                    <li className="flex items-center gap-2 text-gray-700">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      Demographic details (Country, State, City)
+                    </li>
+                    <li className="flex items-center gap-2 text-gray-700">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      Education and career preferences
+                    </li>
+                    <li className="flex items-center gap-2 text-gray-700">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      Counseling status and progress
+                    </li>
+                    <li className="flex items-center gap-2 text-gray-700">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      Timestamps and activity logs
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                  <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <FaFileExcel className="text-green-600" />
+                    File Features
+                  </h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-center gap-2 text-gray-700">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      Professionally formatted Excel file
+                    </li>
+                    <li className="flex items-center gap-2 text-gray-700">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      Color-coded status indicators
+                    </li>
+                    <li className="flex items-center gap-2 text-gray-700">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      Auto-adjusted column widths
+                    </li>
+                    <li className="flex items-center gap-2 text-gray-700">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      Ready for data analysis
+                    </li>
+                    <li className="flex items-center gap-2 text-gray-700">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      Secure and encrypted download
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="text-center p-8 border-2 border-dashed border-gray-300 rounded-2xl bg-gray-50">
+                <FaFileExcel className="text-5xl text-green-500 mx-auto mb-4" />
+                <h4 className="text-xl font-bold text-gray-900 mb-2">Ready to Export?</h4>
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  Click the button below to download all client data in a single Excel file. The download will start immediately.
+                </p>
+                <button 
+                  onClick={handleExportToExcel}
+                  disabled={exporting}
+                  className={`px-10 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-3 mx-auto ${exporting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                >
+                  {exporting ? (
+                    <>
+                      <FaSpinner className="animate-spin text-xl" />
+                      <span>Generating Excel File...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaDownload className="text-xl" />
+                      <span>Download Complete Database (Excel)</span>
+                    </>
+                  )}
+                </button>
+                <p className="text-gray-500 text-sm mt-4">
+                  File includes all client records up to {new Date().toLocaleDateString()}
+                </p>
               </div>
             </div>
           </motion.div>
