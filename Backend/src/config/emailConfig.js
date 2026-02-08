@@ -292,7 +292,7 @@ class EmailService {
         response: info.response,
       });
 
-      console.log(`✅ Email dispatched to ${userEmail}`);
+      console.log(` Email dispatched to ${userEmail}`);
       console.log(`📧 Message ID: ${info.messageId}`);
       console.log(`🔗 Preview: ${nodemailer.getTestMessageUrl(info) || "N/A"}`);
 
@@ -408,7 +408,7 @@ const sendCareerEmail = async (
   );
 
   if (result.success) {
-    console.log("✅ EMAIL DELIVERY INITIATED SUCCESSFULLY");
+    console.log(" EMAIL DELIVERY INITIATED SUCCESSFULLY");
     console.log(`📧 Status: Sent to ${userEmail}`);
     console.log(`🆔 Message ID: ${result.messageId}`);
   } else {
