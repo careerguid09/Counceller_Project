@@ -7,11 +7,11 @@ import Contact from "./pages/Contact";
 import Blog from "./pages/Blog";
 import CounselorDashboard from "./pages/CounselorDashboard";
 
-// NEW: Service Dashboards
+
 import CoursePagesDashboard from "./pages/Services/CoursePagesDashboard";
 import CityTargetDashboard from "./pages/Services/CityTargetDashboard";
 
-// Counselor Dashboards
+
 import EducationalCounselorDashboard from "./pages/Counselors/Dahboards/EducationalCounselorDashboard";
 import RelationshipCounselorDashboard from "./pages/Counselors/Dahboards/RelationshipCounselorDashboard";
 import CareerCounselorDashboard from "./pages/Counselors/Dahboards/CareerCounselorDashboard";

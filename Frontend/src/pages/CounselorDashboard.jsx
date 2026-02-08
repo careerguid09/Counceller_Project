@@ -76,7 +76,7 @@ const CounselorDashboard = () => {
       gradient: "from-blue-500 to-cyan-500",
       stats: { clients: 62, sessions: 180, rating: 4.9 }
     },
-
+    
   
     {
       id: 6,
