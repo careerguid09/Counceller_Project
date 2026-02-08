@@ -2,6 +2,14 @@ const Client = require("../models/Client");
 const ExcelJS = require('exceljs');
 const { sendCareerEmail } = require("../config/emailConfig");
 
+<<<<<<< HEAD
+=======
+
+
+/* ===============================
+   CREATE CLIENT (Public)
+================================ */
+>>>>>>> 6329b6416b5afe6ed58c09c299032389fedc623a
 exports.createClient = async (req, res) => {
   try {
 
@@ -45,6 +53,13 @@ exports.createClient = async (req, res) => {
 };
 
 
+<<<<<<< HEAD
+=======
+
+/* ===============================
+   GET ALL CLIENTS (Protected)
+================================ */
+>>>>>>> 6329b6416b5afe6ed58c09c299032389fedc623a
 exports.getAllClients = async (req, res) => {
   try {
     const clients = await Client.find().sort({ createdAt: -1 });
@@ -55,6 +70,13 @@ exports.getAllClients = async (req, res) => {
 };
 
 
+<<<<<<< HEAD
+=======
+
+/* ===============================
+   DELETE CLIENT (Protected)
+================================ */
+>>>>>>> 6329b6416b5afe6ed58c09c299032389fedc623a
 exports.deleteClient = async (req, res) => {
   try {
     const client = await Client.findById(req.params.id);
@@ -70,11 +92,18 @@ exports.deleteClient = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
+=======
+
+
+/* ===============================
+   UPDATE CLIENT STATUS (Protected)
+================================ */
+
+>>>>>>> 6329b6416b5afe6ed58c09c299032389fedc623a
 exports.updateClientStatus = async (req, res) => {
   const { status } = req.body;
-
   const allowedStatus = ["new", "in-progress", "completed"];
-
   if (!allowedStatus.includes(status)) {
     return res.status(400).json({ message: "Invalid status value" });
   }
@@ -97,6 +126,7 @@ exports.updateClientStatus = async (req, res) => {
 };
 
 
+<<<<<<< HEAD
 exports.getClientsByCategory = async (req, res) => {
   const { category } = req.params;
   const allowedCategories = [
@@ -104,20 +134,53 @@ exports.getClientsByCategory = async (req, res) => {
     "Relationship Counselors",
     "Mental Health Counselors",
     "Educational Counselors",
+=======
+
+
+/* ===============================
+   GET CLIENTS BY CATEGORY (Protected)
+================================ */
+exports.getClientsByDomain = async (req, res) => {
+  const { domain } = req.params;
+  const allowedDomains = [
+    "MEDICAL",
+    "PHARMACY",
+    "NURSING",
+    "PARAMEDICAL",
+    "ENGINEERING",
+    "MANAGEMENT",
+    "GRADUATION",
+    "POST GRADUATION",
+    "VOCATIONAL",
+    "LANGUAGES",
+    "AGRICULTURE",
+    "EDUCATION",
+>>>>>>> 6329b6416b5afe6ed58c09c299032389fedc623a
   ];
 
-  if (!allowedCategories.includes(category)) {
-    return res.status(400).json({ message: "Invalid category" });
+  if (!allowedDomains.includes(domain)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid course domain",
+    });
   }
 
   try {
-    const clients = await Client.find({ category }).sort({
+    const clients = await Client.find({ domain }).sort({
       createdAt: -1,
     });
 
-    res.json({ success: true, clients });
+    res.status(200).json({
+      success: true,
+      total: clients.length,
+      data: clients,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Get clients by domain error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
 
