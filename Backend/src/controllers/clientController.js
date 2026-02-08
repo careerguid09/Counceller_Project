@@ -2,7 +2,9 @@ const Client = require("../models/Client");
 
 /* ===============================
    CREATE CLIENT (Public)
-================================ */exports.createClient = async (req, res) => {
+================================ */
+
+exports.createClient = async (req, res) => {
   try {
     const client = await Client.create(req.body);
     res.status(201).json({ success: true, client });

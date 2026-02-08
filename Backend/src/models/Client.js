@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const clientSchema = new mongoose.Schema(
   {
+ 
     fullName: {
       type: String,
       required: true,
@@ -18,21 +19,53 @@ const clientSchema = new mongoose.Schema(
     phone: {
       type: String,
       required: true,
+      trim: true,
     },
 
-    category: {
+    dob: {
+      type: Date,
+    },
+
+    age: {
+      type: Number,
+    },
+
+    
+    country: {
       type: String,
-      required: true,
+      trim: true,
+    },
+
+    state: {
+      type: String,
+      trim: true,
     },
 
     city: {
       type: String,
-      default: "",
+      trim: true,
+    },
+
+  
+    eduLevel: {
+      type: String, 
+      required: true,
+    },
+
+    domain: {
+      type: String, 
+      trim: true,
+    },
+
+    course: {
+      type: String, 
+      trim: true,
     },
 
     message: {
       type: String,
       required: true,
+      trim: true,
     },
 
     status: {
