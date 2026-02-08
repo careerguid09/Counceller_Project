@@ -518,7 +518,7 @@
 
 
 import { motion, AnimatePresence } from 'framer-motion';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Phone,
   Mail,
@@ -585,7 +585,7 @@ const Contact = () => {
     },
     'UK': {
       'England': ['London', 'Manchester', 'Birmingham'],
-      'Scotland': ['Edinburgh', 'Glasgow']
+      'Scotland': ['Edinburgh', 'Glashow']
     }
   };
 
@@ -647,6 +647,14 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // DEBUG: Check what data is being sent
+    console.log("🔍 FORM DATA BEING SENT:");
+    console.log("eduLevel:", formData.eduLevel);
+    console.log("domain:", formData.domain);
+    console.log("course:", formData.course);
+    console.log("Full data:", JSON.stringify(formData));
+    
     setIsLoading(true);
 
     try {
@@ -810,43 +818,71 @@ const Contact = () => {
                     </div>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Full Name *</label>
+                        <label className="text-sm font-semibold text-slate-700">Full Name <span className="text-red-500">*</span></label>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                          <input type="text" name="fullName" required value={formData.fullName} onChange={handleChange}
+                          <input 
+                            type="text" 
+                            name="fullName" 
+                            required 
+                            value={formData.fullName} 
+                            onChange={handleChange}
                             className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                            placeholder="John Doe" />
+                            placeholder="John Doe" 
+                          />
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Email Address *</label>
+                        <label className="text-sm font-semibold text-slate-700">Email Address <span className="text-red-500">*</span></label>
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                          <input type="email" name="email" required value={formData.email} onChange={handleChange}
+                          <input 
+                            type="email" 
+                            name="email" 
+                            required 
+                            value={formData.email} 
+                            onChange={handleChange}
                             className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                            placeholder="john@example.com" />
+                            placeholder="john@example.com" 
+                          />
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Phone Number *</label>
+                        <label className="text-sm font-semibold text-slate-700">Phone Number <span className="text-red-500">*</span></label>
                         <div className="relative">
                           <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                          <input type="tel" name="phone" required value={formData.phone} onChange={handleChange}
+                          <input 
+                            type="tel" 
+                            name="phone" 
+                            required 
+                            value={formData.phone} 
+                            onChange={handleChange}
                             className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                            placeholder="+1 (555) 000-0000" />
+                            placeholder="+1 (555) 000-0000" 
+                          />
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <label className="text-sm font-semibold text-slate-700">Date of Birth</label>
-                          <input type="date" name="dob" value={formData.dob} onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                          <input 
+                            type="date" 
+                            name="dob" 
+                            value={formData.dob} 
+                            onChange={handleChange}
+                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
+                          />
                         </div>
                         <div className="space-y-2">
                           <label className="text-sm font-semibold text-slate-700">Age</label>
-                          <input type="text" name="age" readOnly value={formData.age}
+                          <input 
+                            type="text" 
+                            name="age" 
+                            readOnly 
+                            value={formData.age}
                             className="w-full px-4 py-3 rounded-xl border border-slate-100 bg-slate-50 text-slate-500 font-bold"
-                            placeholder="---" />
+                            placeholder="---" 
+                          />
                         </div>
                       </div>
                     </div>
@@ -861,24 +897,38 @@ const Contact = () => {
                     <div className="grid md:grid-cols-3 gap-6">
                       <div className="space-y-2">
                         <label className="text-sm font-semibold text-slate-700">Country</label>
-                        <select name="country" value={formData.country} onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <select 
+                          name="country" 
+                          value={formData.country} 
+                          onChange={handleChange}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        >
                           <option value="">Select Country</option>
                           {Object.keys(geoData).map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-semibold text-slate-700">State</label>
-                        <select name="state" value={formData.state} onChange={handleChange} disabled={!formData.country}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 disabled:opacity-50">
+                        <select 
+                          name="state" 
+                          value={formData.state} 
+                          onChange={handleChange} 
+                          disabled={!formData.country}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+                        >
                           <option value="">Select State</option>
                           {formData.country && Object.keys(geoData[formData.country]).map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-semibold text-slate-700">City</label>
-                        <select name="city" value={formData.city} onChange={handleChange} disabled={!formData.state}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 disabled:opacity-50">
+                        <select 
+                          name="city" 
+                          value={formData.city} 
+                          onChange={handleChange} 
+                          disabled={!formData.state}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+                        >
                           <option value="">Select City</option>
                           {formData.state && geoData[formData.country][formData.state].map(ct => <option key={ct} value={ct}>{ct}</option>)}
                         </select>
@@ -886,34 +936,66 @@ const Contact = () => {
                     </div>
                   </div>
 
-                  {/* Section 3: Educational Interests */}
+                  {/* Section 3: Educational Interests - FIXED */}
                   <div>
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center font-bold">3</div>
                       <h3 className="text-lg font-bold text-slate-800">Academic Goals</h3>
                     </div>
                     <div className="grid md:grid-cols-2 gap-6">
+                      {/* eduLevel - NOW REQUIRED */}
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Current Education Level</label>
-                        <select name="eduLevel" value={formData.eduLevel} onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500">
-                          <option value="">Choose Current Level</option>
+                        <label className="text-sm font-semibold text-slate-700">
+                          Current Education Level <span className="text-red-500">*</span>
+                        </label>
+                        <select 
+                          name="eduLevel" 
+                          value={formData.eduLevel} 
+                          onChange={handleChange}
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500"
+                        >
+                          <option value="">Choose Current Level *</option>
                           {eduLevels.map(e => <option key={e} value={e}>{e}</option>)}
                         </select>
                       </div>
+
+                      {/* domain - REQUIRED */}
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Interested Domain *</label>
-                        <select name="domain" required value={formData.domain} onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500">
-                          <option value="">Select Career Domain</option>
+                        <label className="text-sm font-semibold text-slate-700">
+                          Interested Domain <span className="text-red-500">*</span>
+                        </label>
+                        <select 
+                          name="domain" 
+                          required 
+                          value={formData.domain} 
+                          onChange={handleChange}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500"
+                        >
+                          <option value="">Select Career Domain *</option>
                           {Object.keys(domainData).map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
                       </div>
+
+                      {/* Course Selection - FIXED */}
                       <div className="md:col-span-2 space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Interested Course *</label>
+                        <label className="text-sm font-semibold text-slate-700">
+                          Interested Course <span className="text-red-500">*</span>
+                        </label>
+                        
+                        {/* Hidden input for form validation */}
+                        <input
+                          type="hidden"
+                          name="course"
+                          value={formData.course}
+                          required
+                        />
+                        
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                           {!formData.domain ? (
-                            <p className="col-span-full text-slate-400 text-sm italic py-2">Please select a domain first to view courses...</p>
+                            <p className="col-span-full text-slate-400 text-sm italic py-2">
+                              Please select a domain first to view courses...
+                            </p>
                           ) : (
                             domainData[formData.domain].map(course => (
                               <button
@@ -931,19 +1013,29 @@ const Contact = () => {
                             ))
                           )}
                         </div>
+                        
+                        {formData.domain && !formData.course && (
+                          <p className="text-red-500 text-sm mt-2">⚠️ Please select a course</p>
+                        )}
                       </div>
                     </div>
                   </div>
 
                   {/* Section 4: Message */}
                   <div className="space-y-4">
-                    <label className="text-sm font-semibold text-slate-700">Additional Message</label>
-                    <textarea name="message" value={formData.message} onChange={handleChange} rows="4"
+                    <label className="text-sm font-semibold text-slate-700">Additional Message <span className="text-red-500">*</span></label>
+                    <textarea 
+                      name="message" 
+                      value={formData.message} 
+                      onChange={handleChange} 
+                      rows="4"
+                      required
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
-                      placeholder="Share any specific requirements or questions..." />
+                      placeholder="Share any specific requirements or questions..." 
+                    />
                   </div>
 
-                  {/* Submit */}
+                  {/* Submit Button - UPDATED VALIDATION */}
                   <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-slate-100">
                     <div className="flex items-center gap-2 text-slate-500 text-sm">
                       <Shield className="w-4 h-4 text-emerald-500" />
@@ -951,9 +1043,9 @@ const Contact = () => {
                     </div>
                     <button
                       type="submit"
-                      disabled={isLoading || !formData.course}
+                      disabled={isLoading || !formData.eduLevel || !formData.domain || !formData.course}
                       className={`w-full md:w-auto px-10 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all ${
-                        isLoading || !formData.course
+                        isLoading || !formData.eduLevel || !formData.domain || !formData.course
                         ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                         : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-xl hover:-translate-y-1'
                       }`}

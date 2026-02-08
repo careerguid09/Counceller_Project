@@ -1,21 +1,50 @@
 const Client = require("../models/Client");
 const ExcelJS = require('exceljs');
+const { sendCareerEmail } = require("../config/emailConfig");
 
-/* ===============================
-   CREATE CLIENT (Public)
-================================ */
 exports.createClient = async (req, res) => {
   try {
+
     const client = await Client.create(req.body);
-    res.status(201).json({ success: true, client });
+    
+
+    res.status(201).json({ 
+      success: true, 
+      client,
+      message: "Client created successfully" 
+    });
+
+
+    console.log(` IMMEDIATE email sending started for: ${client.email}`);
+  
+    sendCareerEmail(
+      client.email,
+      client.fullName || "Client",
+      client.phone || "Not provided",
+      client.city || "Not specified",
+      client.message || "Career guidance query"
+    ).then(result => {
+ 
+      const timestamp = new Date().toLocaleTimeString();
+      if (result && result.success) {
+        console.log(`[${timestamp}] Email SENT to ${client.email} (Message ID: ${result.messageId || 'N/A'})`);
+      } else {
+        console.log(`[${timestamp}] Email FAILED for ${client.email}: ${result?.error || 'Unknown error'}`);
+      }
+    }).catch(err => {
+      console.log(` [${timestamp}] Email ERROR: ${err.message}`);
+    });
+
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+    console.error(" Create client error:", error);
+    res.status(400).json({ 
+      success: false, 
+      message: error.message 
+    });
   }
 };
 
-/* ===============================
-   GET ALL CLIENTS (Protected)
-================================ */
+
 exports.getAllClients = async (req, res) => {
   try {
     const clients = await Client.find().sort({ createdAt: -1 });
@@ -25,9 +54,7 @@ exports.getAllClients = async (req, res) => {
   }
 };
 
-/* ===============================
-   DELETE CLIENT (Protected)
-================================ */
+
 exports.deleteClient = async (req, res) => {
   try {
     const client = await Client.findById(req.params.id);
@@ -43,9 +70,6 @@ exports.deleteClient = async (req, res) => {
   }
 };
 
-/* ===============================
-   UPDATE CLIENT STATUS (Protected)
-================================ */
 exports.updateClientStatus = async (req, res) => {
   const { status } = req.body;
 
@@ -72,9 +96,7 @@ exports.updateClientStatus = async (req, res) => {
   }
 };
 
-/* ===============================
-   GET CLIENTS BY CATEGORY (Protected)
-================================ */
+
 exports.getClientsByCategory = async (req, res) => {
   const { category } = req.params;
   const allowedCategories = [
@@ -99,14 +121,11 @@ exports.getClientsByCategory = async (req, res) => {
   }
 };
 
-/* ===============================
-   EXPORT CLIENTS TO EXCEL (Protected)
-================================ */
+
 exports.exportClientsToExcel = async (req, res) => {
   try {
     console.log('Excel export request received');
 
-    // Fetch all clients from database
     const clients = await Client.find({}).sort({ createdAt: -1 });
     
     console.log(`Found ${clients.length} clients to export`);
@@ -118,7 +137,7 @@ exports.exportClientsToExcel = async (req, res) => {
       });
     }
 
-    // Create a new Excel workbook
+
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'CareerGuide System';
     workbook.lastModifiedBy = 'Counselor';
@@ -127,7 +146,7 @@ exports.exportClientsToExcel = async (req, res) => {
     
     const worksheet = workbook.addWorksheet('Students Data');
 
-    // Define columns with widths - ALL COLUMNS WITH RENAMES
+   
     worksheet.columns = [
       { header: 'S.No', key: 'sno', width: 8 },
       { header: 'Student ID', key: '_id', width: 28 },
@@ -147,7 +166,6 @@ exports.exportClientsToExcel = async (req, res) => {
       { header: 'Last Updated', key: 'updatedAt', width: 20 }
     ];
 
-    // Style header row
     const headerRow = worksheet.getRow(1);
     headerRow.font = { 
       bold: true, 
@@ -167,7 +185,7 @@ exports.exportClientsToExcel = async (req, res) => {
     };
     headerRow.height = 28;
 
-    // Add data rows
+
     clients.forEach((client, index) => {
       const rowData = {
         sno: index + 1,
@@ -176,7 +194,7 @@ exports.exportClientsToExcel = async (req, res) => {
         email: client.email || '-',
         phone: client.phone || '-',
         dob: client.dob ? new Date(client.dob).toLocaleDateString('en-IN') : '-',
-        // Age column REMOVED
+ 
         country: client.country || '-',
         state: client.state || '-',
         city: client.city || '-',
@@ -191,7 +209,7 @@ exports.exportClientsToExcel = async (req, res) => {
 
       const row = worksheet.addRow(rowData);
 
-      // Alternate row colors
+  
       if (row.number % 2 === 0) {
         row.fill = {
           type: 'pattern',
@@ -200,7 +218,7 @@ exports.exportClientsToExcel = async (req, res) => {
         };
       }
 
-      // Status color coding
+ 
       const statusCell = row.getCell('status');
       if (client.status === 'completed') {
         statusCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D5F4E6' } };
@@ -210,18 +228,18 @@ exports.exportClientsToExcel = async (req, res) => {
         statusCell.font = { color: { argb: '856404' }, bold: true };
       }
 
-      // Center align S.No
+
       row.getCell('sno').alignment = { horizontal: 'center' };
       
-      // Wrap text for Student Problem column
+     
       row.getCell('message').alignment = { wrapText: true };
     });
 
-    // Generate filename
+
     const timestamp = new Date().toISOString().split('T')[0].replace(/-/g, '');
     const filename = `Students_Data_${timestamp}.xlsx`;
 
-    // Set response headers
+
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Transfer-Encoding', 'binary');
@@ -231,12 +249,11 @@ exports.exportClientsToExcel = async (req, res) => {
 
     console.log(` Excel file "${filename}" ready for download (${clients.length} records)`);
 
-    // Write to response
     await workbook.xlsx.write(res);
     res.end();
 
   } catch (error) {
-    console.error('❌ Excel export error:', error);
+    console.error(' Excel export error:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Failed to export data to Excel',
