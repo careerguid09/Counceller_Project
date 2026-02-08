@@ -1,9 +1,10 @@
 const Client = require("../models/Client");
 
+
+
 /* ===============================
    CREATE CLIENT (Public)
 ================================ */
-
 exports.createClient = async (req, res) => {
   try {
     const client = await Client.create(req.body);
@@ -12,6 +13,8 @@ exports.createClient = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+
 
 /* ===============================
    GET ALL CLIENTS (Protected)
@@ -24,6 +27,8 @@ exports.getAllClients = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
 
 /* ===============================
    DELETE CLIENT (Protected)
@@ -43,14 +48,15 @@ exports.deleteClient = async (req, res) => {
   }
 };
 
+
+
 /* ===============================
    UPDATE CLIENT STATUS (Protected)
 ================================ */
+
 exports.updateClientStatus = async (req, res) => {
   const { status } = req.body;
-
   const allowedStatus = ["new", "in-progress", "completed"];
-
   if (!allowedStatus.includes(status)) {
     return res.status(400).json({ message: "Invalid status value" });
   }
@@ -72,29 +78,51 @@ exports.updateClientStatus = async (req, res) => {
   }
 };
 
+
+
+
 /* ===============================
    GET CLIENTS BY CATEGORY (Protected)
 ================================ */
-exports.getClientsByCategory = async (req, res) => {
-  const { category } = req.params;
-  const allowedCategories = [
-    "Career Counselors",
-    "Relationship Counselors",
-    "Mental Health Counselors",
-    "Educational Counselors",
+exports.getClientsByDomain = async (req, res) => {
+  const { domain } = req.params;
+  const allowedDomains = [
+    "MEDICAL",
+    "PHARMACY",
+    "NURSING",
+    "PARAMEDICAL",
+    "ENGINEERING",
+    "MANAGEMENT",
+    "GRADUATION",
+    "POST GRADUATION",
+    "VOCATIONAL",
+    "LANGUAGES",
+    "AGRICULTURE",
+    "EDUCATION",
   ];
 
-  if (!allowedCategories.includes(category)) {
-    return res.status(400).json({ message: "Invalid category" });
+  if (!allowedDomains.includes(domain)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid course domain",
+    });
   }
 
   try {
-    const clients = await Client.find({ category }).sort({
+    const clients = await Client.find({ domain }).sort({
       createdAt: -1,
     });
 
-    res.json({ success: true, clients });
+    res.status(200).json({
+      success: true,
+      total: clients.length,
+      data: clients,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Get clients by domain error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };

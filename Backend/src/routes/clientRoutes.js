@@ -5,6 +5,7 @@ const {
   deleteClient,
   updateClientStatus,
   getClientsByCategory,
+  getClientsByDomain,
 } = require("../controllers/clientController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -30,9 +31,9 @@ router.patch("/:id/status", authMiddleware, updateClientStatus);
 
 // 3️⃣–6️⃣ Get clients by category
 router.get(
-  "/category/:category",
+  "/:domain",
   authMiddleware,
-  getClientsByCategory
+  getClientsByDomain
 );
 
 module.exports = router;
