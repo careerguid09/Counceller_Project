@@ -134,6 +134,8 @@ exports.getClientsByCategory = async (req, res) => {
     "Relationship Counselors",
     "Mental Health Counselors",
     "Educational Counselors",
+
+    //   "Educational Counselors",
 =======
 
 
