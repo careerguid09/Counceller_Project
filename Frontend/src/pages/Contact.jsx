@@ -68,7 +68,7 @@ const Contact = () => {
         throw new Error(data.message || "Something went wrong");
       }
 
-      // success
+      
       setIsSubmitted(true);
       setFormData({
         fullName: '',
