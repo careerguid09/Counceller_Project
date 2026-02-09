@@ -37,183 +37,305 @@ const EMAIL_TEMPLATES = {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Career Query Confirmation</title>
         <style>
-          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; background: #ffffff; }
-          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center; }
-          .content { padding: 40px 30px; }
-          .details-card { background: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; margin: 25px 0; border-radius: 0 8px 8px 0; }
-          .detail-item { margin-bottom: 12px; display: flex; }
-          .detail-label { font-weight: 600; color: #495057; min-width: 140px; }
-          .detail-value { color: #212529; }
-          .timeline { background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 25px 0; }
-          .timeline-item { display: flex; margin-bottom: 15px; }
-          .timeline-number { background: #667eea; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0; }
-          .contact-box { background: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 8px; margin: 25px 0; }
-          .footer { background: #f8f9fa; padding: 25px; text-align: center; color: #6c757d; font-size: 14px; border-top: 1px solid #e9ecef; }
-          @media (max-width: 600px) {
-            .content { padding: 20px 15px; }
-            .detail-item { flex-direction: column; }
-            .detail-label { margin-bottom: 5px; }
+          @media only screen and (max-width: 640px) {
+            .container {
+              width: 100% !important;
+            }
+            .mobile-px-4 {
+              padding-left: 16px !important;
+              padding-right: 16px !important;
+            }
+            .mobile-px-2 {
+              padding-left: 8px !important;
+              padding-right: 8px !important;
+            }
+            .mobile-py-8 {
+              padding-top: 32px !important;
+              padding-bottom: 32px !important;
+            }
+            .mobile-py-6 {
+              padding-top: 24px !important;
+              padding-bottom: 24px !important;
+            }
+            .mobile-text-center {
+              text-align: center !important;
+            }
+            .mobile-flex-col {
+              display: flex !important;
+              flex-direction: column !important;
+            }
+            .mobile-block {
+              display: block !important;
+              width: 100% !important;
+            }
+            .mobile-mt-4 {
+              margin-top: 16px !important;
+            }
+            .mobile-mt-6 {
+              margin-top: 24px !important;
+            }
+            .mobile-mb-4 {
+              margin-bottom: 16px !important;
+            }
+            .mobile-mb-6 {
+              margin-bottom: 24px !important;
+            }
+            .mobile-text-lg {
+              font-size: 18px !important;
+            }
+            .mobile-text-base {
+              font-size: 16px !important;
+            }
+            .mobile-text-sm {
+              font-size: 14px !important;
+            }
+            .mobile-text-xs {
+              font-size: 12px !important;
+            }
+            .mobile-hide {
+              display: none !important;
+            }
+            .mobile-show {
+              display: block !important;
+            }
           }
         </style>
       </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1 style="margin: 0; font-size: 28px;">HerStudent</h1>
-            <p style="margin: 5px 0 0; opacity: 0.9;">Career Guidance & Professional Development</p>
+      <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f9fafb;">
+        <!-- Main Container -->
+        <div class="container" style="max-width: 600px; margin: 0 auto; background: #ffffff;">
+          
+          <!-- Header -->
+          <div class="header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center;">
+            <h1 style="margin: 0; font-size: 28px;" class="mobile-text-lg">HerStudent</h1>
+            <p style="margin: 5px 0 0; opacity: 0.9;" class="mobile-text-sm mobile-mt-4">Career Guidance & Professional Development</p>
           </div>
           
-          <div class="content">
-            <h2 style="color: #2d3748; margin-top: 0;">Dear ${userName},</h2>
+          <!-- Content -->
+          <div class="content mobile-px-4" style="padding: 40px 30px;">
+            <h2 style="color: #2d3748; margin-top: 0; font-size: 24px;" class="mobile-text-base mobile-text-center">Dear ${userName},</h2>
            
-               <h4 class="my-2" style="color: #2d3748; margin-top: 0;">🎉 Your career query has been received successfully! </h4>
+            <h4 class="my-2" style="color: #2d3748; margin-top: 0; margin-bottom: 20px; font-size: 20px;" class="mobile-text-base mobile-text-center mobile-mt-4">🎉 Your career query has been received successfully!</h4>
            
-            <p>Thank you for reaching out to <strong>HerStudent</strong> regarding your career aspirations. We have successfully received your query and our team is actively reviewing your case.</p>
-    
+            <p style="margin-bottom: 24px; color: #4b5563; font-size: 16px;" class="mobile-text-sm mobile-text-center">
+              Thank you for reaching out to <strong>HerStudent</strong> regarding your career aspirations. We have successfully received your query and our team is actively reviewing your case.
+            </p>
 
-       <div class="process-timeline">
-  <h3 style="color: #111827; margin-top: 0; font-size: 20px; font-weight: 600; text-align: center; margin-bottom: 32px;">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 10px;">
-      <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-    </svg>
-    Your Consultation Journey
-  </h3>
-  
-  <div style="display: flex; justify-content: space-between; position: relative; margin: 40px 0;">
-    <!-- Timeline Connector Line -->
-    <div style="position: absolute; top: 30px; left: 50px; right: 50px; height: 3px; background: linear-gradient(90deg, #7C3AED, #10B981); z-index: 1; border-radius: 2px;"></div>
-    
-    <!-- Step 1 -->
-    <div class="timeline-step" style="text-align: center; position: relative; z-index: 2; flex: 1;">
-      <div style="width: 60px; height: 60px; background: white; border: 3px solid #7C3AED; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; position: relative;">
-        <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #7C3AED, #8B5CF6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px;">
-          1
-        </div>
-        <div style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid #7C3AED;"></div>
-      </div>
-      <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 20px rgba(124, 58, 237, 0.1); border: 1px solid #E5E7EB;">
-        <div style="font-weight: 700; color: #111827; font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2">
-            <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-          </svg>
-          Initial Assessment
-        </div>
-        <div style="font-size: 14px; color: #6B7280; line-height: 1.5;">
-          Comprehensive profile analysis by our expert career panel
-        </div>
-        <div style="margin-top: 12px; padding: 8px 12px; background: #F5F3FF; border-radius: 6px; display: inline-block;">
-          <span style="font-size: 12px; color: #7C3AED; font-weight: 600;">
-            ⏱️ 4-6 Hours
-          </span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Step 2 -->
-    <div class="timeline-step" style="text-align: center; position: relative; z-index: 2; flex: 1;">
-      <div style="width: 60px; height: 60px; background: white; border: 3px solid #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; position: relative;">
-        <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #10B981, #34D399); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px;">
-          2
-        </div>
-        <div style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid #10B981;"></div>
-      </div>
-      <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1); border: 1px solid #E5E7EB;">
-        <div style="font-weight: 700; color: #111827; font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
-            <path d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2 2 0 01-2 2H5a2 2 0 01-2-2V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"/>
-          </svg>
-          Strategy Development
-        </div>
-        <div style="font-size: 14px; color: #6B7280; line-height: 1.5;">
-          Personalized career roadmap with actionable milestones
-        </div>
-        <div style="margin-top: 12px; padding: 8px 12px; background: #D1FAE5; border-radius: 6px; display: inline-block;">
-          <span style="font-size: 12px; color: #065F46; font-weight: 600;">
-            📧 Within 24 Hours
-          </span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Step 3 -->
-    <div class="timeline-step" style="text-align: center; position: relative; z-index: 2; flex: 1;">
-      <div style="width: 60px; height: 60px; background: white; border: 3px solid #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; position: relative;">
-        <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #F59E0B, #FBBF24); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px;">
-          3
-        </div>
-        <div style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid #F59E0B;"></div>
-      </div>
-      <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 20px rgba(245, 158, 11, 0.1); border: 1px solid #E5E7EB;">
-        <div style="font-weight: 700; color: #111827; font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2">
-            <path d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0"/>
-          </svg>
-          Implementation Support
-        </div>
-        <div style="font-size: 14px; color: #6B7280; line-height: 1.5;">
-          One-on-one consultation and ongoing mentorship sessions
-        </div>
-        <div style="margin-top: 12px; padding: 8px 12px; background: #FEF3C7; border-radius: 6px; display: inline-block;">
-          <span style="font-size: 12px; color: #92400E; font-weight: 600;">
-            📅 Schedule Anytime
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Progress Bar -->
-  <div style="background: #F3F4F6; border-radius: 10px; height: 10px; margin: 40px 0 20px; position: relative;">
-    </div>
-  </div>
-  
-  <div style="text-align: center; margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #F8FAFC, #F1F5F9); border-radius: 12px;">
-    <div style="display: inline-flex; align-items: center; gap: 10px; color: #4B5563; font-size: 14px;">
+            <!-- User Details Card -->
+            <div style="background: #f8f9fa; border-left: 4px solid #667eea; padding: 24px; margin: 32px 0; border-radius: 0 8px 8px 0;" class="mobile-px-2 mobile-py-6">
+              <h3 style="color: #2d3748; margin-top: 0; margin-bottom: 20px; font-size: 20px;" class="mobile-text-base mobile-text-center">Your Details</h3>
+              
+              <div style="margin-bottom: 16px; display: flex;" class="mobile-flex-col mobile-mb-4">
+                <span style="font-weight: 600; color: #495057; min-width: 140px; margin-bottom: 4px;" class="mobile-block mobile-mb-2">Full Name:</span>
+                <span style="color: #212529; flex: 1;" class="mobile-block">${userName}</span>
+              </div>
+              
+              <div style="margin-bottom: 16px; display: flex;" class="mobile-flex-col mobile-mb-4">
+                <span style="font-weight: 600; color: #495057; min-width: 140px; margin-bottom: 4px;" class="mobile-block mobile-mb-2">Mobile Number:</span>
+                <span style="color: #212529; flex: 1;" class="mobile-block">${mobileNumber}</span>
+              </div>
+              
+              <div style="margin-bottom: 16px; display: flex;" class="mobile-flex-col mobile-mb-4">
+                <span style="font-weight: 600; color: #495057; min-width: 140px; margin-bottom: 4px;" class="mobile-block mobile-mb-2">City:</span>
+                <span style="color: #212529; flex: 1;" class="mobile-block">${city}</span>
+              </div>
+              
+              <div style="display: flex;" class="mobile-flex-col">
+                <span style="font-weight: 600; color: #495057; min-width: 140px; margin-bottom: 4px;" class="mobile-block mobile-mb-2">Career Query:</span>
+                <span style="color: #212529; flex: 1;" class="mobile-block">${problem}</span>
+              </div>
+            </div>
 
-    </div>
-  </div>
-</div>
-
-<style>
-  @media (max-width: 768px) {
-    .process-timeline > div:first-child {
-      flex-direction: column;
-      gap: 40px;
-    }
-    .process-timeline > div:first-child > div:first-child {
-      display: none;
-    }
-    .timeline-step {
-      margin-bottom: 30px;
-    }
-  }
-</style>
-            
-            <div class="contact-box">
-              <h4 style="color: #856404; margin-top: 0;">📞 Need Immediate Assistance?</h4>
-              <p style="margin: 10px 0;">
-                <strong>Phone:</strong> +91-9876543210<br>
-                <strong>Email:</strong> support@herstudent.com<br>
-                <strong>Hours:</strong> Mon-Sat, 10:00 AM - 7:00 PM IST
-              </p>
+            <!-- Process Timeline -->
+            <div style="margin: 40px 0;" class="mobile-mt-6 mobile-mb-6">
+              <h3 style="color: #111827; margin-top: 0; font-size: 20px; font-weight: 600; text-align: center; margin-bottom: 32px;" class="mobile-text-base mobile-text-center mobile-mb-4">
+                <span style="vertical-align: middle; margin-right: 10px;">⏳</span>
+                Your Consultation Journey
+              </h3>
+              
+              <!-- Desktop Timeline -->
+              <div style="display: flex; justify-content: space-between; position: relative; margin: 40px 0;" class="mobile-hide">
+                <!-- Timeline Connector Line -->
+                <div style="position: absolute; top: 30px; left: 50px; right: 50px; height: 3px; background: linear-gradient(90deg, #7C3AED, #10B981); z-index: 1; border-radius: 2px;"></div>
+                
+                <!-- Step 1 -->
+                <div style="text-align: center; position: relative; z-index: 2; flex: 1; padding: 0 10px;">
+                  <div style="width: 60px; height: 60px; background: white; border: 3px solid #7C3AED; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; position: relative;">
+                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #7C3AED, #8B5CF6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px;">
+                      1
+                    </div>
+                  </div>
+                  <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 20px rgba(124, 58, 237, 0.1); border: 1px solid #E5E7EB;">
+                    <div style="font-weight: 700; color: #111827; font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                      📋 Initial Assessment
+                    </div>
+                    <div style="font-size: 14px; color: #6B7280; line-height: 1.5; margin-bottom: 12px;">
+                      Comprehensive profile analysis by our expert career panel
+                    </div>
+                    <div style="padding: 8px 12px; background: #F5F3FF; border-radius: 6px; display: inline-block;">
+                      <span style="font-size: 12px; color: #7C3AED; font-weight: 600;">
+                        ⏱️ 4-6 Hours
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div style="text-align: center; position: relative; z-index: 2; flex: 1; padding: 0 10px;">
+                  <div style="width: 60px; height: 60px; background: white; border: 3px solid #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; position: relative;">
+                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #10B981, #34D399); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px;">
+                      2
+                    </div>
+                  </div>
+                  <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1); border: 1px solid #E5E7EB;">
+                    <div style="font-weight: 700; color: #111827; font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                      🎯 Strategy Development
+                    </div>
+                    <div style="font-size: 14px; color: #6B7280; line-height: 1.5; margin-bottom: 12px;">
+                      Personalized career roadmap with actionable milestones
+                    </div>
+                    <div style="padding: 8px 12px; background: #D1FAE5; border-radius: 6px; display: inline-block;">
+                      <span style="font-size: 12px; color: #065F46; font-weight: 600;">
+                        📧 Within 24 Hours
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div style="text-align: center; position: relative; z-index: 2; flex: 1; padding: 0 10px;">
+                  <div style="width: 60px; height: 60px; background: white; border: 3px solid #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; position: relative;">
+                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #F59E0B, #FBBF24); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px;">
+                      3
+                    </div>
+                  </div>
+                  <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 20px rgba(245, 158, 11, 0.1); border: 1px solid #E5E7EB;">
+                    <div style="font-weight: 700; color: #111827; font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                      🚀 Implementation Support
+                    </div>
+                    <div style="font-size: 14px; color: #6B7280; line-height: 1.5; margin-bottom: 12px;">
+                      One-on-one consultation and ongoing mentorship sessions
+                    </div>
+                    <div style="padding: 8px 12px; background: #FEF3C7; border-radius: 6px; display: inline-block;">
+                      <span style="font-size: 12px; color: #92400E; font-weight: 600;">
+                        📅 Schedule Anytime
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Mobile Timeline -->
+              <div style="display: none;" class="mobile-show">
+                <!-- Step 1 Mobile -->
+                <div style="margin-bottom: 32px; display: flex; align-items: flex-start;">
+                  <div style="width: 50px; height: 50px; background: white; border: 3px solid #7C3AED; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px; flex-shrink: 0;">
+                    <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #7C3AED, #8B5CF6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px;">
+                      1
+                    </div>
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 700; color: #111827; font-size: 16px; margin-bottom: 6px;">
+                      📋 Initial Assessment
+                    </div>
+                    <div style="font-size: 14px; color: #6B7280; line-height: 1.5; margin-bottom: 10px;">
+                      Comprehensive profile analysis by our expert career panel
+                    </div>
+                    <div style="padding: 6px 10px; background: #F5F3FF; border-radius: 6px; display: inline-block;">
+                      <span style="font-size: 12px; color: #7C3AED; font-weight: 600;">
+                        ⏱️ 4-6 Hours
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Step 2 Mobile -->
+                <div style="margin-bottom: 32px; display: flex; align-items: flex-start;">
+                  <div style="width: 50px; height: 50px; background: white; border: 3px solid #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px; flex-shrink: 0;">
+                    <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #10B981, #34D399); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px;">
+                      2
+                    </div>
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 700; color: #111827; font-size: 16px; margin-bottom: 6px;">
+                      🎯 Strategy Development
+                    </div>
+                    <div style="font-size: 14px; color: #6B7280; line-height: 1.5; margin-bottom: 10px;">
+                      Personalized career roadmap with actionable milestones
+                    </div>
+                    <div style="padding: 6px 10px; background: #D1FAE5; border-radius: 6px; display: inline-block;">
+                      <span style="font-size: 12px; color: #065F46; font-weight: 600;">
+                        📧 Within 24 Hours
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Step 3 Mobile -->
+                <div style="display: flex; align-items: flex-start;">
+                  <div style="width: 50px; height: 50px; background: white; border: 3px solid #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px; flex-shrink: 0;">
+                    <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #F59E0B, #FBBF24); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px;">
+                      3
+                    </div>
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 700; color: #111827; font-size: 16px; margin-bottom: 6px;">
+                      🚀 Implementation Support
+                    </div>
+                    <div style="font-size: 14px; color: #6B7280; line-height: 1.5; margin-bottom: 10px;">
+                      One-on-one consultation and ongoing mentorship sessions
+                    </div>
+                    <div style="padding: 6px 10px; background: #FEF3C7; border-radius: 6px; display: inline-block;">
+                      <span style="font-size: 12px; color: #92400E; font-weight: 600;">
+                        📅 Schedule Anytime
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             
-            <p style="margin-top: 30px;">We're committed to helping you achieve your career goals!</p>
+            <!-- Contact Box -->
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 24px; border-radius: 8px; margin: 32px 0;" class="mobile-px-2 mobile-py-6">
+              <h4 style="color: #856404; margin-top: 0; font-size: 18px; margin-bottom: 16px;" class="mobile-text-base mobile-text-center">📞 Need Immediate Assistance?</h4>
+              <div style="margin-bottom: 8px;" class="mobile-text-center mobile-mb-4">
+                <strong style="color: #856404;">Phone:</strong> 
+                <span style="color: #212529;">+91-9876543210</span>
+              </div>
+              <div style="margin-bottom: 8px;" class="mobile-text-center mobile-mb-4">
+                <strong style="color: #856404;">Email:</strong> 
+                <span style="color: #212529;">support@herstudent.com</span>
+              </div>
+              <div class="mobile-text-center">
+                <strong style="color: #856404;">Hours:</strong> 
+                <span style="color: #212529;">Mon-Sat, 10:00 AM - 7:00 PM IST</span>
+              </div>
+            </div>
             
-            <p style="margin: 30px 0 20px;">
-              Best regards,<br>
-              <strong style="color: #667eea;">Career Solutions Team</strong><br>
-              <em>HerStudent - Shaping Future Professionals</em>
+            <p style="margin-top: 30px; color: #4b5563; font-size: 16px; text-align: center;" class="mobile-text-sm mobile-text-center mobile-mt-6">
+              We're committed to helping you achieve your career goals!
             </p>
+            
+            <div style="margin: 30px 0 20px; text-align: center;" class="mobile-text-center mobile-mt-6">
+              <p style="margin: 0 0 8px; color: #4b5563;">
+                Best regards,
+              </p>
+              <p style="margin: 0 0 8px;">
+                <strong style="color: #667eea;">Career Solutions Team</strong>
+              </p>
+              <p style="margin: 0; color: #6b7280; font-style: italic;">
+                HerStudent - Shaping Future Professionals
+              </p>
+            </div>
           </div>
           
-          <div class="footer">
+          <!-- Footer -->
+          <div class="footer mobile-px-4" style="background: #f8f9fa; padding: 25px; text-align: center; color: #6c757d; font-size: 14px; border-top: 1px solid #e9ecef;">
             <p style="margin: 0 0 10px;">
-              <strong>HerStudent Career Services</strong><br>
-              Office 22, Business Center, Mumbai - 400001
+              <strong style="color: #374151;">HerStudent Career Services</strong><br>
+              <span style="font-size: 13px;">Office 22, Business Center, Mumbai - 400001</span>
             </p>
-            <p style="margin: 0; font-size: 12px; opacity: 0.7;">
+            <p style="margin: 0; font-size: 12px; opacity: 0.7;" class="mobile-text-xs">
               This is an automated message. Please do not reply directly.<br>
               © ${new Date().getFullYear()} HerStudent. All rights reserved.
             </p>

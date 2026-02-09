@@ -1,140 +1,162 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Stethoscope, Pill, UserRound, Microscope, Settings, Briefcase,
   GraduationCap, BookOpen, Laptop, Languages, Leaf, Presentation,
-  Calendar, Users, Star, IndianRupee, ArrowRight, Clock, LogOut,
-  ChevronRight, Search, Bell, Filter, MapPin, CheckCircle,
-  ChevronLeft, MoreVertical, Mail, Phone, ExternalLink,
-  User, CalendarDays, BookMarked, MessageSquare, Globe, RefreshCcw,
-  AlertCircle, Trash2, X
+  Clock, LogOut, ChevronRight, MapPin, CheckCircle,
+  ChevronLeft, Mail, Phone, MessageSquare, RefreshCcw,
+  Trash2, Users, ArrowRight, Home,
+  TrendingUp, FileSpreadsheet, Database
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
-const DOMAIN_COURSES = {
-  MEDICAL: ["MBBS", "BAMS", "BHMS", "BNYS"],
-  PHARMACY: ["B.Pharma", "D.Pharma", "M.Pharma", "Pharm D", "PhD Pharmacy"],
-  NURSING: ["ANM", "GNM", "BSc Nursing", "MSc Nursing", "Post Basic Nursing"],
-  PARAMEDICAL: [
-    "X-Ray Technician (Radiology)",
-    "BMLT / DMLT",
-    "BPT / MPT",
-    "Bachelor of Human Nutrition"
-  ],
-  ENGINEERING: ["Diploma Engineering", "B.Tech / BE", "M.Tech / ME", "PhD Engineering"],
-  MANAGEMENT: ["BBA", "MBA", "PGDM"],
-  GRADUATION: ["BA", "BSc", "BCom"],
-  "POST GRADUATION": ["MA", "MSc", "MCom"],
-  "VOCATIONAL COURSES": ["BCA", "MCA", "PGDCA", "B.Lib / M.Lib"],
-  "LANGUAGE COURSES": ["German", "French", "Italian", "Chinese"],
-  AGRICULTURE: ["BSc Agriculture", "MSc Agriculture"],
-  "EDUCATION COURSES": ["B.Ed", "D.El.Ed", "CTET / STET Guidance"],
-};
-
-const StudentManagement = ({ domain, onBack }) => {
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [updatingId, setUpdatingId] = useState(null);
-
-  // State for Delete Confirmation
-  const [studentToDelete, setStudentToDelete] = useState(null);
+const CounselorDashboard = () => {
+  // ========== STATES ==========
+  const [counselorProfile, setCounselorProfile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [currentView, setCurrentView] = useState('dashboard');
+  const [selectedDomain, setSelectedDomain] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [domainCourses, setDomainCourses] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [clientsLoading, setClientsLoading] = useState(false);
+  const [domainStats, setDomainStats] = useState([]);
+  const [overallStats, setOverallStats] = useState({
+    total: 0, new: 0, inProgress: 0, completed: 0
+  });
+  const [courseStats, setCourseStats] = useState([]);
+  const [deleteModal, setDeleteModal] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [courseFilter, setCourseFilter] = useState("all");
+  // ========== DOMAIN DATA ==========
+  const counselorDomains = [
+    { id: 1, name: "MEDICAL", icon: Stethoscope, description: "Healthcare and surgical medical programs", color: "text-red-600", bgColor: "bg-red-50" },
+    { id: 2, name: "PHARMACY", icon: Pill, description: "Pharmaceutical sciences and drug research", color: "text-emerald-600", bgColor: "bg-emerald-50" },
+    { id: 3, name: "NURSING", icon: UserRound, description: "Clinical nursing and healthcare assistance", color: "text-blue-600", bgColor: "bg-blue-50" },
+    { id: 4, name: "PARAMEDICAL", icon: Microscope, description: "Paramedical and allied health services", color: "text-purple-600", bgColor: "bg-purple-50" },
+    { id: 5, name: "ENGINEERING", icon: Settings, description: "Technical and technological innovations", color: "text-orange-600", bgColor: "bg-orange-50" },
+    { id: 6, name: "MANAGEMENT", icon: Briefcase, description: "Business leadership and administration", color: "text-indigo-600", bgColor: "bg-indigo-50" },
+    { id: 7, name: "GRADUATION", icon: BookOpen, description: "Undergraduate arts and science degrees", color: "text-teal-600", bgColor: "bg-teal-50" },
+    { id: 8, name: "POST GRADUATION", icon: GraduationCap, description: "Advanced master and research programs", color: "text-cyan-600", bgColor: "bg-cyan-50" },
+    { id: 9, name: "VOCATIONAL", icon: Laptop, description: "Skill-based technical training", color: "text-pink-600", bgColor: "bg-pink-50" },
+    { id: 10, name: "LANGUAGES", icon: Languages, description: "Global communication and linguistics", color: "text-yellow-600", bgColor: "bg-yellow-50" },
+    { id: 11, name: "AGRICULTURE", icon: Leaf, description: "Farm science and agricultural technology", color: "text-lime-600", bgColor: "bg-lime-50" },
+    { id: 12, name: "EDUCATION", icon: Presentation, description: "Teacher training and pedagogical studies", color: "text-amber-600", bgColor: "bg-amber-50" }
+  ];
 
-  const formatDOB = (dob) => {
-    if (!dob) return "-";
-    return new Date(dob).toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+  const DOMAIN_COURSES_MAP = {
+    MEDICAL: ["MBBS", "BAMS", "BHMS", "BNYS", "BDS", "BPT", "B.Sc Nursing"],
+    PHARMACY: ["B.Pharma", "D.Pharma", "M.Pharma", "Pharm D", "PhD Pharmacy"],
+    NURSING: ["ANM", "GNM", "BSc Nursing", "MSc Nursing", "Post Basic Nursing"],
+    PARAMEDICAL: ["X-Ray Technician", "BMLT / DMLT", "BPT / MPT", "Bachelor of Human Nutrition"],
+    ENGINEERING: ["Diploma Engineering", "B.Tech / BE", "M.Tech / ME", "PhD Engineering"],
+    MANAGEMENT: ["BBA", "MBA", "PGDM", "Executive MBA"],
+    GRADUATION: ["BA", "BSc", "BCom", "BCA"],
+    "POST GRADUATION": ["MA", "MSc", "MCom", "MCA"],
+    VOCATIONAL: ["ITI", "BCA", "MCA", "PGDCA", "B.Lib / M.Lib"],
+    LANGUAGES: ["German", "French", "Italian", "Chinese", "Japanese"],
+    AGRICULTURE: ["BSc Agriculture", "MSc Agriculture", "B.Tech Agriculture"],
+    EDUCATION: ["B.Ed", "D.El.Ed", "M.Ed", "CTET / STET Guidance"]
   };
 
+  // ========== INITIALIZE ==========
+  useEffect(() => {
+    const savedProfile = localStorage.getItem("counselorProfile");
+    const profileData = savedProfile ? JSON.parse(savedProfile) : { 
+      name: "Dr. Sandeep", 
+      email: "sandeep@careerguide.com" 
+    };
+    setCounselorProfile(profileData);
+    fetchDomainStats();
+  }, []);
 
-  const courseOptions = useMemo(() => {
-    if (!domain?.name) return ["all"];
-    const courses = DOMAIN_COURSES[domain.name.toUpperCase()] || [];
-    return ["all", ...courses];
-  }, [domain?.name]);
-
-  const filteredStudents = useMemo(() => {
-    return students.filter(student => {
-      const matchesSearch =
-        student.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.state?.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const matchesStatus =
-        statusFilter === "all" || student.status === statusFilter;
-
-      const matchesCourse =
-        courseFilter === "all" || student.course === courseFilter;
-
-      return matchesSearch && matchesStatus && matchesCourse;
-    });
-  }, [students, searchQuery, statusFilter, courseFilter]);
-
-  const fetchStudents = async () => {
+  // ========== MAIN FUNCTIONS ==========
+  const fetchDomainStats = async () => {
     try {
       setLoading(true);
-      setError(null);
+      const res = await fetch('http://localhost:5000/api/clients/stats/domain', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
+        },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setDomainStats(data.domainStats || []);
+        setOverallStats(data.overallStats || { total: 0, new: 0, inProgress: 0, completed: 0 });
+      }
+    } catch (err) {
+      console.error("Failed to fetch domain stats:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCourseStats = async (domain) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/clients/stats/course/${domain}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
+        },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCourseStats(data.courseStats || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch course stats:", err);
+    }
+  };
+
+  const handleDomainClick = async (domain) => {
+    const domainInfo = counselorDomains.find(d => d.name === domain.domain) || counselorDomains[0];
+    setSelectedDomain({ ...domainInfo, stats: domain });
+    
+    const courses = DOMAIN_COURSES_MAP[domainInfo.name] || [];
+    setDomainCourses(courses);
+    
+    await fetchCourseStats(domainInfo.name);
+    setCurrentView('domainCourses');
+  };
+
+  const handleCourseClick = async (course) => {
+    setSelectedCourse(course);
+    setClientsLoading(true);
+    try {
       const res = await fetch(
-        `http://localhost:5000/api/clients/${domain.name}`,
+        `http://localhost:5000/api/clients/course/${encodeURIComponent(course.course)}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
           },
         }
       );
-
+      
       if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-
       const data = await res.json();
-      setStudents(data.data || []);
-    } catch (err) {
-      console.error("Failed to fetch students:", err);
-      setError("Unable to connect to the server. Please check if your backend is running at http://localhost:5000.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (domain?.name) fetchStudents();
-  }, [domain.name]);
-
-  /* ------------------ UPDATE STATUS LOGIC ------------------ */
-  const handleStatusUpdate = async (studentId, newStatus) => {
-    try {
-      setUpdatingId(studentId);
-      const res = await fetch(`http://localhost:5000/api/clients/${studentId}/status`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
-        },
-        body: JSON.stringify({ status: newStatus }),
+      
+      const sortedClients = (data.data || []).sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt);
       });
-
-      setStudents(prev =>
-        prev.map(s => (s._id === studentId ? { ...s, status: newStatus } : s))
-      );
+      
+      setClients(sortedClients);
+      setCurrentView('clients');
     } catch (err) {
-      console.error("Failed to update status:", err);
+      console.error("Failed to fetch clients:", err);
+      alert("Failed to load clients data");
     } finally {
-      setUpdatingId(null);
+      setClientsLoading(false);
     }
   };
 
-  /* ------------------ DELETE LOGIC ------------------ */
-  const handleDeleteStudent = async () => {
-    if (!studentToDelete) return;
+  const handleClientClick = async (client) => {
+    setSelectedClient(client);
+    setCurrentView('clientDetail');
+  };
+
+  const deleteClient = async (clientId) => {
     try {
       setIsDeleting(true);
-      const res = await fetch(`http://localhost:5000/api/clients/${studentToDelete._id}`, {
+      const res = await fetch(`http://localhost:5000/api/clients/${clientId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
@@ -142,289 +164,107 @@ const StudentManagement = ({ domain, onBack }) => {
       });
 
       if (res.ok) {
-        setStudents(prev => prev.filter(s => s._id !== studentToDelete._id));
-        setStudentToDelete(null);
+        setClients(prev => prev.filter(c => c._id !== clientId));
+        setDeleteModal(null);
+        
+        fetchDomainStats();
+        if (selectedDomain) {
+          fetchCourseStats(selectedDomain.name);
+        }
+        
+        if (clients.length === 1) {
+          handleBackToCourses();
+        }
       }
     } catch (err) {
-      console.error("Failed to delete student:", err);
+      console.error("Delete error:", err);
+      alert("Failed to delete client");
     } finally {
       setIsDeleting(false);
     }
   };
 
-  const getStatusStyles = (status, isActive) => {
-    const base = "flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 border";
-    switch (status) {
-      case "new":
-        return isActive ? `${base} bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-200` : `${base} bg-white text-blue-600 border-blue-100 hover:bg-blue-50`;
-      case "in-progress":
-        return isActive ? `${base} bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-200` : `${base} bg-white text-amber-600 border-amber-100 hover:bg-amber-50`;
-      case "completed":
-        return isActive ? `${base} bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-200` : `${base} bg-white text-emerald-600 border-emerald-100 hover:bg-emerald-50`;
-      default: return base;
+  const updateClientStatus = async (clientId, newStatus) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/clients/${clientId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (res.ok) {
+        setClients(prev =>
+          prev.map(c => c._id === clientId ? { ...c, status: newStatus } : c)
+        );
+        if (selectedClient && selectedClient._id === clientId) {
+          setSelectedClient(prev => ({ ...prev, status: newStatus }));
+        }
+        
+        fetchDomainStats();
+        if (selectedDomain) {
+          fetchCourseStats(selectedDomain.name);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to update status:", err);
     }
   };
 
-  return (
-    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-      {/* ---------------- DELETE CONFIRMATION MODAL ---------------- */}
-      <AnimatePresence>
-        {studentToDelete && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setStudentToDelete(null)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative bg-white rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 p-6">
-                <button onClick={() => setStudentToDelete(null)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
-                  <X size={20} className="text-slate-400" />
-                </button>
-              </div>
+  const exportToExcel = async () => {
+    try {
+      setExporting(true);
+      const res = await fetch('http://localhost:5000/api/clients/export', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
+        },
+      });
 
-              <div className="flex flex-col items-center text-center">
-                <div className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mb-6">
-                  <Trash2 size={40} />
-                </div>
-                <h3 className="text-2xl font-black text-slate-800 mb-2">Delete Lead?</h3>
-                <p className="text-slate-500 mb-8">
-                  Are you sure you want to delete <span className="font-black text-slate-800">{studentToDelete.fullName}</span>? This action cannot be undone.
-                </p>
+      if (!res.ok) throw new Error('Export failed');
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `students_export_${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+    } catch (err) {
+      console.error("Export error:", err);
+      alert("Failed to export data");
+    } finally {
+      setExporting(false);
+    }
+  };
 
-                <div className="flex gap-4 w-full">
-                  <button
-                    onClick={() => setStudentToDelete(null)}
-                    className="flex-1 py-4 bg-slate-100 text-slate-600 font-black rounded-2xl hover:bg-slate-200 transition-all"
-                  >
-                    CANCEL
-                  </button>
-                  <button
-                    onClick={handleDeleteStudent}
-                    disabled={isDeleting}
-                    className="flex-1 py-4 bg-red-600 text-white font-black rounded-2xl hover:bg-red-700 transition-all flex items-center justify-center gap-2"
-                  >
-                    {isDeleting ? <RefreshCcw size={18} className="animate-spin" /> : <Trash2 size={18} />}
-                    CONFIRM
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+  const handleBackToDashboard = () => {
+    setCurrentView('dashboard');
+    setSelectedDomain(null);
+    setSelectedCourse(null);
+    setClients([]);
+    fetchDomainStats();
+  };
 
-      {/* ---------------- HEADER ---------------- */}
-      <div className="flex flex-col gap-6 mb-10">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={onBack}
-            className="p-3 bg-white border rounded-xl shadow-sm hover:bg-slate-50 transition-colors"
-          >
-            <ChevronLeft size={22} />
-          </button>
-          <div>
-            <h2 className="text-3xl font-black">{domain.name} Students</h2>
-            <p className="text-slate-500">Manage & track students by course and status</p>
-          </div>
-        </div>
+  const handleBackToDomains = () => {
+    setCurrentView('domainCourses');
+    setSelectedCourse(null);
+    setClients([]);
+  };
 
-        {/* ---------------- FILTER BAR ---------------- */}
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <input
-              type="text"
-              placeholder="Search by name or city..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="pl-11 pr-4 py-3 border rounded-xl w-full focus:ring-2 focus:ring-blue-100 outline-none"
-            />
-          </div>
+  const handleBackToCourses = () => {
+    setCurrentView('domainCourses');
+    setSelectedClient(null);
+  };
 
-          <select
-            value={courseFilter}
-            onChange={e => setCourseFilter(e.target.value)}
-            className="px-4 py-3 border rounded-xl bg-white focus:ring-2 focus:ring-blue-100 outline-none"
-          >
-            {courseOptions.map(course => (
-              <option key={course} value={course}>
-                {course === "all" ? "All Courses" : course}
-              </option>
-            ))}
-          </select>
-
-          <div className="flex gap-2 flex-wrap">
-            {["all", "new", "in-progress", "completed"].map(status => (
-              <button
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${statusFilter === status ? "bg-slate-900 text-white shadow-lg" : "bg-white border text-slate-600 hover:bg-slate-50"
-                  }`}
-              >
-                {status.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ---------------- CONTENT ---------------- */}
-      {error && (
-        <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center justify-between">
-          <div className="flex items-center gap-3 text-red-600 text-sm font-medium">
-            <AlertCircle size={20} />
-            {error}
-          </div>
-          <button onClick={fetchStudents} className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-xl hover:bg-red-700 transition-colors">
-            Try Again
-          </button>
-        </div>
-      )}
-
-      {loading ? (
-        <div className="py-20 text-center flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="font-bold text-slate-400">Loading students...</p>
-        </div>
-      ) : filteredStudents.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {filteredStudents.map(student => (
-            <motion.div
-              key={student._id}
-              whileHover={{ y: -4 }}
-              className="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl transition-all duration-300 relative group"
-            >
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-slate-100 text-slate-700 rounded-2xl flex items-center justify-center font-black text-xl shadow-inner border border-white">
-                    {student.fullName?.charAt(0)}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-black text-slate-800">{student.fullName}</h3>
-                    <p className="text-sm text-slate-500 flex items-center gap-1">
-                      <MapPin size={14} className="text-blue-500" />
-                      {student.city}, {student.state}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {updatingId === student._id && <RefreshCcw size={14} className="animate-spin text-blue-500" />}
-
-                  {/* Conditionally show Delete Icon if status is completed */}
-                  {student.status === "completed" && (
-                    <motion.button
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      onClick={() => setStudentToDelete(student)}
-                      className="p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-colors"
-                      title="Delete Student"
-                    >
-                      <Trash2 size={18} />
-                    </motion.button>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6 text-sm mb-6 pb-6 border-b border-slate-50">
-                <p className="flex items-center gap-2 text-slate-600 truncate">
-                  <Mail size={16} className="text-slate-400 flex-shrink-0" />
-                  {student.email}
-                </p>
-
-                <p className="flex items-center gap-2 text-slate-600">
-                  <Phone size={16} className="text-slate-400 flex-shrink-0" />
-                  {student.phone}
-                </p>
-
-                <p className="flex items-center gap-2 text-slate-600">
-                  <GraduationCap size={16} className="text-slate-400 flex-shrink-0" />
-                  {student.eduLevel}
-                </p>
-
-                <p className="flex items-center gap-2 text-slate-600">
-                  <BookOpen size={16} className="text-slate-400 flex-shrink-0" />
-                  <span className="font-semibold text-slate-500">Interested Course:</span>
-                  <span className="font-bold text-slate-700">{student.course}</span>
-                </p>
-
-                <p className="flex items-center gap-2 text-slate-600">
-                  <Calendar size={16} className="text-slate-400 flex-shrink-0" />
-                  <span className="font-semibold text-slate-500">DOB:</span>
-                  <span className="font-bold text-slate-700">
-                    {formatDOB(student.dob)}
-                  </span>
-
-                </p>
-
-                <p className="flex items-center gap-2 text-slate-600">
-                  <span className="w-4 h-4 flex items-center justify-center rounded-full bg-slate-200 text-[10px] font-black text-slate-600">
-                    A
-                  </span>
-                  <span className="font-semibold text-slate-500">Age:</span>
-                  <span className="font-bold text-slate-700">{student.age} yrs</span>
-                </p>
-              </div>
-
-
-              <div className="mb-6">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-1">Update Lead Status</p>
-                <div className="flex flex-wrap gap-3">
-                  <button onClick={() => handleStatusUpdate(student._id, "new")} className={getStatusStyles("new", student.status === "new")}>
-                    {student.status === "new" && <CheckCircle size={12} />} NEW
-                  </button>
-                  <button onClick={() => handleStatusUpdate(student._id, "in-progress")} className={getStatusStyles("in-progress", student.status === "in-progress")}>
-                    {student.status === "in-progress" && <Clock size={12} />} IN PROGRESS
-                  </button>
-                  <button onClick={() => handleStatusUpdate(student._id, "completed")} className={getStatusStyles("completed", student.status === "completed")}>
-                    {student.status === "completed" && <CheckCircle size={12} />} COMPLETED
-                  </button>
-                </div>
-              </div>
-
-              {student.message && (
-                <div className="bg-slate-50 p-5 rounded-2xl text-sm border border-slate-100">
-                  <p className="font-black text-slate-400 text-[10px] uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                    <MessageSquare size={12} /> Student Note
-                  </p>
-                  <p className="text-slate-600 italic leading-relaxed">"{student.message}"</p>
-                </div>
-              )}
-            </motion.div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-32 bg-white rounded-[3rem] border border-dashed border-slate-300">
-          <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Search size={32} className="text-slate-300" />
-          </div>
-          <h3 className="text-xl font-black text-slate-400">No matching students found</h3>
-          <p className="text-slate-400">Try adjusting your filters or search query</p>
-        </div>
-      )}
-    </motion.div>
-  );
-};
-
-const CounselorDashboard = () => {
-  const [counselorProfile, setCounselorProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [selectedDomain, setSelectedDomain] = useState(null);
-
-  useEffect(() => {
-    const savedProfile = localStorage.getItem("counselorProfile");
-    const profileData = savedProfile ? JSON.parse(savedProfile) : { name: "Dr. Sandeep", email: "sandeep@careerguide.com" };
-    setCounselorProfile(profileData);
-    setLoading(false);
-  }, []);
+  const handleBackToClients = () => {
+    setCurrentView('clients');
+    setSelectedClient(null);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("counselorToken");
@@ -432,110 +272,752 @@ const CounselorDashboard = () => {
     window.location.reload();
   };
 
-  const counselorCategories = [
-    { id: 1, name: "MEDICAL", icon: Stethoscope, description: "Healthcare and surgical medical programs.", courses: ["MBBS", "BAMS", "BHMS"], stats: { rating: 4.9 }, color: "text-red-600", bgColor: "bg-red-50" },
-    { id: 2, name: "PHARMACY", icon: Pill, description: "Pharmaceutical sciences and drug research.", courses: ["B.Pharm", "D.Pharm"], stats: { rating: 4.7 }, color: "text-emerald-600", bgColor: "bg-emerald-50" },
-    { id: 3, name: "NURSING", icon: UserRound, description: "Clinical nursing and healthcare assistance.", courses: ["B.Sc Nursing", "GNM"], stats: { rating: 4.8 }, color: "text-blue-600", bgColor: "bg-blue-50" },
-    { id: 4, name: "PARAMEDICAL", icon: Microscope, description: "Paramedical and allied health services.", courses: ["BPT", "BMLT"], stats: { rating: 4.6 }, color: "text-purple-600", bgColor: "bg-purple-50" },
-    { id: 5, name: "ENGINEERING", icon: Settings, description: "Technical and technological innovations.", courses: ["B.Tech", "M.Tech"], stats: { rating: 4.9 }, color: "text-orange-600", bgColor: "bg-orange-50" },
-    { id: 6, name: "MANAGEMENT", icon: Briefcase, description: "Business leadership and administration.", courses: ["MBA", "BBA"], stats: { rating: 4.7 }, color: "text-indigo-600", bgColor: "bg-indigo-50" },
-    { id: 7, name: "GRADUATION", icon: BookOpen, description: "Undergraduate arts and science degrees.", courses: ["BA", "B.Sc"], stats: { rating: 4.5 }, color: "text-teal-600", bgColor: "bg-teal-50" },
-    { id: 8, name: "POST GRADUATION", icon: GraduationCap, description: "Advanced master and research programs.", courses: ["MA", "M.Sc"], stats: { rating: 4.8 }, color: "text-cyan-600", bgColor: "bg-cyan-50" },
-    { id: 9, name: "VOCATIONAL", icon: Laptop, description: "Skill-based technical training.", courses: ["ITI", "BCA"], stats: { rating: 4.4 }, color: "text-pink-600", bgColor: "bg-pink-50" },
-    { id: 10, name: "LANGUAGES", icon: Languages, description: "Global communication and linguistics.", courses: ["IELTS", "German"], stats: { rating: 4.9 }, color: "text-yellow-600", bgColor: "bg-yellow-50" },
-    { id: 11, name: "AGRICULTURE", icon: Leaf, description: "Farm science and agricultural technology.", courses: ["B.Sc Agri"], stats: { rating: 4.7 }, color: "text-lime-600", bgColor: "bg-lime-50" },
-    { id: 12, name: "EDUCATION", icon: Presentation, description: "Teacher training and pedagogical studies.", courses: ["B.Ed", "M.Ed"], stats: { rating: 4.6 }, color: "text-amber-600", bgColor: "bg-amber-50" }
-  ];
+  const formatDate = (dateString) => {
+    if (!dateString) return "Not available";
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
 
-  if (loading || !counselorProfile) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+  const formatDateTime = (dateString) => {
+    if (!dateString) return "Not available";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN') + ' ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const renderDashboard = () => (
+    <div>
+
+      <div className="bg-gradient-to-r from-slate-900 to-blue-900 rounded-3xl p-8 mb-10 text-white shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-800/20 rounded-full -translate-y-32 translate-x-32"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-800/20 rounded-full translate-y-24 -translate-x-24"></div>
+        
+        <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div className="max-w-2xl">
+            <h1 className="text-4xl font-black mb-4">Welcome back, {counselorProfile?.name}!</h1>
+            <p className="text-blue-200 text-lg">
+              Manage {overallStats.total} students across {domainStats.length} domains.
+            </p>
+          </div>
+          <div className="flex flex-col items-end gap-3">
+            <button
+              onClick={exportToExcel}
+              disabled={exporting || overallStats.total === 0}
+              className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-xl flex items-center gap-3 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-600"
+            >
+              {exporting ? (
+                <>
+                  <RefreshCcw size={18} className="animate-spin" />
+                  Exporting...
+                </>
+              ) : (
+                <>
+                  <FileSpreadsheet size={18} />
+                  Get All Students data
+                </>
+              )}
+            </button>
+            
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                <Database size={28} className="text-white" />
+              </div>
+              <div>
+                <div className="text-2xl font-black">{overallStats.total}</div>
+                <div className="text-sm text-blue-200">Total Students</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans selection:bg-blue-100">
-      <div className="container mx-auto px-6 py-10">
-        <AnimatePresence mode="wait">
-          {!selectedDomain ? (
-            <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <div className="relative overflow-hidden bg-slate-900 rounded-[3rem] p-12 mb-12 text-white shadow-2xl">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full -translate-y-48 translate-x-48 blur-[100px]"></div>
-                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-                  <div className="max-w-xl">
-                    <h2 className="text-5xl font-black mb-4 leading-tight">Welcome Back, {counselorProfile?.name}! 👋</h2>
-                    <p className="text-slate-400 text-lg leading-relaxed">
-                      Your counseling dashboard is ready. Select a domain below to manage leads and update student progress in real-time.
+      {/* STATUS SUMMARY CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+        <div 
+          onClick={() => {
+            setSelectedDomain({ name: 'NEW', icon: Clock });
+            setCurrentView('clients');
+            setClientsLoading(true);
+            fetch(`http://localhost:5000/api/clients/filter?filterField=status&filterValue=new`, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
+              },
+            })
+              .then(res => res.json())
+              .then(data => {
+                setClients(data.data || []);
+                setClientsLoading(false);
+              })
+              .catch(err => {
+                console.error(err);
+                setClientsLoading(false);
+              });
+          }}
+          className="bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-2xl p-6 cursor-pointer hover:shadow-xl hover:border-blue-300 transition-all duration-300 group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-3xl font-black text-blue-700 mb-1">{overallStats.new || 0}</div>
+              <div className="text-blue-600 font-semibold mb-1">New Students</div>
+              <div className="text-sm text-blue-500">Require attention</div>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+              <Clock size={24} className="text-blue-600" />
+            </div>
+          </div>
+        </div>
+        
+        <div 
+          onClick={() => {
+            setSelectedDomain({ name: 'IN PROGRESS', icon: RefreshCcw });
+            setCurrentView('clients');
+            setClientsLoading(true);
+            fetch(`http://localhost:5000/api/clients/filter?filterField=status&filterValue=in-progress`, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
+              },
+            })
+              .then(res => res.json())
+              .then(data => {
+                setClients(data.data || []);
+                setClientsLoading(false);
+              })
+              .catch(err => {
+                console.error(err);
+                setClientsLoading(false);
+              });
+          }}
+          className="bg-gradient-to-br from-amber-50 to-white border border-amber-100 rounded-2xl p-6 cursor-pointer hover:shadow-xl hover:border-amber-300 transition-all duration-300 group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-3xl font-black text-amber-700 mb-1">{overallStats.inProgress || 0}</div>
+              <div className="text-amber-600 font-semibold mb-1">In Progress</div>
+              <div className="text-sm text-amber-500">Active counseling</div>
+            </div>
+            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+              <RefreshCcw size={24} className="text-amber-600" />
+            </div>
+          </div>
+        </div>
+        
+        <div 
+          onClick={() => {
+            setSelectedDomain({ name: 'COMPLETED', icon: CheckCircle });
+            setCurrentView('clients');
+            setClientsLoading(true);
+            fetch(`http://localhost:5000/api/clients/filter?filterField=status&filterValue=completed`, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
+              },
+            })
+              .then(res => res.json())
+              .then(data => {
+                setClients(data.data || []);
+                setClientsLoading(false);
+              })
+              .catch(err => {
+                console.error(err);
+                setClientsLoading(false);
+              });
+          }}
+          className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 rounded-2xl p-6 cursor-pointer hover:shadow-xl hover:border-emerald-300 transition-all duration-300 group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-3xl font-black text-emerald-700 mb-1">{overallStats.completed || 0}</div>
+              <div className="text-emerald-600 font-semibold mb-1">Completed</div>
+              <div className="text-sm text-emerald-500">Finished counseling</div>
+            </div>
+            <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+              <CheckCircle size={24} className="text-emerald-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-3xl font-black text-slate-700 mb-1">{overallStats.total || 0}</div>
+              <div className="text-slate-600 font-semibold mb-1">Total Students</div>
+              <div className="text-sm text-slate-500">Across all domains</div>
+            </div>
+            <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
+              <TrendingUp size={24} className="text-slate-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* DOMAIN CARDS */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl font-black text-slate-800 mb-2">Specialization Domains</h2>
+            <p className="text-slate-500">Select a domain to explore courses and students</p>
+          </div>
+          <div className="text-sm text-slate-500 bg-slate-100 px-4 py-2 rounded-xl">
+            {loading ? "Loading..." : `${domainStats.length} domains available`}
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[1,2,3,4,5,6,7,8].map(i => (
+              <div key={i} className="bg-white rounded-2xl border border-slate-200 p-6 animate-pulse">
+                <div className="h-14 w-14 bg-slate-200 rounded-xl mb-5"></div>
+                <div className="h-6 bg-slate-200 rounded mb-2"></div>
+                <div className="h-4 bg-slate-200 rounded mb-8"></div>
+                <div className="h-10 bg-slate-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {domainStats.map((domain) => {
+              const domainInfo = counselorDomains.find(d => d.name === domain.domain);
+              const Icon = domainInfo?.icon || Stethoscope;
+              
+              return (
+                <div
+                  key={domain.domain}
+                  onClick={() => handleDomainClick(domain)}
+                  className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-blue-300 cursor-pointer relative transition-all duration-300 group"
+                >
+                  {/* NO NEW BADGE - REMOVED */}
+                  
+                  <div className="flex items-start justify-between mb-5">
+                    <div className={`w-14 h-14 rounded-xl ${domainInfo?.bgColor || 'bg-blue-50'} ${domainInfo?.color || 'text-blue-600'} flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform`}>
+                      <Icon size={24} />
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-black text-slate-800">{domain.total}</div>
+                      <div className="text-xs text-slate-500">Students</div>
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">{domain.domain}</h3>
+                  <p className="text-sm text-slate-600 mb-4">{domainInfo?.description || "Professional domain"}</p>
+                  
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                    <div className="flex items-center gap-2 text-sm text-blue-600 font-semibold group-hover:text-blue-700">
+                      View Details
+                      <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderDomainCourses = () => (
+    <div>
+      {/* HEADER */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleBackToDashboard}
+            className="p-3 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
+          >
+            <ChevronLeft size={22} />
+          </button>
+          <div>
+            <h2 className="text-3xl font-black text-slate-800 mb-2">{selectedDomain?.name} Courses</h2>
+            <p className="text-slate-500">Select a course to view enrolled students</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-100 px-4 py-2.5 rounded-xl">
+          <Home size={16} />
+          <span className="hover:text-blue-600 cursor-pointer" onClick={handleBackToDashboard}>Dashboard</span>
+          <ChevronRight size={16} />
+          <span className="font-semibold text-blue-600">{selectedDomain?.name}</span>
+        </div>
+      </div>
+
+      {/* COURSE CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {courseStats.length > 0 ? courseStats.map((course, index) => (
+          <div
+            key={index}
+            onClick={() => handleCourseClick(course)}
+            className="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm hover:shadow-xl hover:border-blue-400 cursor-pointer group relative transition-all duration-300"
+          >
+            {/* NO NEW BADGE - REMOVED */}
+            
+            <div className="flex items-center gap-4 mb-5">
+              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                <BookOpen size={22} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-800 group-hover:text-blue-700">{course.course}</h3>
+                <p className="text-sm text-slate-500">{selectedDomain?.name} Domain</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between pt-5 border-t border-slate-100">
+              <div className="text-sm text-slate-600">
+                {course.total} student{course.total !== 1 ? 's' : ''}
+              </div>
+              <div className="text-blue-600 font-semibold flex items-center gap-1 group-hover:text-blue-700">
+                View Students
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </div>
+        )) : (
+          <div className="col-span-3 text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
+            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <BookOpen size={32} className="text-slate-300" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-400 mb-2">No courses found</h3>
+            <p className="text-slate-400">No students enrolled in courses for {selectedDomain?.name}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderClients = () => (
+    <div>
+      {/* HEADER */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={selectedDomain?.stats ? handleBackToDomains : handleBackToDashboard}
+            className="p-3 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
+          >
+            <ChevronLeft size={22} />
+          </button>
+          <div>
+            <h2 className="text-3xl font-black text-slate-800 mb-2">
+              {selectedCourse ? `${selectedCourse.course} Students` : selectedDomain?.name || "Students"}
+            </h2>
+            <p className="text-slate-500">{clients.length} students found</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-100 px-4 py-2.5 rounded-xl">
+          <Home size={16} />
+          <span className="hover:text-blue-600 cursor-pointer" onClick={handleBackToDashboard}>Dashboard</span>
+          <ChevronRight size={16} />
+          {selectedDomain?.stats && (
+            <>
+              <span className="hover:text-blue-600 cursor-pointer" onClick={handleBackToDomains}>
+                {selectedDomain.name}
+              </span>
+              <ChevronRight size={16} />
+            </>
+          )}
+          <span className="font-semibold text-blue-600">
+            {selectedCourse ? selectedCourse.course : selectedDomain?.name}
+          </span>
+        </div>
+      </div>
+
+      {clientsLoading ? (
+        <div className="py-20 text-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-slate-500 font-medium">Loading students data...</p>
+        </div>
+      ) : clients.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {clients.map((client) => (
+            <div
+              key={client._id}
+              className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-blue-300 transition-all duration-300 group"
+            >
+              {/* CARD HEADER */}
+              <div className="flex items-start justify-between mb-5">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <div className="w-14 h-14 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center font-bold text-xl group-hover:bg-blue-50 transition-colors">
+                      {client.fullName?.charAt(0) || "U"}
+                    </div>
+                    {/* NO NEW BADGE - REMOVED */}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-800 text-lg group-hover:text-blue-700">{client.fullName}</h3>
+                    <p className="text-sm text-slate-500 flex items-center gap-1">
+                      <MapPin size={12} />
+                      {client.city || "Location not set"}
                     </p>
                   </div>
-                  <div className="flex gap-4">
-                    <button className="px-8 py-4 bg-blue-600 text-white font-black rounded-[1.5rem] hover:bg-blue-500 transition-all shadow-xl shadow-blue-900/40 flex items-center gap-2">
-                      Review Performance <ArrowRight size={20} />
-                    </button>
+                </div>
+                
+                <button
+                  onClick={() => setDeleteModal(client)}
+                  className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors opacity-0 group-hover:opacity-100"
+                  title="Delete Student"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
+
+              {/* CLIENT INFO */}
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Mail size={14} />
+                  </div>
+                  <div className="truncate">
+                    <div className="text-xs text-slate-500">Email</div>
+                    <div className="font-medium truncate">{client.email}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 bg-green-50 text-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Phone size={14} />
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-500">Phone</div>
+                    <div className="font-medium">{client.phone}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <GraduationCap size={14} />
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-500">Education</div>
+                    <div className="font-medium">{client.eduLevel}</div>
                   </div>
                 </div>
               </div>
 
-              <div className="mb-10">
-                <h2 className="text-3xl font-black text-slate-800 tracking-tight">Specialization Domains</h2>
-                <p className="text-slate-500 font-medium">Click a category to manage focused student data</p>
+              {/* STATUS & ACTION */}
+              <div className="pt-5 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${
+                      client.status === 'new' ? 'bg-blue-100 text-blue-600' :
+                      client.status === 'in-progress' ? 'bg-amber-100 text-amber-600' :
+                      'bg-emerald-100 text-emerald-600'
+                    }`}>
+                      {client.status?.toUpperCase()}
+                    </span>
+                    {/* NO NEW LABEL - REMOVED */}
+                  </div>
+                  <button
+                    onClick={() => handleClientClick(client)}
+                    className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm hover:shadow-md"
+                  >
+                    View Details
+                  </button>
+                </div>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {counselorCategories.map((category, idx) => {
-                  const Icon = category.icon;
-                  return (
-                    <motion.div
-                      key={category.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                      whileHover={{ y: -10, scale: 1.02 }}
-                      onClick={() => setSelectedDomain(category)}
-                      className="group bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm hover:shadow-2xl hover:border-blue-100 transition-all duration-500 cursor-pointer flex flex-col relative overflow-hidden"
-                    >
-                      <div className={`w-16 h-16 rounded-[1.5rem] ${category.bgColor} ${category.color} flex items-center justify-center mb-8 shadow-lg group-hover:rotate-12 transition-transform duration-500`}>
-                        <Icon size={24} />
-                      </div>
-                      <h3 className="text-2xl font-black text-slate-800 mb-3 group-hover:text-blue-600 transition-colors">{category.name}</h3>
-                      <p className="text-slate-400 font-medium text-sm leading-relaxed mb-8 flex-grow">{category.description}</p>
-                      <div className="flex items-center justify-between pt-6 border-t border-slate-50">
-                        <div className="flex items-center gap-2">
-                          <Star size={16} fill="currentColor" className="text-amber-400" />
-                          <span className="text-sm font-black text-slate-800">{category.stats.rating}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-blue-600 font-black text-xs uppercase tracking-widest group-hover:translate-x-2 transition-transform">
-                          Review Leads <ChevronRight size={18} />
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </motion.div>
-          ) : (
-            <StudentManagement key="management" domain={selectedDomain} onBack={() => setSelectedDomain(null)} />
-          )}
-        </AnimatePresence>
-      </div>
-
-      <footer className="container mx-auto px-6 py-12 mt-20 border-t border-slate-200">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-10">
-          <div className="flex items-center gap-3 opacity-50 grayscale hover:grayscale-0 transition-all cursor-pointer">
-            <div className="bg-slate-800 p-2 rounded-xl text-white">
-              <GraduationCap size={20} />
             </div>
-            <span className="text-xl font-black tracking-tighter">CounselorPro</span>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
+          <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Users size={32} className="text-slate-300" />
           </div>
-          <div className="flex items-center gap-8">
-            <button onClick={handleLogout} className="flex items-center gap-2 px-6 py-3 bg-red-50 text-red-600 font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-red-100 transition-all">
-              <LogOut size={16} /> Logout System
+          <h3 className="text-xl font-bold text-slate-400 mb-2">No students found</h3>
+          <p className="text-slate-400">
+            {selectedCourse ? `No students are enrolled in ${selectedCourse.course} course` : 'No students found'}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderClientDetail = () => {
+    if (!selectedClient) return null;
+
+    return (
+      <div>
+        {/* HEADER */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleBackToClients}
+              className="p-3 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
+            >
+              <ChevronLeft size={22} />
             </button>
+            <div>
+              <h2 className="text-3xl font-black text-slate-800 mb-2">Student Details</h2>
+              <p className="text-slate-500">Complete information about {selectedClient.fullName}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-100 px-4 py-2.5 rounded-xl">
+            <Home size={16} />
+            <span className="hover:text-blue-600 cursor-pointer" onClick={handleBackToDashboard}>Dashboard</span>
+            <ChevronRight size={16} />
+            {selectedDomain?.stats && (
+              <>
+                <span className="hover:text-blue-600 cursor-pointer" onClick={handleBackToDomains}>
+                  {selectedDomain.name}
+                </span>
+                <ChevronRight size={16} />
+              </>
+            )}
+            {selectedCourse && (
+              <>
+                <span className="hover:text-blue-600 cursor-pointer" onClick={handleBackToCourses}>
+                  {selectedCourse.course}
+                </span>
+                <ChevronRight size={16} />
+              </>
+            )}
+            <span className="font-semibold text-blue-600">{selectedClient.fullName?.split(' ')[0]}</span>
           </div>
         </div>
-      </footer>
+
+
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+    
+          <div className="bg-gradient-to-r from-blue-50 to-slate-50 p-8 border-b border-slate-200">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex items-center gap-6">
+                <div className="relative">
+                  <div className="w-24 h-24 bg-white border-4 border-white shadow-lg rounded-2xl flex items-center justify-center font-black text-3xl text-slate-700">
+                    {selectedClient.fullName?.charAt(0) || "U"}
+                  </div>
+               
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-slate-800 mb-2">{selectedClient.fullName}</h3>
+                  <div className="flex flex-wrap items-center gap-4 text-slate-600">
+                    <div className="flex items-center gap-2">
+                      <MapPin size={16} className="text-blue-500" />
+                      <span>{selectedClient.city}, {selectedClient.state}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <BookOpen size={16} className="text-purple-500" />
+                      <span className="font-semibold">{selectedClient.course}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setDeleteModal(selectedClient)}
+                  className="px-5 py-2.5 bg-red-50 text-red-600 font-semibold rounded-xl hover:bg-red-100 flex items-center gap-2 transition-colors"
+                >
+                  <Trash2 size={18} />
+                  Delete
+                </button>
+                <button className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm hover:shadow-md">
+                  Contact Now
+                </button>
+              </div>
+            </div>
+          </div>
+
+     
+          <div className="p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+        
+              <div className="space-y-6">
+                <h4 className="text-lg font-bold text-slate-800 border-b pb-3">Personal Information</h4>
+                <div className="space-y-5">
+                  <div>
+                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Email Address</div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
+                        <Mail size={18} />
+                      </div>
+                      <div className="font-medium truncate">{selectedClient.email}</div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Phone Number</div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-50 text-green-600 rounded-lg flex items-center justify-center">
+                        <Phone size={18} />
+                      </div>
+                      <div className="font-medium">{selectedClient.phone}</div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Date of Birth</div>
+                    <div className="font-medium text-slate-800">{formatDate(selectedClient.dob)}</div>
+                  </div>
+                </div>
+              </div>
+
+
+              <div className="space-y-6">
+                <h4 className="text-lg font-bold text-slate-800 border-b pb-3">Academic Information</h4>
+                <div className="space-y-5">
+                  <div>
+                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Education Level</div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center">
+                        <GraduationCap size={18} />
+                      </div>
+                      <div className="font-medium">{selectedClient.eduLevel}</div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Selected Course</div>
+                    <div className="font-medium text-blue-600 text-lg">{selectedClient.course}</div>
+                  </div>
+                  
+                  <div>
+                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Domain</div>
+                    <div className="font-medium">{selectedClient.domain}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* STATUS & ACTIONS */}
+              <div className="space-y-6">
+                <h4 className="text-lg font-bold text-slate-800 border-b pb-3">Status & Actions</h4>
+                <div className="space-y-5">
+                  <div>
+                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Current Status</div>
+                    <div className="flex gap-3">
+                      {['new', 'in-progress', 'completed'].map(status => (
+                        <button
+                          key={status}
+                          onClick={() => updateClientStatus(selectedClient._id, status)}
+                          className={`flex-1 py-3 rounded-xl text-sm font-bold uppercase transition-all ${
+                            selectedClient.status === status 
+                              ? status === 'new' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' :
+                                status === 'in-progress' ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md' :
+                                'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md'
+                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Joined Date</div>
+                    <div className="font-medium">{formatDateTime(selectedClient.createdAt)}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {selectedClient.message && (
+              <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl p-6 border border-slate-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <MessageSquare size={20} className="text-slate-400" />
+                  <h4 className="text-lg font-bold text-slate-700">Student's Message</h4>
+                </div>
+                <div className="text-slate-600 leading-relaxed bg-white p-5 rounded-xl border border-slate-200">
+                  "{selectedClient.message}"
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+
+  const renderDeleteModal = () => {
+    if (!deleteModal) return null;
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transform transition-all">
+          <div className="p-8">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
+                <Trash2 size={36} className="text-red-500" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-800 mb-3">Delete Student Record</h3>
+              <p className="text-slate-600 mb-2">
+                Are you sure you want to delete <span className="font-bold">{deleteModal.fullName}</span>?
+              </p>
+              <p className="text-sm text-slate-500 mb-8">
+                This action cannot be undone. All data will be permanently removed.
+              </p>
+              
+              <div className="flex gap-3 w-full">
+                <button
+                  onClick={() => setDeleteModal(null)}
+                  className="flex-1 py-3.5 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => deleteClient(deleteModal._id)}
+                  disabled={isDeleting}
+                  className="flex-1 py-3.5 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-xl hover:from-red-600 hover:to-red-700 transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+                >
+                  {isDeleting ? (
+                    <>
+                      <RefreshCcw size={18} className="animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 size={18} />
+                      Delete Permanently
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-slate-50 p-4 text-center border-t border-slate-200">
+            <p className="text-xs text-slate-500">
+              Student ID: {deleteModal._id?.substring(0, 8)}... • {deleteModal.course}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-800">
+ 
+
+
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        {currentView === 'dashboard' && renderDashboard()}
+        {currentView === 'domainCourses' && renderDomainCourses()}
+        {currentView === 'clients' && renderClients()}
+        {currentView === 'clientDetail' && renderClientDetail()}
+      </div>
+
+      {renderDeleteModal()}
+
+      <div className="border-t border-slate-200 bg-white py-8">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-center justify-between text-slate-500 text-sm gap-4">
+            <div>© 2026 CounselorPro. All rights reserved.</div>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <Database size={14} />
+                <span>Total Students: {overallStats.total}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Briefcase size={14} />
+                <span>Active Domains: {domainStats.length}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock size={14} />
+                <span>New Today: {overallStats.new}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
