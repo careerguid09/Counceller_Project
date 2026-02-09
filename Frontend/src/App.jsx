@@ -9,10 +9,12 @@ import CounselorDashboard from "./pages/Counselors/CounselorDashboard";
 import CoursePagesDashboard from "./pages/Services/CoursePagesDashboard";
 import CityTargetDashboard from "./pages/Services/CityTargetDashboard";
 import ProtectedCounselorRoute from "./components/ProtectedCounselorRoute";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <Router>
+      <ScrollToTop /> 
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <main className="flex-grow">

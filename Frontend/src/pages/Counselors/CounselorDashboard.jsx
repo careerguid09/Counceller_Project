@@ -7,6 +7,7 @@ import {
   Trash2, Users, ArrowRight, Home,
   TrendingUp, FileSpreadsheet, Database, Sparkles
 } from "lucide-react";
+import ScrollToTop from "../../components/ScrollToTop";
 
 const CounselorDashboard = () => {
   // ========== STATES ==========
@@ -582,6 +583,7 @@ const CounselorDashboard = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            
             {domainStats.map((domain) => {
               const domainInfo = counselorDomains.find(d => d.name === domain.domain);
               const Icon = domainInfo?.icon || Stethoscope;
@@ -592,6 +594,7 @@ const CounselorDashboard = () => {
                   onClick={() => handleDomainClick(domain)}
                   className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-blue-300 cursor-pointer relative transition-all duration-300 group"
                 >
+           
                   {/* NEW BADGE FOR DOMAIN */}
                   {domain.hasNew && (
                     <div className="absolute -top-2 -right-2 z-10">
@@ -635,6 +638,7 @@ const CounselorDashboard = () => {
 
   const renderDomainCourses = () => (
     <div>
+      <ScrollToTop/>
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
         <div className="flex items-center gap-4">
@@ -715,6 +719,7 @@ const CounselorDashboard = () => {
 
   const renderClients = () => (
     <div>
+      
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
         <div className="flex items-center gap-4">
@@ -765,6 +770,7 @@ const CounselorDashboard = () => {
                 onClick={() => handleClientClick(client)}
                 className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-blue-300 cursor-pointer transition-all duration-300 group relative"
               >
+                   <ScrollToTop/>
                 {/* NEW BADGE FOR STUDENT */}
                 {isNewStudent && (
                   <div className="absolute -top-2 -right-2 z-10">
@@ -886,6 +892,7 @@ const CounselorDashboard = () => {
 
     return (
       <div>
+        <ScrollToTop />
         {/* HEADER */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
           <div className="flex items-center gap-4">
