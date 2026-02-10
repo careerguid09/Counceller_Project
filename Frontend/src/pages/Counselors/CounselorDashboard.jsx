@@ -5,7 +5,7 @@ import {
   Clock, LogOut, ChevronRight, MapPin, CheckCircle,
   ChevronLeft, Mail, Phone, MessageSquare, RefreshCcw,
   Trash2, Users, ArrowRight, Home,
-  TrendingUp, FileSpreadsheet, Database
+  TrendingUp, FileSpreadsheet, Database, Sparkles
 } from "lucide-react";
 
 const CounselorDashboard = () => {
@@ -107,7 +107,77 @@ const CounselorDashboard = () => {
     }
   };
 
+  // Function to mark domain as viewed
+  const markDomainAsViewed = async (domainName) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/clients/domain/viewed/${domainName}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
+        },
+      });
+      
+      if (res.ok) {
+        // Update local state
+        fetchDomainStats();
+      }
+    } catch (err) {
+      console.error("Failed to mark domain as viewed:", err);
+    }
+  };
+
+  // Function to mark course as viewed
+  const markCourseAsViewed = async (courseName) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/clients/course/viewed/${encodeURIComponent(courseName)}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
+        },
+      });
+      
+      if (res.ok) {
+        // Update course stats
+        if (selectedDomain) {
+          fetchCourseStats(selectedDomain.name);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to mark course as viewed:", err);
+    }
+  };
+
+  // Function to mark student as viewed
+  const markStudentAsViewed = async (clientId) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/clients/student/viewed/${clientId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
+        },
+      });
+      
+      if (res.ok) {
+        // Update local state
+        setClients(prev =>
+          prev.map(c => c._id === clientId ? { ...c, studentViewed: true, isNew: false } : c)
+        );
+        
+        if (selectedClient && selectedClient._id === clientId) {
+          setSelectedClient(prev => ({ ...prev, studentViewed: true, isNew: false }));
+        }
+      }
+    } catch (err) {
+      console.error("Failed to mark student as viewed:", err);
+    }
+  };
+
   const handleDomainClick = async (domain) => {
+    // Mark domain as viewed when clicked
+    if (domain.hasNew) {
+      await markDomainAsViewed(domain.domain);
+    }
+    
     const domainInfo = counselorDomains.find(d => d.name === domain.domain) || counselorDomains[0];
     setSelectedDomain({ ...domainInfo, stats: domain });
     
@@ -119,6 +189,11 @@ const CounselorDashboard = () => {
   };
 
   const handleCourseClick = async (course) => {
+    // Mark course as viewed when clicked
+    if (course.hasNew) {
+      await markCourseAsViewed(course.course);
+    }
+    
     setSelectedCourse(course);
     setClientsLoading(true);
     try {
@@ -149,7 +224,12 @@ const CounselorDashboard = () => {
   };
 
   const handleClientClick = async (client) => {
-    setSelectedClient(client);
+    // Mark student as viewed when clicked
+    if (client.isNew && !client.studentViewed) {
+      await markStudentAsViewed(client._id);
+    }
+    
+    setSelectedClient({...client, studentViewed: true, isNew: false});
     setCurrentView('clientDetail');
   };
 
@@ -287,9 +367,21 @@ const CounselorDashboard = () => {
     return date.toLocaleDateString('en-IN') + ' ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
   };
 
+  // Check if student is new (within last 7 days and not viewed)
+  const isStudentNew = (student) => {
+    if (!student.newAt) return false;
+    if (student.studentViewed) return false;
+    
+    const newAt = new Date(student.newAt);
+    const now = new Date();
+    const daysDiff = (now - newAt) / (1000 * 60 * 60 * 24);
+    
+    return daysDiff <= 7 && student.isNew;
+  };
+
   const renderDashboard = () => (
     <div>
-
+      {/* WELCOME BANNER */}
       <div className="bg-gradient-to-r from-slate-900 to-blue-900 rounded-3xl p-8 mb-10 text-white shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-800/20 rounded-full -translate-y-32 translate-x-32"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-800/20 rounded-full translate-y-24 -translate-x-24"></div>
@@ -299,6 +391,11 @@ const CounselorDashboard = () => {
             <h1 className="text-4xl font-black mb-4">Welcome back, {counselorProfile?.name}!</h1>
             <p className="text-blue-200 text-lg">
               Manage {overallStats.total} students across {domainStats.length} domains.
+              {overallStats.new > 0 && (
+                <span className="ml-2 bg-gradient-to-r from-pink-600 to-red-500 px-3 py-1 rounded-full text-sm font-bold">
+                  {overallStats.new} NEW STUDENTS
+                </span>
+              )}
             </p>
           </div>
           <div className="flex flex-col items-end gap-3">
@@ -333,7 +430,7 @@ const CounselorDashboard = () => {
         </div>
       </div>
 
-      {/* STATUS SUMMARY CARDS */}
+      {/* STATUS SUMMARY CARDS - YEH ADD KIYA HAI */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
         <div 
           onClick={() => {
@@ -355,8 +452,17 @@ const CounselorDashboard = () => {
                 setClientsLoading(false);
               });
           }}
-          className="bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-2xl p-6 cursor-pointer hover:shadow-xl hover:border-blue-300 transition-all duration-300 group"
+          className="bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-2xl p-6 cursor-pointer hover:shadow-xl hover:border-blue-300 transition-all duration-300 group relative"
         >
+          {overallStats.new > 0 && (
+            <div className="absolute -top-2 -right-2">
+              <div className="bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse flex items-center gap-1">
+                <Sparkles size={10} />
+                NEW
+              </div>
+            </div>
+          )}
+          
           <div className="flex items-center justify-between">
             <div>
               <div className="text-3xl font-black text-blue-700 mb-1">{overallStats.new || 0}</div>
@@ -486,7 +592,15 @@ const CounselorDashboard = () => {
                   onClick={() => handleDomainClick(domain)}
                   className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-blue-300 cursor-pointer relative transition-all duration-300 group"
                 >
-                  {/* NO NEW BADGE - REMOVED */}
+                  {/* NEW BADGE FOR DOMAIN */}
+                  {domain.hasNew && (
+                    <div className="absolute -top-2 -right-2 z-10">
+                      <div className="bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse flex items-center gap-1">
+                        <Sparkles size={10} />
+                        NEW
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="flex items-start justify-between mb-5">
                     <div className={`w-14 h-14 rounded-xl ${domainInfo?.bgColor || 'bg-blue-50'} ${domainInfo?.color || 'text-blue-600'} flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform`}>
@@ -506,6 +620,9 @@ const CounselorDashboard = () => {
                       View Details
                       <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
                     </div>
+                    {domain.hasNew && (
+                      <div className="w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
+                    )}
                   </div>
                 </div>
               );
@@ -548,7 +665,15 @@ const CounselorDashboard = () => {
             onClick={() => handleCourseClick(course)}
             className="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm hover:shadow-xl hover:border-blue-400 cursor-pointer group relative transition-all duration-300"
           >
-            {/* NO NEW BADGE - REMOVED */}
+            {/* NEW BADGE FOR COURSE */}
+            {course.hasNew && (
+              <div className="absolute -top-2 -right-2 z-10">
+                <div className="bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse flex items-center gap-1">
+                  <Sparkles size={10} />
+                  NEW
+                </div>
+              </div>
+            )}
             
             <div className="flex items-center gap-4 mb-5">
               <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
@@ -563,6 +688,11 @@ const CounselorDashboard = () => {
             <div className="flex items-center justify-between pt-5 border-t border-slate-100">
               <div className="text-sm text-slate-600">
                 {course.total} student{course.total !== 1 ? 's' : ''}
+                {course.hasNew && (
+                  <span className="ml-2 text-red-500 font-semibold">
+                    • {course.new} new
+                  </span>
+                )}
               </div>
               <div className="text-blue-600 font-semibold flex items-center gap-1 group-hover:text-blue-700">
                 View Students
@@ -626,94 +756,114 @@ const CounselorDashboard = () => {
         </div>
       ) : clients.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {clients.map((client) => (
-            <div
-              key={client._id}
-              className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-blue-300 transition-all duration-300 group"
-            >
-              {/* CARD HEADER */}
-              <div className="flex items-start justify-between mb-5">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <div className="w-14 h-14 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center font-bold text-xl group-hover:bg-blue-50 transition-colors">
-                      {client.fullName?.charAt(0) || "U"}
+          {clients.map((client) => {
+            const isNewStudent = isStudentNew(client);
+            
+            return (
+              <div
+                key={client._id}
+                onClick={() => handleClientClick(client)}
+                className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-blue-300 cursor-pointer transition-all duration-300 group relative"
+              >
+                {/* NEW BADGE FOR STUDENT */}
+                {isNewStudent && (
+                  <div className="absolute -top-2 -right-2 z-10">
+                    <div className="bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse flex items-center gap-1">
+                      <Sparkles size={10} />
+                      NEW
                     </div>
-                    {/* NO NEW BADGE - REMOVED */}
                   </div>
-                  <div>
-                    <h3 className="font-bold text-slate-800 text-lg group-hover:text-blue-700">{client.fullName}</h3>
-                    <p className="text-sm text-slate-500 flex items-center gap-1">
-                      <MapPin size={12} />
-                      {client.city || "Location not set"}
-                    </p>
-                  </div>
-                </div>
+                )}
                 
-                <button
-                  onClick={() => setDeleteModal(client)}
-                  className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors opacity-0 group-hover:opacity-100"
-                  title="Delete Student"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
-
-              {/* CLIENT INFO */}
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-3 text-sm">
-                  <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Mail size={14} />
+                {/* CARD HEADER */}
+                <div className="flex items-start justify-between mb-5">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <div className="w-14 h-14 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center font-bold text-xl group-hover:bg-blue-50 transition-colors">
+                        {client.fullName?.charAt(0) || "U"}
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-800 text-lg group-hover:text-blue-700">{client.fullName}</h3>
+                      <p className="text-sm text-slate-500 flex items-center gap-1">
+                        <MapPin size={12} />
+                        {client.city || "Location not set"}
+                      </p>
+                    </div>
                   </div>
-                  <div className="truncate">
-                    <div className="text-xs text-slate-500">Email</div>
-                    <div className="font-medium truncate">{client.email}</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 text-sm">
-                  <div className="w-8 h-8 bg-green-50 text-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Phone size={14} />
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-500">Phone</div>
-                    <div className="font-medium">{client.phone}</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 text-sm">
-                  <div className="w-8 h-8 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <GraduationCap size={14} />
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-500">Education</div>
-                    <div className="font-medium">{client.eduLevel}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* STATUS & ACTION */}
-              <div className="pt-5 border-t border-slate-100">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${
-                      client.status === 'new' ? 'bg-blue-100 text-blue-600' :
-                      client.status === 'in-progress' ? 'bg-amber-100 text-amber-600' :
-                      'bg-emerald-100 text-emerald-600'
-                    }`}>
-                      {client.status?.toUpperCase()}
-                    </span>
-                    {/* NO NEW LABEL - REMOVED */}
-                  </div>
+                  
                   <button
-                    onClick={() => handleClientClick(client)}
-                    className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm hover:shadow-md"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeleteModal(client);
+                    }}
+                    className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors opacity-0 group-hover:opacity-100"
+                    title="Delete Student"
                   >
-                    View Details
+                    <Trash2 size={18} />
                   </button>
                 </div>
+
+                {/* CLIENT INFO */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-3 text-sm">
+                    <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Mail size={14} />
+                    </div>
+                    <div className="truncate">
+                      <div className="text-xs text-slate-500">Email</div>
+                      <div className="font-medium truncate">{client.email}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-sm">
+                    <div className="w-8 h-8 bg-green-50 text-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Phone size={14} />
+                    </div>
+                    <div>
+                      <div className="text-xs text-slate-500">Phone</div>
+                      <div className="font-medium">{client.phone}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-sm">
+                    <div className="w-8 h-8 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <GraduationCap size={14} />
+                    </div>
+                    <div>
+                      <div className="text-xs text-slate-500">Education</div>
+                      <div className="font-medium">{client.eduLevel}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* STATUS & ACTION */}
+                <div className="pt-5 border-t border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${
+                        client.status === 'new' ? 'bg-blue-100 text-blue-600' :
+                        client.status === 'in-progress' ? 'bg-amber-100 text-amber-600' :
+                        'bg-emerald-100 text-emerald-600'
+                      }`}>
+                        {client.status?.toUpperCase()}
+                      </span>
+                      {isNewStudent && (
+                        <span className="text-xs text-red-500 font-bold flex items-center gap-1">
+                          <Sparkles size={10} />
+                          UNSEEN
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-blue-600 font-semibold text-sm flex items-center gap-1">
+                      View Details
+                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
@@ -731,6 +881,8 @@ const CounselorDashboard = () => {
 
   const renderClientDetail = () => {
     if (!selectedClient) return null;
+
+    const isNewStudent = isStudentNew(selectedClient);
 
     return (
       <div>
@@ -772,9 +924,9 @@ const CounselorDashboard = () => {
           </div>
         </div>
 
-
+        {/* MAIN CONTENT */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-    
+          {/* PROFILE HEADER */}
           <div className="bg-gradient-to-r from-blue-50 to-slate-50 p-8 border-b border-slate-200">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center gap-6">
@@ -782,7 +934,15 @@ const CounselorDashboard = () => {
                   <div className="w-24 h-24 bg-white border-4 border-white shadow-lg rounded-2xl flex items-center justify-center font-black text-3xl text-slate-700">
                     {selectedClient.fullName?.charAt(0) || "U"}
                   </div>
-               
+                  {/* NEW BADGE ON PROFILE */}
+                  {isNewStudent && (
+                    <div className="absolute -top-2 -right-2">
+                      <div className="bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg animate-pulse flex items-center gap-2">
+                        <Sparkles size={12} />
+                        NEW STUDENT
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <h3 className="text-2xl font-black text-slate-800 mb-2">{selectedClient.fullName}</h3>
@@ -814,10 +974,10 @@ const CounselorDashboard = () => {
             </div>
           </div>
 
-     
+          {/* DETAILS SECTION */}
           <div className="p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
-        
+              {/* PERSONAL INFO */}
               <div className="space-y-6">
                 <h4 className="text-lg font-bold text-slate-800 border-b pb-3">Personal Information</h4>
                 <div className="space-y-5">
@@ -848,7 +1008,7 @@ const CounselorDashboard = () => {
                 </div>
               </div>
 
-
+              {/* ACADEMIC INFO */}
               <div className="space-y-6">
                 <h4 className="text-lg font-bold text-slate-800 border-b pb-3">Academic Information</h4>
                 <div className="space-y-5">
@@ -902,6 +1062,12 @@ const CounselorDashboard = () => {
                   <div>
                     <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Joined Date</div>
                     <div className="font-medium">{formatDateTime(selectedClient.createdAt)}</div>
+                    {isNewStudent && (
+                      <div className="text-sm text-red-500 font-bold mt-1 flex items-center gap-1">
+                        <Sparkles size={12} />
+                        New student
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -924,7 +1090,7 @@ const CounselorDashboard = () => {
     );
   };
 
-
+  // Render Delete Modal
   const renderDeleteModal = () => {
     if (!deleteModal) return null;
 
@@ -982,12 +1148,9 @@ const CounselorDashboard = () => {
     );
   };
 
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-800">
- 
-
-
+      {/* MAIN CONTENT */}
       <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-10">
         {currentView === 'dashboard' && renderDashboard()}
         {currentView === 'domainCourses' && renderDomainCourses()}
@@ -997,6 +1160,7 @@ const CounselorDashboard = () => {
 
       {renderDeleteModal()}
 
+      {/* FOOTER */}
       <div className="border-t border-slate-200 bg-white py-8">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between text-slate-500 text-sm gap-4">

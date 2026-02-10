@@ -1,4 +1,4 @@
-// Backend/config/db.js
+
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
@@ -7,7 +7,7 @@ const connectDB = async () => {
     console.log(" MongoDB Connected Successfully!");
   } catch (error) {
     console.error(" MongoDB Connection Failed:", error.message);
-    // Don't exit in production, but retry
+
     if (process.env.NODE_ENV === 'development') {
       console.log("  Running in development mode without MongoDB");
     }

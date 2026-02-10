@@ -1,0 +1,18 @@
+[
+  {
+    "timestamp": "10:49:50 pm",
+    "type": "SENT",
+    "userEmail": "kunallokhande3969@gmail.com",
+    "userName": "Kunal Lokhande",
+    "messageId": "<61997279-0969-8ebb-56b1-10a9a5ffa036@gmail.com>",
+    "duration": "5459ms"
+  },
+  {
+    "timestamp": "11:16:52 pm",
+    "type": "SENT",
+    "userEmail": "kunallokhande3969@gmail.com",
+    "userName": "Kunal Lokhande",
+    "messageId": "<f3a7f23e-4a3c-231c-1ce4-9eea26e06190@gmail.com>",
+    "duration": "4182ms"
+  }
+]

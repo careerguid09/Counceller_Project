@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 
 const clientSchema = new mongoose.Schema(
@@ -57,8 +58,34 @@ const clientSchema = new mongoose.Schema(
       enum: ["new", "in-progress", "completed"],
       default: "new",
     },
+
+    isNew: {
+      type: Boolean,
+      default: true
+    },
+    domainViewed: {
+      type: Boolean,
+      default: false
+    },
+    courseViewed: {
+      type: Boolean,
+      default: false
+    },
+    studentViewed: {
+      type: Boolean,
+      default: false
+    },
+    newAt: {
+      type: Date,
+      default: Date.now
+    }
   },
   { timestamps: true }
 );
+
+
+clientSchema.index({ domain: 1, domainViewed: 1, newAt: 1 });
+clientSchema.index({ course: 1, courseViewed: 1, newAt: 1 });
+clientSchema.index({ studentViewed: 1, isNew: 1, newAt: 1 });
 
 module.exports = mongoose.model("Client", clientSchema);

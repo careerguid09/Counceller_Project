@@ -7,7 +7,17 @@ const { sendCareerEmail } = require("../config/emailConfig");
 ================================ */
 exports.createClient = async (req, res) => {
   try {
-    const client = await Client.create(req.body);
+    // Add new tracking fields
+    const clientData = {
+      ...req.body,
+      isNew: true,
+      domainViewed: false,
+      courseViewed: false,
+      studentViewed: false,
+      newAt: new Date()
+    };
+    
+    const client = await Client.create(clientData);
     
     res.status(201).json({ 
       success: true, 
@@ -309,53 +319,246 @@ exports.exportClientsToExcel = async (req, res) => {
   }
 };
 
-exports.getClientsByDynamicFilter = async (req, res) => {
+/* ===============================
+   MARK DOMAIN AS VIEWED
+================================ */
+exports.markDomainAsViewed = async (req, res) => {
   try {
-    const { filterField, filterValue } = req.query;
+    const { domain } = req.params;
     
-    if (!filterField || !filterValue) {
-      return res.status(400).json({
+    // Update all students in this domain
+    await Client.updateMany(
+      { domain, domainViewed: false },
+      { domainViewed: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Domain marked as viewed"
+    });
+
+  } catch (error) {
+    console.error("Mark domain as viewed error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+/* ===============================
+   MARK COURSE AS VIEWED
+================================ */
+exports.markCourseAsViewed = async (req, res) => {
+  try {
+    const { course } = req.params;
+    
+    // Update all students in this course
+    await Client.updateMany(
+      { course, courseViewed: false },
+      { courseViewed: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Course marked as viewed"
+    });
+
+  } catch (error) {
+    console.error("Mark course as viewed error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+/* ===============================
+   MARK STUDENT AS VIEWED
+================================ */
+exports.markStudentAsViewed = async (req, res) => {
+  try {
+    const { clientId } = req.params;
+    
+    const client = await Client.findByIdAndUpdate(
+      clientId,
+      { 
+        studentViewed: true,
+        isNew: false 
+      },
+      { new: true }
+    );
+
+    if (!client) {
+      return res.status(404).json({
         success: false,
-        message: "filterField and filterValue are required"
+        message: "Client not found"
       });
     }
 
-    // Allowed filter fields
-    const allowedFields = [
-      "domain", "status", "eduLevel", 
-      "country", "state", "city", "course"
+    res.status(200).json({
+      success: true,
+      message: "Student marked as viewed"
+    });
+
+  } catch (error) {
+    console.error("Mark student as viewed error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+/* ===============================
+   GET DOMAIN STATS WITH NEW COUNT
+================================ */
+exports.getDomainStats = async (req, res) => {
+  try {
+    const domains = [
+      "MEDICAL", "PHARMACY", "NURSING", "PARAMEDICAL",
+      "ENGINEERING", "MANAGEMENT", "GRADUATION", 
+      "POST GRADUATION", "VOCATIONAL", "LANGUAGES",
+      "AGRICULTURE", "EDUCATION"
     ];
+
+    const stats = [];
     
-    if (!allowedFields.includes(filterField)) {
-      return res.status(400).json({
-        success: false,
-        message: `Invalid filter field. Allowed: ${allowedFields.join(', ')}`
+    for (const domain of domains) {
+      const total = await Client.countDocuments({ domain });
+      const newCount = await Client.countDocuments({ 
+        domain, 
+        domainViewed: false,
+        newAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } // Last 7 days
+      });
+      const inProgress = await Client.countDocuments({ domain, status: 'in-progress' });
+      const completed = await Client.countDocuments({ domain, status: 'completed' });
+      
+      stats.push({
+        domain,
+        total,
+        new: newCount,
+        inProgress,
+        completed,
+        hasNew: newCount > 0
       });
     }
 
-    const query = {};
-    query[filterField] = filterValue;
+    // Overall stats
+    const totalStudents = await Client.countDocuments();
+    const totalNew = await Client.countDocuments({ 
+      domainViewed: false,
+      newAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+    });
+    const totalInProgress = await Client.countDocuments({ status: 'in-progress' });
+    const totalCompleted = await Client.countDocuments({ status: 'completed' });
 
-    const clients = await Client.find(query)
-      .select('fullName email phone domain status eduLevel city course dob age message createdAt')
+    res.status(200).json({
+      success: true,
+      domainStats: stats,
+      overallStats: {
+        total: totalStudents,
+        new: totalNew,
+        inProgress: totalInProgress,
+        completed: totalCompleted
+      }
+    });
+
+  } catch (error) {
+    console.error("Domain stats error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+/* ===============================
+   GET COURSE STATS WITH NEW COUNT
+================================ */
+exports.getCourseStats = async (req, res) => {
+  try {
+    const { domain } = req.params;
+    
+    if (!domain) {
+      return res.status(400).json({
+        success: false,
+        message: "Domain is required"
+      });
+    }
+
+    // Get all unique courses in this domain
+    const courses = await Client.distinct("course", { domain });
+    
+    const courseStats = [];
+    
+    for (const course of courses) {
+      if (course) {
+        const total = await Client.countDocuments({ domain, course });
+        const newCount = await Client.countDocuments({ 
+          domain, 
+          course, 
+          courseViewed: false,
+          newAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+        });
+        
+        courseStats.push({
+          course,
+          total,
+          new: newCount,
+          hasNew: newCount > 0
+        });
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      domain,
+      courseStats
+    });
+
+  } catch (error) {
+    console.error("Course stats error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+/* ===============================
+   GET CLIENTS BY COURSE WITH VIEW STATUS
+================================ */
+exports.getClientsByCourse = async (req, res) => {
+  try {
+    const { course } = req.params;
+    
+    if (!course) {
+      return res.status(400).json({
+        success: false,
+        message: "Course name is required"
+      });
+    }
+
+    const clients = await Client.find({ course })
+      .select('fullName email phone domain status eduLevel city course dob age message createdAt domainViewed courseViewed studentViewed isNew newAt')
       .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
       count: clients.length,
+      course: course,
       data: clients
     });
 
   } catch (error) {
-    console.error("Dynamic filter error:", error);
+    console.error("Get clients by course error:", error);
     res.status(500).json({
       success: false,
-      message: "Server error",
-      error: error.message
+      message: "Server error"
     });
   }
 };
-
 
 /* ===============================
    GET CLIENTS BY DYNAMIC FILTER
@@ -384,7 +587,7 @@ exports.getClientsByDynamicFilter = async (req, res) => {
     query[filterField] = filterValue;
 
     const clients = await Client.find(query)
-      .select('fullName email phone domain status eduLevel city course dob age message createdAt')
+      .select('fullName email phone domain status eduLevel city course dob age message createdAt domainViewed courseViewed studentViewed isNew newAt')
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -395,392 +598,6 @@ exports.getClientsByDynamicFilter = async (req, res) => {
 
   } catch (error) {
     console.error("Dynamic filter error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message
-    });
-  }
-};
-
-/* ===============================
-   GET CLIENTS BY COURSE (NEW)
-================================ */
-exports.getClientsByCourse = async (req, res) => {
-  try {
-    const { course } = req.params;
-    
-    if (!course) {
-      return res.status(400).json({
-        success: false,
-        message: "Course name is required"
-      });
-    }
-
-    const clients = await Client.find({ course })
-      .select('fullName email phone domain status eduLevel city course dob age message createdAt')
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      count: clients.length,
-      course: course,
-      data: clients
-    });
-
-  } catch (error) {
-    console.error("Get clients by course error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message
-    });
-  }
-};
-
-/* ===============================
-   GET DOMAIN STATS (NEW)
-================================ */
-exports.getDomainStats = async (req, res) => {
-  try {
-    const domains = [
-      "MEDICAL", "PHARMACY", "NURSING", "PARAMEDICAL",
-      "ENGINEERING", "MANAGEMENT", "GRADUATION", 
-      "POST GRADUATION", "VOCATIONAL", "LANGUAGES",
-      "AGRICULTURE", "EDUCATION"
-    ];
-
-    const stats = [];
-    
-    for (const domain of domains) {
-      const total = await Client.countDocuments({ domain });
-      const newCount = await Client.countDocuments({ domain, status: 'new' });
-      const inProgress = await Client.countDocuments({ domain, status: 'in-progress' });
-      const completed = await Client.countDocuments({ domain, status: 'completed' });
-      
-      stats.push({
-        domain,
-        total,
-        new: newCount,
-        inProgress,
-        completed
-      });
-    }
-
-    // Overall stats
-    const totalStudents = await Client.countDocuments();
-    const totalNew = await Client.countDocuments({ status: 'new' });
-    const totalInProgress = await Client.countDocuments({ status: 'in-progress' });
-    const totalCompleted = await Client.countDocuments({ status: 'completed' });
-
-    res.status(200).json({
-      success: true,
-      domainStats: stats,
-      overallStats: {
-        total: totalStudents,
-        new: totalNew,
-        inProgress: totalInProgress,
-        completed: totalCompleted
-      }
-    });
-
-  } catch (error) {
-    console.error("Domain stats error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
-  }
-};
-
-/* ===============================
-   GET COURSE STATS (NEW)
-================================ */
-exports.getCourseStats = async (req, res) => {
-  try {
-    const { domain } = req.params;
-    
-    if (!domain) {
-      return res.status(400).json({
-        success: false,
-        message: "Domain is required"
-      });
-    }
-
-    // Get all unique courses in this domain
-    const courses = await Client.distinct("course", { domain });
-    
-    const courseStats = [];
-    
-    for (const course of courses) {
-      if (course) { // Skip empty/null courses
-        const total = await Client.countDocuments({ domain, course });
-        const newCount = await Client.countDocuments({ domain, course, status: 'new' });
-        
-        courseStats.push({
-          course,
-          total,
-          new: newCount
-        });
-      }
-    }
-
-    res.status(200).json({
-      success: true,
-      domain,
-      courseStats
-    });
-
-  } catch (error) {
-    console.error("Course stats error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
-  }
-};
-
-/* ===============================
-   MARK AS VIEWED (NEW)
-================================ */
-exports.markAsViewed = async (req, res) => {
-  try {
-    const { clientId } = req.params;
-    
-    const client = await Client.findById(clientId);
-    if (!client) {
-      return res.status(404).json({
-        success: false,
-        message: "Client not found"
-      });
-    }
-
-    // Add viewed flag or update status
-    client.viewed = true;
-    await client.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Marked as viewed"
-    });
-
-  } catch (error) {
-    console.error("Mark as viewed error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
-  }
-};
-
-
-/* ===============================
-   GET DOMAIN STATS (NEW)
-================================ */
-exports.getDomainStats = async (req, res) => {
-  try {
-    const domains = [
-      "MEDICAL", "PHARMACY", "NURSING", "PARAMEDICAL",
-      "ENGINEERING", "MANAGEMENT", "GRADUATION", 
-      "POST GRADUATION", "VOCATIONAL", "LANGUAGES",
-      "AGRICULTURE", "EDUCATION"
-    ];
-
-    const stats = [];
-    
-    for (const domain of domains) {
-      const total = await Client.countDocuments({ domain });
-      const newCount = await Client.countDocuments({ domain, status: 'new' });
-      const inProgress = await Client.countDocuments({ domain, status: 'in-progress' });
-      const completed = await Client.countDocuments({ domain, status: 'completed' });
-      
-      stats.push({
-        domain,
-        total,
-        new: newCount,
-        inProgress,
-        completed
-      });
-    }
-
-    // Overall stats
-    const totalStudents = await Client.countDocuments();
-    const totalNew = await Client.countDocuments({ status: 'new' });
-    const totalInProgress = await Client.countDocuments({ status: 'in-progress' });
-    const totalCompleted = await Client.countDocuments({ status: 'completed' });
-
-    res.status(200).json({
-      success: true,
-      domainStats: stats,
-      overallStats: {
-        total: totalStudents,
-        new: totalNew,
-        inProgress: totalInProgress,
-        completed: totalCompleted
-      }
-    });
-
-  } catch (error) {
-    console.error("Domain stats error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
-  }
-};
-
-/* ===============================
-   GET COURSE STATS (NEW)
-================================ */
-exports.getCourseStats = async (req, res) => {
-  try {
-    const { domain } = req.params;
-    
-    if (!domain) {
-      return res.status(400).json({
-        success: false,
-        message: "Domain is required"
-      });
-    }
-
-    // Get all unique courses in this domain
-    const courses = await Client.distinct("course", { domain });
-    
-    const courseStats = [];
-    
-    for (const course of courses) {
-      if (course) {
-        const total = await Client.countDocuments({ domain, course });
-        const newCount = await Client.countDocuments({ domain, course, status: 'new' });
-        
-        courseStats.push({
-          course,
-          total,
-          new: newCount
-        });
-      }
-    }
-
-    res.status(200).json({
-      success: true,
-      domain,
-      courseStats
-    });
-
-  } catch (error) {
-    console.error("Course stats error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
-  }
-};
-
-/* ===============================
-   MARK AS VIEWED (NEW)
-================================ */
-exports.markAsViewed = async (req, res) => {
-  try {
-    const { clientId } = req.params;
-    
-    const client = await Client.findById(clientId);
-    if (!client) {
-      return res.status(404).json({
-        success: false,
-        message: "Client not found"
-      });
-    }
-
-    // Add viewed flag
-    client.viewed = true;
-    await client.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Marked as viewed"
-    });
-
-  } catch (error) {
-    console.error("Mark as viewed error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
-  }
-};
-
-/* ===============================
-   GET CLIENTS BY DYNAMIC FILTER (NEW)
-================================ */
-exports.getClientsByDynamicFilter = async (req, res) => {
-  try {
-    const { filterField, filterValue } = req.query;
-    
-    if (!filterField || !filterValue) {
-      return res.status(400).json({
-        success: false,
-        message: "filterField and filterValue are required"
-      });
-    }
-
-    const allowedFields = ["domain", "status", "eduLevel", "country", "state", "city", "course"];
-    
-    if (!allowedFields.includes(filterField)) {
-      return res.status(400).json({
-        success: false,
-        message: `Invalid filter field. Allowed: ${allowedFields.join(', ')}`
-      });
-    }
-
-    const query = {};
-    query[filterField] = filterValue;
-
-    const clients = await Client.find(query)
-      .select('fullName email phone domain status eduLevel city course dob age message createdAt viewed')
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      count: clients.length,
-      data: clients
-    });
-
-  } catch (error) {
-    console.error("Dynamic filter error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
-  }
-};
-
-/* ===============================
-   GET CLIENTS BY COURSE (NEW)
-================================ */
-exports.getClientsByCourse = async (req, res) => {
-  try {
-    const { course } = req.params;
-    
-    if (!course) {
-      return res.status(400).json({
-        success: false,
-        message: "Course name is required"
-      });
-    }
-
-    const clients = await Client.find({ course })
-      .select('fullName email phone domain status eduLevel city course dob age message createdAt viewed')
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      count: clients.length,
-      course: course,
-      data: clients
-    });
-
-  } catch (error) {
-    console.error("Get clients by course error:", error);
     res.status(500).json({
       success: false,
       message: "Server error"
@@ -807,7 +624,11 @@ exports.getDashboardStats = async (req, res) => {
     
     for (const domain of domains) {
       const total = await Client.countDocuments({ domain });
-      const newCount = await Client.countDocuments({ domain, status: 'new' });
+      const newCount = await Client.countDocuments({ 
+        domain, 
+        domainViewed: false,
+        newAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+      });
       const inProgress = await Client.countDocuments({ domain, status: 'in-progress' });
       const completed = await Client.countDocuments({ domain, status: 'completed' });
       
@@ -820,7 +641,8 @@ exports.getDashboardStats = async (req, res) => {
         total,
         new: newCount,
         inProgress,
-        completed
+        completed,
+        hasNew: newCount > 0
       });
     }
 
@@ -859,6 +681,179 @@ exports.getDashboardStats = async (req, res) => {
 
   } catch (error) {
     console.error("Dashboard stats error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+/* ===============================
+   GET RECENT NEW STUDENTS
+================================ */
+exports.getRecentNewStudents = async (req, res) => {
+  try {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    
+    const newStudents = await Client.find({
+      newAt: { $gte: sevenDaysAgo },
+      domainViewed: false
+    })
+    .select('fullName email phone domain course status newAt domainViewed courseViewed studentViewed')
+    .sort({ newAt: -1 })
+    .limit(50);
+
+    res.status(200).json({
+      success: true,
+      count: newStudents.length,
+      data: newStudents
+    });
+
+  } catch (error) {
+    console.error("Get recent new students error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+/* ===============================
+   BULK MARK AS VIEWED
+================================ */
+exports.bulkMarkAsViewed = async (req, res) => {
+  try {
+    const { ids, type } = req.body; // type: 'domain', 'course', or 'student'
+    
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Array of IDs is required"
+      });
+    }
+
+    if (!type || !['domain', 'course', 'student'].includes(type)) {
+      return res.status(400).json({
+        success: false,
+        message: "Type must be 'domain', 'course', or 'student'"
+      });
+    }
+
+    let updateField = '';
+    let query = { _id: { $in: ids } };
+
+    switch (type) {
+      case 'domain':
+        updateField = 'domainViewed';
+        break;
+      case 'course':
+        updateField = 'courseViewed';
+        break;
+      case 'student':
+        updateField = 'studentViewed';
+        break;
+    }
+
+    await Client.updateMany(
+      query,
+      { 
+        [updateField]: true,
+        ...(type === 'student' ? { isNew: false } : {})
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `Bulk marked ${type}s as viewed`,
+      count: ids.length
+    });
+
+  } catch (error) {
+    console.error("Bulk mark as viewed error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+/* ===============================
+   GET UNVIEWED COUNTS
+================================ */
+exports.getUnviewedCounts = async (req, res) => {
+  try {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    
+    const domainUnviewed = await Client.countDocuments({
+      domainViewed: false,
+      newAt: { $gte: sevenDaysAgo }
+    });
+
+    const courseUnviewed = await Client.countDocuments({
+      courseViewed: false,
+      newAt: { $gte: sevenDaysAgo }
+    });
+
+    const studentUnviewed = await Client.countDocuments({
+      studentViewed: false,
+      isNew: true,
+      newAt: { $gte: sevenDaysAgo }
+    });
+
+    res.status(200).json({
+      success: true,
+      counts: {
+        domain: domainUnviewed,
+        course: courseUnviewed,
+        student: studentUnviewed
+      }
+    });
+
+  } catch (error) {
+    console.error("Get unviewed counts error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+/* ===============================
+   AUTO MARK OLD AS VIEWED (CRON JOB)
+================================ */
+exports.autoMarkOldAsViewed = async (req, res) => {
+  try {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    
+    // Automatically mark students older than 30 days as viewed
+    const result = await Client.updateMany(
+      {
+        newAt: { $lt: thirtyDaysAgo },
+        $or: [
+          { domainViewed: false },
+          { courseViewed: false },
+          { studentViewed: false },
+          { isNew: true }
+        ]
+      },
+      {
+        domainViewed: true,
+        courseViewed: true,
+        studentViewed: true,
+        isNew: false
+      }
+    );
+
+    console.log(`Auto-marked ${result.modifiedCount} old students as viewed`);
+
+    res.status(200).json({
+      success: true,
+      message: "Auto-marked old students as viewed",
+      modifiedCount: result.modifiedCount
+    });
+
+  } catch (error) {
+    console.error("Auto mark old as viewed error:", error);
     res.status(500).json({
       success: false,
       message: "Server error"

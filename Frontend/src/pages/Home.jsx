@@ -297,12 +297,9 @@ const DarkModeToggle = ({ darkMode, toggleDarkMode }) => (
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
+
+
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -313,16 +310,7 @@ export default function App() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">Loading your wellness journey...</p>
-        </div>
-      </div>
-    );
-  }
+ 
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
