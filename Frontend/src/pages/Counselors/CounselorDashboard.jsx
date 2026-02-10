@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import {
   Stethoscope, Pill, UserRound, Microscope, Settings, Briefcase,
   GraduationCap, BookOpen, Laptop, Languages, Leaf, Presentation,
@@ -63,9 +64,9 @@ const CounselorDashboard = () => {
   // ========== INITIALIZE ==========
   useEffect(() => {
     const savedProfile = localStorage.getItem("counselorProfile");
-    const profileData = savedProfile ? JSON.parse(savedProfile) : { 
-      name: "Dr. Sandeep", 
-      email: "sandeep@careerguide.com" 
+    const profileData = savedProfile ? JSON.parse(savedProfile) : {
+      name: "Dr. Sandeep",
+      email: "sandeep@careerguide.com"
     };
     setCounselorProfile(profileData);
     fetchDomainStats();
@@ -117,7 +118,7 @@ const CounselorDashboard = () => {
           Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
         },
       });
-      
+
       if (res.ok) {
         // Update local state
         fetchDomainStats();
@@ -136,7 +137,7 @@ const CounselorDashboard = () => {
           Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
         },
       });
-      
+
       if (res.ok) {
         // Update course stats
         if (selectedDomain) {
@@ -157,13 +158,13 @@ const CounselorDashboard = () => {
           Authorization: `Bearer ${localStorage.getItem("counselorToken") || ""}`,
         },
       });
-      
+
       if (res.ok) {
         // Update local state
         setClients(prev =>
           prev.map(c => c._id === clientId ? { ...c, studentViewed: true, isNew: false } : c)
         );
-        
+
         if (selectedClient && selectedClient._id === clientId) {
           setSelectedClient(prev => ({ ...prev, studentViewed: true, isNew: false }));
         }
@@ -178,13 +179,13 @@ const CounselorDashboard = () => {
     if (domain.hasNew) {
       await markDomainAsViewed(domain.domain);
     }
-    
+
     const domainInfo = counselorDomains.find(d => d.name === domain.domain) || counselorDomains[0];
     setSelectedDomain({ ...domainInfo, stats: domain });
-    
+
     const courses = DOMAIN_COURSES_MAP[domainInfo.name] || [];
     setDomainCourses(courses);
-    
+
     await fetchCourseStats(domainInfo.name);
     setCurrentView('domainCourses');
   };
@@ -194,7 +195,7 @@ const CounselorDashboard = () => {
     if (course.hasNew) {
       await markCourseAsViewed(course.course);
     }
-    
+
     setSelectedCourse(course);
     setClientsLoading(true);
     try {
@@ -206,14 +207,14 @@ const CounselorDashboard = () => {
           },
         }
       );
-      
+
       if (!res.ok) throw new Error(`Server responded with ${res.status}`);
       const data = await res.json();
-      
+
       const sortedClients = (data.data || []).sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
-      
+
       setClients(sortedClients);
       setCurrentView('clients');
     } catch (err) {
@@ -229,8 +230,8 @@ const CounselorDashboard = () => {
     if (client.isNew && !client.studentViewed) {
       await markStudentAsViewed(client._id);
     }
-    
-    setSelectedClient({...client, studentViewed: true, isNew: false});
+
+    setSelectedClient({ ...client, studentViewed: true, isNew: false });
     setCurrentView('clientDetail');
   };
 
@@ -247,15 +248,20 @@ const CounselorDashboard = () => {
       if (res.ok) {
         setClients(prev => prev.filter(c => c._id !== clientId));
         setDeleteModal(null);
-        
+
         fetchDomainStats();
         if (selectedDomain) {
           fetchCourseStats(selectedDomain.name);
         }
-        
+
         if (clients.length === 1) {
           handleBackToCourses();
         }
+
+        toast.success("Client deleted successfully ✅");
+      } else {
+        toast.error("Failed to delete client ❌");
+
       }
     } catch (err) {
       console.error("Delete error:", err);
@@ -283,11 +289,14 @@ const CounselorDashboard = () => {
         if (selectedClient && selectedClient._id === clientId) {
           setSelectedClient(prev => ({ ...prev, status: newStatus }));
         }
-        
+
         fetchDomainStats();
         if (selectedDomain) {
           fetchCourseStats(selectedDomain.name);
         }
+        toast.success("Client status updated 🔄");
+      } else {
+        toast.error("Failed to update status ❌");
       }
     } catch (err) {
       console.error("Failed to update status:", err);
@@ -304,7 +313,7 @@ const CounselorDashboard = () => {
       });
 
       if (!res.ok) throw new Error('Export failed');
-      
+
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -314,7 +323,6 @@ const CounselorDashboard = () => {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      
     } catch (err) {
       console.error("Export error:", err);
       alert("Failed to export data");
@@ -372,11 +380,11 @@ const CounselorDashboard = () => {
   const isStudentNew = (student) => {
     if (!student.newAt) return false;
     if (student.studentViewed) return false;
-    
+
     const newAt = new Date(student.newAt);
     const now = new Date();
     const daysDiff = (now - newAt) / (1000 * 60 * 60 * 24);
-    
+
     return daysDiff <= 7 && student.isNew;
   };
 
@@ -386,7 +394,7 @@ const CounselorDashboard = () => {
       <div className="bg-gradient-to-r from-slate-900 to-blue-900 rounded-3xl p-8 mb-10 text-white shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-800/20 rounded-full -translate-y-32 translate-x-32"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-800/20 rounded-full translate-y-24 -translate-x-24"></div>
-        
+
         <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-8">
           <div className="max-w-2xl">
             <h1 className="text-4xl font-black mb-4">Welcome back, {counselorProfile?.name}!</h1>
@@ -417,7 +425,7 @@ const CounselorDashboard = () => {
                 </>
               )}
             </button>
-            
+
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                 <Database size={28} className="text-white" />
@@ -433,7 +441,7 @@ const CounselorDashboard = () => {
 
       {/* STATUS SUMMARY CARDS - YEH ADD KIYA HAI */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-        <div 
+        <div
           onClick={() => {
             setSelectedDomain({ name: 'NEW', icon: Clock });
             setCurrentView('clients');
@@ -463,7 +471,7 @@ const CounselorDashboard = () => {
               </div>
             </div>
           )}
-          
+
           <div className="flex items-center justify-between">
             <div>
               <div className="text-3xl font-black text-blue-700 mb-1">{overallStats.new || 0}</div>
@@ -475,8 +483,8 @@ const CounselorDashboard = () => {
             </div>
           </div>
         </div>
-        
-        <div 
+
+        <div
           onClick={() => {
             setSelectedDomain({ name: 'IN PROGRESS', icon: RefreshCcw });
             setCurrentView('clients');
@@ -509,8 +517,8 @@ const CounselorDashboard = () => {
             </div>
           </div>
         </div>
-        
-        <div 
+
+        <div
           onClick={() => {
             setSelectedDomain({ name: 'COMPLETED', icon: CheckCircle });
             setCurrentView('clients');
@@ -572,7 +580,7 @@ const CounselorDashboard = () => {
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[1,2,3,4,5,6,7,8].map(i => (
+            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
               <div key={i} className="bg-white rounded-2xl border border-slate-200 p-6 animate-pulse">
                 <div className="h-14 w-14 bg-slate-200 rounded-xl mb-5"></div>
                 <div className="h-6 bg-slate-200 rounded mb-2"></div>
@@ -583,18 +591,18 @@ const CounselorDashboard = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            
+
             {domainStats.map((domain) => {
               const domainInfo = counselorDomains.find(d => d.name === domain.domain);
               const Icon = domainInfo?.icon || Stethoscope;
-              
+
               return (
                 <div
                   key={domain.domain}
                   onClick={() => handleDomainClick(domain)}
                   className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-blue-300 cursor-pointer relative transition-all duration-300 group"
                 >
-           
+
                   {/* NEW BADGE FOR DOMAIN */}
                   {domain.hasNew && (
                     <div className="absolute -top-2 -right-2 z-10">
@@ -604,7 +612,7 @@ const CounselorDashboard = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   <div className="flex items-start justify-between mb-5">
                     <div className={`w-14 h-14 rounded-xl ${domainInfo?.bgColor || 'bg-blue-50'} ${domainInfo?.color || 'text-blue-600'} flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform`}>
                       <Icon size={24} />
@@ -614,10 +622,10 @@ const CounselorDashboard = () => {
                       <div className="text-xs text-slate-500">Students</div>
                     </div>
                   </div>
-                  
+
                   <h3 className="text-xl font-bold text-slate-800 mb-2">{domain.domain}</h3>
                   <p className="text-sm text-slate-600 mb-4">{domainInfo?.description || "Professional domain"}</p>
-                  
+
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                     <div className="flex items-center gap-2 text-sm text-blue-600 font-semibold group-hover:text-blue-700">
                       View Details
@@ -638,7 +646,7 @@ const CounselorDashboard = () => {
 
   const renderDomainCourses = () => (
     <div>
-      <ScrollToTop/>
+      <ScrollToTop />
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
         <div className="flex items-center gap-4">
@@ -678,7 +686,7 @@ const CounselorDashboard = () => {
                 </div>
               </div>
             )}
-            
+
             <div className="flex items-center gap-4 mb-5">
               <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                 <BookOpen size={22} />
@@ -688,7 +696,7 @@ const CounselorDashboard = () => {
                 <p className="text-sm text-slate-500">{selectedDomain?.name} Domain</p>
               </div>
             </div>
-            
+
             <div className="flex items-center justify-between pt-5 border-t border-slate-100">
               <div className="text-sm text-slate-600">
                 {course.total} student{course.total !== 1 ? 's' : ''}
@@ -719,7 +727,7 @@ const CounselorDashboard = () => {
 
   const renderClients = () => (
     <div>
-      
+
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
         <div className="flex items-center gap-4">
@@ -763,14 +771,14 @@ const CounselorDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {clients.map((client) => {
             const isNewStudent = isStudentNew(client);
-            
+
             return (
               <div
                 key={client._id}
                 onClick={() => handleClientClick(client)}
                 className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-blue-300 cursor-pointer transition-all duration-300 group relative"
               >
-                   <ScrollToTop/>
+                <ScrollToTop />
                 {/* NEW BADGE FOR STUDENT */}
                 {isNewStudent && (
                   <div className="absolute -top-2 -right-2 z-10">
@@ -780,7 +788,7 @@ const CounselorDashboard = () => {
                     </div>
                   </div>
                 )}
-                
+
                 {/* CARD HEADER */}
                 <div className="flex items-start justify-between mb-5">
                   <div className="flex items-center gap-4">
@@ -797,7 +805,7 @@ const CounselorDashboard = () => {
                       </p>
                     </div>
                   </div>
-                  
+
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -847,11 +855,10 @@ const CounselorDashboard = () => {
                 <div className="pt-5 border-t border-slate-100">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${
-                        client.status === 'new' ? 'bg-blue-100 text-blue-600' :
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${client.status === 'new' ? 'bg-blue-100 text-blue-600' :
                         client.status === 'in-progress' ? 'bg-amber-100 text-amber-600' :
-                        'bg-emerald-100 text-emerald-600'
-                      }`}>
+                          'bg-emerald-100 text-emerald-600'
+                        }`}>
                         {client.status?.toUpperCase()}
                       </span>
                       {isNewStudent && (
@@ -965,7 +972,7 @@ const CounselorDashboard = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setDeleteModal(selectedClient)}
@@ -997,7 +1004,7 @@ const CounselorDashboard = () => {
                       <div className="font-medium truncate">{selectedClient.email}</div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Phone Number</div>
                     <div className="flex items-center gap-3">
@@ -1007,7 +1014,7 @@ const CounselorDashboard = () => {
                       <div className="font-medium">{selectedClient.phone}</div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Date of Birth</div>
                     <div className="font-medium text-slate-800">{formatDate(selectedClient.dob)}</div>
@@ -1028,12 +1035,12 @@ const CounselorDashboard = () => {
                       <div className="font-medium">{selectedClient.eduLevel}</div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Selected Course</div>
                     <div className="font-medium text-blue-600 text-lg">{selectedClient.course}</div>
                   </div>
-                  
+
                   <div>
                     <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Domain</div>
                     <div className="font-medium">{selectedClient.domain}</div>
@@ -1052,20 +1059,19 @@ const CounselorDashboard = () => {
                         <button
                           key={status}
                           onClick={() => updateClientStatus(selectedClient._id, status)}
-                          className={`flex-1 py-3 rounded-xl text-sm font-bold uppercase transition-all ${
-                            selectedClient.status === status 
-                              ? status === 'new' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' :
-                                status === 'in-progress' ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md' :
+                          className={`flex-1 py-3 rounded-xl text-sm font-bold uppercase transition-all ${selectedClient.status === status
+                            ? status === 'new' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' :
+                              status === 'in-progress' ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md' :
                                 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md'
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                          }`}
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            }`}
                         >
                           {status}
                         </button>
                       ))}
                     </div>
                   </div>
-                  
+
                   <div>
                     <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Joined Date</div>
                     <div className="font-medium">{formatDateTime(selectedClient.createdAt)}</div>
@@ -1116,7 +1122,7 @@ const CounselorDashboard = () => {
               <p className="text-sm text-slate-500 mb-8">
                 This action cannot be undone. All data will be permanently removed.
               </p>
-              
+
               <div className="flex gap-3 w-full">
                 <button
                   onClick={() => setDeleteModal(null)}
@@ -1144,7 +1150,7 @@ const CounselorDashboard = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-slate-50 p-4 text-center border-t border-slate-200">
             <p className="text-xs text-slate-500">
               Student ID: {deleteModal._id?.substring(0, 8)}... • {deleteModal.course}

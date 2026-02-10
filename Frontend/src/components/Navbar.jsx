@@ -12,6 +12,7 @@ import {
   FaCity,
   FaAngleRight,
 } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 // Counselor Login Modal
 const CounselorLoginModal = ({ isOpen, onClose, onLogin }) => {
@@ -55,6 +56,8 @@ const CounselorLoginModal = ({ isOpen, onClose, onLogin }) => {
         role: "counselor",
         name: data.counselor?.name || formData.email.split("@")[0],
       };
+
+       toast.success("Login successfully!");
 
       onLogin(counselorProfile);
       onClose();
@@ -278,6 +281,7 @@ const Navbar = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        toast.success("Logout successfully!");
       }
     } catch (err) {
       console.error("Logout failed", err);

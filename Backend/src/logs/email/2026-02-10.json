@@ -70,5 +70,45 @@
     "userName": "Kunal Lokhande",
     "messageId": "<1de7a9fa-5d7c-400d-f804-a0f6a04a14e0@gmail.com>",
     "duration": "4193ms"
+  },
+  {
+    "timestamp": "2:58:31 pm",
+    "type": "SENT",
+    "userEmail": "jagdeeshkuswah4960@gmail.com",
+    "userName": "Jagdeesh",
+    "messageId": "<d388c4c9-289f-242d-5e4f-8ea5b34320c6@gmail.com>",
+    "duration": "5620ms"
+  },
+  {
+    "timestamp": "4:01:41 pm",
+    "type": "SENT",
+    "userEmail": "jagdeeshkuswah4960@gmail.com",
+    "userName": "Jagdeesh",
+    "messageId": "<34d7411e-bb18-91e4-e2f3-0565ebe1a235@gmail.com>",
+    "duration": "5711ms"
+  },
+  {
+    "timestamp": "4:10:17 pm",
+    "type": "SENT",
+    "userEmail": "jagdeeshkuswah4960@gmail.com",
+    "userName": "Jagdeesh",
+    "messageId": "<df4f75f0-6cd4-e80b-f820-a96f482fb57d@gmail.com>",
+    "duration": "6801ms"
+  },
+  {
+    "timestamp": "4:13:18 pm",
+    "type": "SENT",
+    "userEmail": "jagdeeshkushwah4960@gmail.com",
+    "userName": "Jagdeesh Kushwah",
+    "messageId": "<c43ac818-6a46-4851-4a98-0dc81ba135b5@gmail.com>",
+    "duration": "5724ms"
+  },
+  {
+    "timestamp": "4:16:33 pm",
+    "type": "SENT",
+    "userEmail": "jagdeeshkushwah4960@gmail.com",
+    "userName": "Jagdeesh Kushwah",
+    "messageId": "<0ef52d9d-c492-8749-d182-a57da25a4e59@gmail.com>",
+    "duration": "3989ms"
   }
 ]

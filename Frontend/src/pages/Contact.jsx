@@ -220,7 +220,6 @@ const Toast = ({ message, type = "success", onClose, progress = 100 }) => {
       border: "border-green-500",
       text: "text-white",
       icon: "text-green-500",
-      text: "text-white",
     },
     error: {
       bg: "bg-red-500",
