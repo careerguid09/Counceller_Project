@@ -6,7 +6,8 @@ import AppRoutes from "./AppRoutes";
 
 function App() {
   return (
-    <Router>
+ <div className="pt-16">
+     <Router>
       <ScrollToTop />
 
       <ToastContainer
@@ -14,9 +15,9 @@ function App() {
         autoClose={2000}
         theme="colored"
       />
-
       <AppRoutes />
     </Router>
+ </div>
   );
 }
 
