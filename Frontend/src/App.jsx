@@ -11,6 +11,7 @@ import CityTargetDashboard from "./pages/Services/CityTargetDashboard";
 import ProtectedCounselorRoute from "./components/ProtectedCounselorRoute";
 import ScrollToTop from "./components/ScrollToTop";
 
+
 function App() {
   return (
     <Router>
@@ -19,7 +20,7 @@ function App() {
         <Navbar />
         <main className="flex-grow">
           <Routes>
-            {/* public routes */}
+          
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
@@ -27,8 +28,6 @@ function App() {
             <Route path="/course-pages-dashboard" element={<CoursePagesDashboard />} />
             <Route path="/city-target-dashboard" element={<CityTargetDashboard />} />
 
-
-            {/* Protected Counselor Routes */}
             <Route
               path="/Counselors/Dashboard"
               element={
@@ -39,10 +38,12 @@ function App() {
             />
           </Routes>
         </main>
+
         <Footer />
+
       </div>
     </Router>
   );
-}
+} 
 
 export default App;

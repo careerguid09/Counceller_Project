@@ -9,3 +9,7 @@
 
 @import "tailwindcss";
 /* Custom CSS */
+
+html {
+  scroll-behavior: smooth;
+}

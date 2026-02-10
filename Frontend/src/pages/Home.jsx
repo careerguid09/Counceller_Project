@@ -326,7 +326,7 @@ export default function App() {
       }`}>
         <div className="container mx-auto px-6 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
+          
             <div className="max-w-2xl">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}

@@ -32,11 +32,22 @@
     animation: logo-spin infinite 20s linear;
   }
 }
-
 .card {
   padding: 2em;
 }
-
 .read-the-docs {
   color: #888;
 }
+
+
+
+.smooth-scroll {
+  overflow: hidden;
+}
+
+main {
+  padding-top: 80px; /* अपने Navbar की height के हिसाब से change करो */
+}
+
+
+

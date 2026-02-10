@@ -15,7 +15,6 @@ async function seedCounselor() {
       await Counselor.deleteOne({ email: "counselor@company.com" });
     }
 
-    // Createcounselor (NEW)
     const hashedPassword = await bcrypt.hash("Counselor@123#Secure", 10);
     const counselor = await Counselor.create({
       email: "counselor@company.com",
