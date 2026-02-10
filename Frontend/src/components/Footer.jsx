@@ -49,7 +49,7 @@ const Footer = () => {
               </div>
               <div>
                 <h2 className="text-2xl font-bold">CareerGuide</h2>
-                <p className="text-sm text-gray-400">College Admission Experts</p>
+                <p className="text-sm text-gray-400">SS Admission Vala</p>
               </div>
             </div>
             
@@ -106,13 +106,12 @@ const Footer = () => {
                   whileHover={{ x: 5 }}
                   className="group"
                 >
-                  <a
-                    href="/services"
+                  <div
                     className="flex items-center text-gray-400 hover:text-white transition-colors group-hover:text-blue-400"
                   >
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                     {service}
-                  </a>
+                  </div>
                 </motion.li>
               ))}
             </ul>
@@ -140,26 +139,7 @@ const Footer = () => {
               </div>
             </div>
 
-            <div>
-              <h4 className="font-bold mb-4 text-white">Stay Updated</h4>
-              <div className="relative">
-                <input 
-                  type="email" 
-                  placeholder="Your email address"
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="absolute right-1 top-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-md hover:from-blue-600 hover:to-blue-700 transition-all"
-                >
-                  Subscribe
-                </motion.button>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Get admission tips and scholarship alerts
-              </p>
-            </div>
+        
           </div>
         </div>
 
@@ -167,9 +147,9 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-gray-800">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { number: '1500+', label: 'Students Guided' },
+              { number: '15000+', label: 'Students Guided' },
               { number: '98%', label: 'Success Rate' },
-              { number: '200+', label: 'Partner Colleges' },
+              { number: '500+', label: 'Partner Colleges' },
               { number: '₹25Cr+', label: 'Scholarships Secured' }
             ].map((stat, idx) => (
               <div key={idx} className="text-center">
