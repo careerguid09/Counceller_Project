@@ -11,20 +11,19 @@ const EMAIL_CONFIG = {
     pass: process.env.COMPANY_EMAIL_PASS || "wtty bdjf xkzy gres",
   },
   // ⚡ FAST SETTINGS FOR INSTANT DELIVERY
-  pool: true,           // Reuse connections (IMPORTANT)
-  maxConnections: 5,    // Multiple connections at once
-  maxMessages: 100,     // Messages per connection
-  rateDelta: 1000,      // Rate limiting
-  rateLimit: 10,        // 10 emails per second
-  secure: true,         // Use SSL
+  pool: true, // Reuse connections (IMPORTANT)
+  maxConnections: 5, // Multiple connections at once
+  maxMessages: 100, // Messages per connection
+  rateDelta: 1000, // Rate limiting
+  rateLimit: 10, // 10 emails per second
+  secure: true, // Use SSL
   tls: {
-    rejectUnauthorized: false  // Bypass certificate validation for speed
+    rejectUnauthorized: false, // Bypass certificate validation for speed
   },
   connectionTimeout: 10000, // 10 seconds timeout
   greetingTimeout: 10000,
-  socketTimeout: 10000
+  socketTimeout: 10000,
 };
-
 
 const EMAIL_TEMPLATES = {
   careerConfirmation: (userName, mobileNumber, city, problem) => ({
@@ -118,7 +117,7 @@ const EMAIL_TEMPLATES = {
             <h4 class="my-2" style="color: #2d3748; margin-top: 0; margin-bottom: 20px; font-size: 20px;" class="mobile-text-base mobile-text-center mobile-mt-4">🎉 Your career query has been received successfully!</h4>
            
             <p style="margin-bottom: 24px; color: #4b5563; font-size: 16px;" class="mobile-text-sm mobile-text-center">
-              Thank you for reaching out to <strong>HerStudent</strong> regarding your career aspirations. We have successfully received your query and our team is actively reviewing your case.
+              Thank you for reaching out to <strong>SS ADMISSION VALA</strong> regarding your career aspirations. We have successfully received your query and our team is actively reviewing your case.
             </p>
 
             <!-- User Details Card -->
@@ -300,15 +299,15 @@ const EMAIL_TEMPLATES = {
               <h4 style="color: #856404; margin-top: 0; font-size: 18px; margin-bottom: 16px;" class="mobile-text-base mobile-text-center">📞 Need Immediate Assistance?</h4>
               <div style="margin-bottom: 8px;" class="mobile-text-center mobile-mb-4">
                 <strong style="color: #856404;">Phone:</strong> 
-                <span style="color: #212529;">+91-9876543210</span>
+                <span style="color: #212529;">+91 74156 66361</span>
               </div>
               <div style="margin-bottom: 8px;" class="mobile-text-center mobile-mb-4">
                 <strong style="color: #856404;">Email:</strong> 
-                <span style="color: #212529;">support@herstudent.com</span>
+                <span style="color: #212529;">careerguid09@gmail.com</span>
               </div>
               <div class="mobile-text-center">
                 <strong style="color: #856404;">Hours:</strong> 
-                <span style="color: #212529;">Mon-Sat, 10:00 AM - 7:00 PM IST</span>
+                <span style="color: #212529;">Mon-Sat,  09 AM TO 08 PM IST</span>
               </div>
             </div>
             
@@ -324,7 +323,7 @@ const EMAIL_TEMPLATES = {
                 <strong style="color: #667eea;">Career Solutions Team</strong>
               </p>
               <p style="margin: 0; color: #6b7280; font-style: italic;">
-                HerStudent - Shaping Future Professionals
+                SS ADMISSION VALA - Shaping Future Professionals
               </p>
             </div>
           </div>
@@ -332,12 +331,12 @@ const EMAIL_TEMPLATES = {
           <!-- Footer -->
           <div class="footer mobile-px-4" style="background: #f8f9fa; padding: 25px; text-align: center; color: #6c757d; font-size: 14px; border-top: 1px solid #e9ecef;">
             <p style="margin: 0 0 10px;">
-              <strong style="color: #374151;">HerStudent Career Services</strong><br>
+              <strong style="color: #374151;">SS ADMISSION VALACareer Services</strong><br>
               <span style="font-size: 13px;">Office 22, Business Center, Mumbai - 400001</span>
             </p>
             <p style="margin: 0; font-size: 12px; opacity: 0.7;" class="mobile-text-xs">
               This is an automated message. Please do not reply directly.<br>
-              © ${new Date().getFullYear()} HerStudent. All rights reserved.
+              © ${new Date().getFullYear()} SS ADMISSION VALA. All rights reserved.
             </p>
           </div>
         </div>
@@ -400,22 +399,27 @@ class EmailService {
   }
 
   // ⚡ OPTIMIZED EMAIL SENDING FUNCTION
-  async sendCareerConfirmation(userEmail, userName, mobileNumber, city, problem) {
+  async sendCareerConfirmation(
+    userEmail,
+    userName,
+    mobileNumber,
+    city,
+    problem,
+  ) {
     const startTime = Date.now();
-    
+
     try {
       const template = EMAIL_TEMPLATES.careerConfirmation(
         userName || "Client",
         mobileNumber || "Not provided",
         city || "Not specified",
-        problem || "Career guidance query"
+        problem || "Career guidance query",
       );
-
       const mailOptions = {
-        from: `"HerStudent Career Support" <${EMAIL_CONFIG.auth.user}>`,
+        from: `"SS ADMISSION VALA Career Support" <${EMAIL_CONFIG.auth.user}>`,
         to: userEmail,
         cc: process.env.ADMIN_EMAIL,
-        replyTo: "support@herstudent.com",
+        replyTo: "careerguid09@gmail.com",
         subject: template.subject,
         html: template.html,
         text: `Hello ${userName || "Client"}, your career query has been received. Our team will contact you within 24 hours.`,
@@ -434,7 +438,7 @@ class EmailService {
 
       // ⚡ SEND EMAIL WITHOUT WAITING FOR FULL RESPONSE
       const sendPromise = this.transporter.sendMail(mailOptions);
-      
+
       // Set timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error("Email sending timeout")), 10000);
@@ -454,8 +458,10 @@ class EmailService {
         });
       }, 0);
 
-      console.log(`⚡ [${new Date().toLocaleTimeString()}] Email SENT to ${userEmail} in ${duration}ms`);
-      
+      console.log(
+        `⚡ [${new Date().toLocaleTimeString()}] Email SENT to ${userEmail} in ${duration}ms`,
+      );
+
       return {
         success: true,
         messageId: info.messageId,
@@ -466,8 +472,11 @@ class EmailService {
     } catch (error) {
       const endTime = Date.now();
       const duration = endTime - startTime;
-      
-      console.error(`❌ [${new Date().toLocaleTimeString()}] Email FAILED for ${userEmail} after ${duration}ms:`, error.message);
+
+      console.error(
+        `❌ [${new Date().toLocaleTimeString()}] Email FAILED for ${userEmail} after ${duration}ms:`,
+        error.message,
+      );
 
       // ⚡ ASYNC ERROR LOGGING
       setTimeout(() => {
@@ -481,8 +490,9 @@ class EmailService {
       }, 0);
 
       // ⚡ ASYNC BACKUP - DON'T WAIT
-      this.saveToBackup(userEmail, userName, mobileNumber, city, problem)
-        .catch(backupErr => console.error("Backup error:", backupErr.message));
+      this.saveToBackup(userEmail, userName, mobileNumber, city, problem).catch(
+        (backupErr) => console.error("Backup error:", backupErr.message),
+      );
 
       return {
         success: false,
@@ -531,34 +541,48 @@ class EmailService {
 const emailService = new EmailService();
 
 // ⚡ ULTRA-FAST EMAIL FUNCTION
-const sendCareerEmail = async (userEmail, userName, mobileNumber, city, problem) => {
+const sendCareerEmail = async (
+  userEmail,
+  userName,
+  mobileNumber,
+  city,
+  problem,
+) => {
   const timestamp = new Date().toLocaleTimeString();
-  
+
   console.log(`\n🚀 [${timestamp}] INSTANT EMAIL PROCESSING STARTED`);
-  console.log(`   👤 ${userName || 'Client'}`);
+  console.log(`   👤 ${userName || "Client"}`);
   console.log(`   📧 ${userEmail}`);
-  console.log(`   📍 ${city || 'Not specified'}`);
-  
+  console.log(`   📍 ${city || "Not specified"}`);
+
   // ⚡ IMMEDIATE RESPONSE - Don't wait for email
   const immediateResponse = {
     success: true,
     immediate: true,
     message: "Email queued for instant delivery",
-    timestamp: timestamp
+    timestamp: timestamp,
   };
 
   // ⚡ SEND EMAIL IN BACKGROUND WITHOUT BLOCKING
-  emailService.sendCareerConfirmation(userEmail, userName, mobileNumber, city, problem)
-    .then(result => {
+  emailService
+    .sendCareerConfirmation(userEmail, userName, mobileNumber, city, problem)
+    .then((result) => {
       const resultTime = new Date().toLocaleTimeString();
       if (result.success) {
-        console.log(`✅ [${resultTime}] Email DELIVERED to ${userEmail} (${result.duration})`);
+        console.log(
+          `✅ [${resultTime}] Email DELIVERED to ${userEmail} (${result.duration})`,
+        );
       } else {
-        console.log(`⚠️ [${resultTime}] Email FAILED for ${userEmail}: ${result.error}`);
+        console.log(
+          `⚠️ [${resultTime}] Email FAILED for ${userEmail}: ${result.error}`,
+        );
       }
     })
-    .catch(err => {
-      console.error(`❌ [${new Date().toLocaleTimeString()}] Background email error:`, err.message);
+    .catch((err) => {
+      console.error(
+        `❌ [${new Date().toLocaleTimeString()}] Background email error:`,
+        err.message,
+      );
     });
 
   // ⚡ RETURN IMMEDIATELY - DON'T WAIT FOR EMAIL
@@ -568,6 +592,6 @@ const sendCareerEmail = async (userEmail, userName, mobileNumber, city, problem)
 // ==================== EXPORTS ====================
 module.exports = {
   sendCareerEmail,
-  emailService, 
-  EmailService, 
+  emailService,
+  EmailService,
 };
