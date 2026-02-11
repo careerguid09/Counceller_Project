@@ -291,7 +291,7 @@ export default function App() {
 
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
+    <div className={`min-h-screen transition-colors pt-5 duration-300 ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
       }`}>
 
 
