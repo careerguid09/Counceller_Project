@@ -571,7 +571,7 @@ const Contact = () => {
                           <div className="text-sm opacity-90">Students Guided</div>
                           <div className="text-xl font-bold">15,000+</div>
                         </div>
-                      </div>
+                      </div>  
                     </div>
                     <div className="flex items-center justify-between pb-3 border-b border-blue-500/30">
                       <div className="flex items-center gap-3">
