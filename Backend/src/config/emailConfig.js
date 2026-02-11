@@ -332,7 +332,7 @@ const EMAIL_TEMPLATES = {
           <div class="footer mobile-px-4" style="background: #f8f9fa; padding: 25px; text-align: center; color: #6c757d; font-size: 14px; border-top: 1px solid #e9ecef;">
             <p style="margin: 0 0 10px;">
               <strong style="color: #374151;">SS ADMISSION VALACareer Services</strong><br>
-              <span style="font-size: 13px;">Office 22, Business Center, Mumbai - 400001</span>
+              <span style="font-size: 13px;"> Arhedi Road,Shiv City, Ayodhya Nagar Bhopal </span>
             </p>
             <p style="margin: 0; font-size: 12px; opacity: 0.7;" class="mobile-text-xs">
               This is an automated message. Please do not reply directly.<br>

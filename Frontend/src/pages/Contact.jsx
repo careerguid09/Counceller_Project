@@ -4,19 +4,12 @@ import {
   Phone,
   Mail,
   MapPin,
-  Clock,
   Send,
   CheckCircle,
-  Calendar,
   User,
   MessageCircle,
-  ChevronRight,
   Shield,
   Globe,
-  Headphones,
-  Users,
-  BookOpen,
-  Map,
   Search,
   ChevronDown,
   Check,
@@ -24,6 +17,20 @@ import {
   Info,
   X,
   Loader2,
+  Facebook,
+  Instagram,
+  Youtube,
+  MessageSquare,
+  ExternalLink,
+  Award,
+  GraduationCap,
+  Calendar,
+  ChevronRight,
+  Clock,
+  PhoneCall,
+  Map as MapIcon,
+  BookOpen,
+  Users,
 } from "lucide-react";
 
 // --- DATA: COUNTRIES WITH FLAGS AND CODES ---
@@ -38,43 +45,6 @@ const countriesData = [
   { name: "China", code: "+86", flag: "🇨🇳" },
   { name: "Japan", code: "+81", flag: "🇯🇵" },
   { name: "Singapore", code: "+65", flag: "🇸🇬" },
-  { name: "UAE", code: "+971", flag: "🇦🇪" },
-  { name: "Russia", code: "+7", flag: "🇷🇺" },
-  { name: "Brazil", code: "+55", flag: "🇧🇷" },
-  { name: "South Africa", code: "+27", flag: "🇿🇦" },
-  { name: "Afghanistan", code: "+93", flag: "🇦🇫" },
-  { name: "Albania", code: "+355", flag: "🇦🇱" },
-  { name: "Algeria", code: "+213", flag: "🇩🇿" },
-  { name: "Argentina", code: "+54", flag: "🇦🇷" },
-  { name: "Austria", code: "+43", flag: "🇦🇹" },
-  { name: "Bangladesh", code: "+880", flag: "🇧🇩" },
-  { name: "Belgium", code: "+32", flag: "🇧🇪" },
-  { name: "Bhutan", code: "+975", flag: "🇧🇹" },
-  { name: "Egypt", code: "+20", flag: "🇪🇬" },
-  { name: "Hong Kong", code: "+852", flag: "🇭🇰" },
-  { name: "Indonesia", code: "+62", flag: "🇮🇩" },
-  { name: "Ireland", code: "+353", flag: "🇮🇪" },
-  { name: "Israel", code: "+972", flag: "🇮🇱" },
-  { name: "Italy", code: "+39", flag: "🇮🇹" },
-  { name: "Kuwait", code: "+965", flag: "🇰🇼" },
-  { name: "Malaysia", code: "+60", flag: "🇲🇾" },
-  { name: "Mexico", code: "+52", flag: "🇲🇽" },
-  { name: "Nepal", code: "+977", flag: "🇳🇵" },
-  { name: "Netherlands", code: "+31", flag: "🇳🇱" },
-  { name: "New Zealand", code: "+64", flag: "🇳🇿" },
-  { name: "Norway", code: "+47", flag: "🇳🇴" },
-  { name: "Pakistan", code: "+92", flag: "🇵🇰" },
-  { name: "Philippines", code: "+63", flag: "🇵🇭" },
-  { name: "Portugal", code: "+351", flag: "🇵🇹" },
-  { name: "Qatar", code: "+974", flag: "🇶🇦" },
-  { name: "Saudi Arabia", code: "+966", flag: "🇸🇦" },
-  { name: "South Korea", code: "+82", flag: "🇰🇷" },
-  { name: "Spain", code: "+34", flag: "🇪🇸" },
-  { name: "Sri Lanka", code: "+94", flag: "🇱🇰" },
-  { name: "Switzerland", code: "+41", flag: "🇨🇭" },
-  { name: "Thailand", code: "+66", flag: "🇹🇭" },
-  { name: "Turkey", code: "+90", flag: "🇹🇷" },
-  { name: "Vietnam", code: "+84", flag: "🇻🇳" },
 ].sort((a, b) => a.name.localeCompare(b.name));
 
 // --- SEARCHABLE SELECT COMPONENT ---
@@ -125,22 +95,22 @@ const SearchableSelect = ({
   return (
     <div className="space-y-2 relative" ref={containerRef}>
       {label && (
-        <label className="text-sm font-semibold text-slate-700">{label}</label>
+        <label className="text-sm font-medium text-gray-700">{label}</label>
       )}
       <div
         onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`w-full px-4 py-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
+        className={`w-full px-4 py-3 rounded-lg border flex items-center justify-between cursor-pointer transition-all ${
           disabled
-            ? "bg-slate-50 border-slate-100 opacity-50"
-            : "bg-white border-slate-200 hover:border-blue-300"
+            ? "bg-gray-50 border-gray-100 opacity-50"
+            : "bg-white border-gray-200 hover:border-blue-500"
         } ${isOpen ? "ring-2 ring-blue-500 border-blue-500" : ""}`}
       >
-        <div className="flex items-center gap-2 truncate text-slate-700">
-          {Icon && <Icon className="w-4 h-4 text-slate-400" />}
+        <div className="flex items-center gap-2 truncate">
+          {Icon && <Icon className="w-4 h-4 text-gray-400" />}
           <span className="font-medium">{getDisplayValue()}</span>
         </div>
         <ChevronDown
-          className={`w-4 h-4 text-slate-400 transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`}
+          className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`}
         />
       </div>
 
@@ -150,15 +120,15 @@ const SearchableSelect = ({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute z-50 w-64 md:w-80 mt-2 bg-white border border-slate-200 rounded-xl shadow-2xl overflow-hidden left-0"
+            className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden left-0"
           >
-            <div className="p-2 border-b border-slate-100 flex items-center gap-2 sticky top-0 bg-white">
-              <Search className="w-4 h-4 text-slate-400" />
+            <div className="p-2 border-b border-gray-100 flex items-center gap-2 sticky top-0 bg-white">
+              <Search className="w-4 h-4 text-gray-400" />
               <input
                 type="text"
                 autoFocus
                 className="w-full text-sm outline-none py-1"
-                placeholder="Search country name..."
+                placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onClick={(e) => e.stopPropagation()}
@@ -182,7 +152,7 @@ const SearchableSelect = ({
                         setIsOpen(false);
                         setSearchTerm("");
                       }}
-                      className="px-4 py-3 text-sm hover:bg-blue-50 cursor-pointer flex items-center justify-between border-b border-slate-50 last:border-0"
+                      className="px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer flex items-center justify-between border-b border-gray-50 last:border-0"
                     >
                       <span className="truncate">{labelStr}</span>
                       {(isString ? value === opt : value === opt.code) && (
@@ -192,7 +162,7 @@ const SearchableSelect = ({
                   );
                 })
               ) : (
-                <div className="px-4 py-3 text-sm text-slate-400 italic text-center">
+                <div className="px-4 py-3 text-sm text-gray-400 italic text-center">
                   No results found
                 </div>
               )}
@@ -204,7 +174,7 @@ const SearchableSelect = ({
   );
 };
 
-// Custom Toast Component (React Toastify jaise exact)
+// Toast Component
 const Toast = ({ message, type = "success", onClose, progress = 100 }) => {
   const icons = {
     success: <CheckCircle className="w-5 h-5" />,
@@ -215,36 +185,11 @@ const Toast = ({ message, type = "success", onClose, progress = 100 }) => {
   };
 
   const colors = {
-    success: {
-      bg: "bg-green-500",
-      border: "border-green-500",
-      text: "text-white",
-      icon: "text-green-500",
-    },
-    error: {
-      bg: "bg-red-500",
-      border: "border-red-600",
-      text: "text-white",
-      icon: "text-red-100",
-    },
-    warning: {
-      bg: "bg-amber-500",
-      border: "border-amber-600",
-      text: "text-amber-900",
-      icon: "text-amber-700",
-    },
-    info: {
-      bg: "bg-blue-500",
-      border: "border-blue-600",
-      text: "text-white",
-      icon: "text-blue-100",
-    },
-    loading: {
-      bg: "bg-slate-700",
-      border: "border-slate-800",
-      text: "text-white",
-      icon: "text-slate-300",
-    },
+    success: "bg-green-500 border-green-600",
+    error: "bg-red-500 border-red-600",
+    warning: "bg-amber-500 border-amber-600",
+    info: "bg-blue-500 border-blue-600",
+    loading: "bg-gray-700 border-gray-800",
   };
 
   const title = {
@@ -260,21 +205,15 @@ const Toast = ({ message, type = "success", onClose, progress = 100 }) => {
       initial={{ opacity: 0, x: 100 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 100 }}
-      className={`relative overflow-hidden rounded-lg shadow-xl ${colors[type].border} border`}
+      className={`relative overflow-hidden rounded-lg shadow-lg ${colors[type]} border`}
     >
-      {/* Progress bar (React Toastify jaise) */}
-      <div
-        className={`absolute top-0 left-0 h-1 ${colors[type].bg} transition-all duration-300`}
-        style={{ width: `${progress}%` }}
-      />
-
-      <div className={`${colors[type].bg} px-4 py-3 flex items-start gap-3`}>
-        <div className={`flex-shrink-0 ${colors[type].icon}`}>
+      <div className="px-4 py-3 flex items-start gap-3 text-white">
+        <div className="flex-shrink-0">
           {icons[type]}
         </div>
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-sm mb-1">{title[type]}</div>
-          <div className={`text-sm ${colors[type].text}`}>{message}</div>
+          <div className="text-sm">{message}</div>
         </div>
         {type !== "loading" && (
           <button
@@ -292,32 +231,11 @@ const Toast = ({ message, type = "success", onClose, progress = 100 }) => {
 const Contact = () => {
   const domainData = {
     MEDICAL: ["MBBS", "BAMS", "BHMS", "BNYS"],
-    PHARMACY: ["B.Pharma", "D.Pharma", "M.Pharma", "Pharm D", "PhD Pharmacy"],
-    NURSING: ["ANM", "GNM", "BSc Nursing", "MSc Nursing", "Post Basic Nursing"],
-    PARAMEDICAL: [
-      "X-Ray Technician (Radiology)",
-      "BMLT / DMLT",
-      "BPT / MPT",
-      "Bachelor of Human Nutrition",
-    ],
-    ENGINEERING: [
-      "Diploma Engineering",
-      "B.Tech / BE",
-      "M.Tech / ME",
-      "PhD Engineering",
-    ],
+    PHARMACY: ["B.Pharma", "D.Pharma", "M.Pharma", "Pharm D"],
+    NURSING: ["ANM", "GNM", "BSc Nursing", "MSc Nursing"],
+    PARAMEDICAL: ["BMLT", "DMLT", "BPT", "MPT"],
+    ENGINEERING: ["B.Tech", "M.Tech", "Diploma", "PhD"],
     MANAGEMENT: ["BBA", "MBA", "PGDM"],
-    GRADUATION: ["BA", "BSc", "BCom"],
-    "POST GRADUATION": ["MA", "MSc", "MCom"],
-    "VOCATIONAL COURSES": ["BCA", "MCA", "PGDCA", "B.Lib / M.Lib"],
-    "LANGUAGE COURSES": [
-      "German",
-      "French",
-      "Italian",
-      "Chinese (Bachelor & Diploma)",
-    ],
-    AGRICULTURE: ["BSc Agriculture", "MSc Agriculture"],
-    "EDUCATION COURSES": ["B.Ed", "D.El.Ed", "CTET / STET Guidance"],
   };
 
   const eduLevels = [
@@ -328,6 +246,17 @@ const Contact = () => {
     "Postgraduate",
     "PhD / Doctorate",
   ];
+
+  const contactInfo = {
+    phone: "+91 74156 66361",
+    whatsapp: "+917415666361",
+    email: "careerguid09@gmail.com",
+    address: "Arhedi Road, Shiv City, Ayodhya Nagar, Bhopal",
+    googleMaps: "https://maps.app.goo.gl/XnW6DUaLRCxb1ymbA",
+    instagram: "https://www.instagram.com/ss_admission_wala",
+    facebook: "https://www.facebook.com/profile.php?id=61587254466624",
+    youtube: "https://www.youtube.com/@SSADMISSIONVALA"
+  };
 
   // --- STATE ---
   const [formData, setFormData] = useState({
@@ -364,25 +293,10 @@ const Contact = () => {
   const addToast = (message, type = "success", duration = 4000) => {
     const id = Date.now() + Math.random();
     const newToast = { id, message, type, progress: 100 };
-
     setToasts((prev) => [...prev, newToast]);
 
     if (type !== "loading" && duration > 0) {
-      const interval = setInterval(() => {
-        setToasts((prev) =>
-          prev.map((t) =>
-            t.id === id
-              ? {
-                  ...t,
-                  progress: Math.max(0, t.progress - 100 / (duration / 100)),
-                }
-              : t,
-          ),
-        );
-      }, 100);
-
       setTimeout(() => {
-        clearInterval(interval);
         removeToast(id);
       }, duration);
     }
@@ -476,7 +390,7 @@ const Contact = () => {
         message: "",
       });
 
-      toast.success("Form submitted successfully! Our team will contact soon.");
+      toast.success("Form submitted successfully! Our team will contact you soon.");
 
       setTimeout(() => setIsSubmitted(false), 5000);
     } catch (error) {
@@ -489,6 +403,11 @@ const Contact = () => {
     }
   };
 
+  const openWhatsApp = () => {
+    const message = `Hello SS Admission Wala, I'm interested in career counseling.`;
+    window.open(`https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
   return (
     <>
       <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-3 w-80">
@@ -498,157 +417,228 @@ const Contact = () => {
               key={toastItem.id}
               message={toastItem.message}
               type={toastItem.type}
-              progress={toastItem.progress}
               onClose={() => removeToast(toastItem.id)}
             />
           ))}
         </AnimatePresence>
       </div>
 
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900 pb-12">
-        <section className="pt-24 pb-12 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-indigo-600/5 -z-10" />
-          <div className="container mx-auto px-6 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold mb-6"
-            >
-              <Globe className="w-4 h-4" />
-              <span>Global Academic Support</span>
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6"
-            >
-              Empower Your Future with <br />
-              <span className="text-blue-600">Expert Guidance</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="max-w-2xl mx-auto text-lg text-slate-600"
-            >
-              Whether it's Medical, Engineering, or Vocational training, our
-              counselors provide personalized roadmaps for your career success.
-            </motion.p>
-          </div>
-        </section>
+      <div className="min-h-screen bg-gray-50 text-gray-900">
+        {/* Floating WhatsApp Button */}
+        <motion.button
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.05 }}
+          onClick={openWhatsApp}
+          className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-green-600 rounded-full shadow-lg flex items-center justify-center hover:shadow-green-500/50 transition-all"
+        >
+          <MessageSquare className="w-5 h-5 text-white" />
+        </motion.button>
 
-        <section className="pb-24">
+   
+
+        {/* Main Content */}
+        <section className="py-12">
           <div className="container mx-auto px-6">
-            <div className="grid lg:grid-cols-12 gap-12 max-w-7xl mx-auto">
-              <div className="lg:col-span-4 space-y-8">
+            <div className="grid lg:grid-cols-12 gap-8 max-w-6xl mx-auto">
+              {/* Left Sidebar - Contact Info */}
+              <div className="lg:col-span-4 space-y-6">
+                {/* Contact Card */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm"
+                  className="bg-white rounded-xl border border-gray-200 p-6"
                 >
-                  <h2 className="text-2xl font-bold mb-8">
-                    Contact Information
-                  </h2>
-                  <div className="space-y-6">
-                    {[
-                      {
-                        icon: <Phone className="w-5 h-5" />,
-                        title: "Call Us",
-                        val: "+1 (555) 123-4567",
-                        bg: "bg-blue-50 text-blue-600",
-                      },
-                      {
-                        icon: <Mail className="w-5 h-5" />,
-                        title: "Email",
-                        val: "admissions@counselhub.com",
-                        bg: "bg-emerald-50 text-emerald-600",
-                      },
-                      {
-                        icon: <MapPin className="w-5 h-5" />,
-                        title: "Global HQ",
-                        val: "Wellness Plaza, San Francisco",
-                        bg: "bg-purple-50 text-purple-600",
-                      },
-                    ].map((item, i) => (
-                      <div key={i} className="flex gap-4">
-                        <div
-                          className={`p-3 rounded-2xl ${item.bg} flex-shrink-0`}
-                        >
-                          {item.icon}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-slate-500 uppercase tracking-wider">
-                            {item.title}
-                          </p>
-                          <p className="font-bold text-slate-800">{item.val}</p>
+                  <h2 className="text-xl font-bold text-gray-900 mb-6">Contact Information</h2>
+                  
+                  <div className="space-y-4">
+                    {/* Phone */}
+                    <a 
+                      href={`tel:${contactInfo.phone}`}
+                      className="flex gap-4 p-3 rounded-lg hover:bg-blue-50 transition-colors group"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        <PhoneCall className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Phone</p>
+                        <p className="font-semibold text-gray-900">{contactInfo.phone}</p>
+                      </div>
+                    </a>
+
+                    {/* WhatsApp */}
+                    <button
+                      onClick={openWhatsApp}
+                      className="w-full flex gap-4 p-3 rounded-lg hover:bg-green-50 transition-colors text-left group"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                        <MessageSquare className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">WhatsApp</p>
+                        <p className="font-semibold text-gray-900">{contactInfo.phone}</p>
+                        <span className="text-xs text-green-600 mt-1 inline-flex items-center gap-1">
+                          <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                          Online Now
+                        </span>
+                      </div>
+                    </button>
+
+                    {/* Email */}
+                    <a 
+                      href={`mailto:${contactInfo.email}`}
+                      className="flex gap-4 p-3 rounded-lg hover:bg-purple-50 transition-colors group"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                        <Mail className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Email</p>
+                        <p className="font-semibold text-gray-900 truncate">{contactInfo.email}</p>
+                      </div>
+                    </a>
+
+                    {/* Address */}
+                    <a 
+                      href={contactInfo.googleMaps}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex gap-4 p-3 rounded-lg hover:bg-orange-50 transition-colors group"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
+                        <MapIcon className="w-5 h-5 text-orange-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Office Address</p>
+                        <p className="font-semibold text-gray-900">{contactInfo.address}</p>
+                        <div className="flex items-center gap-1 mt-1 text-blue-600 text-sm">
+                          <ExternalLink className="w-3 h-3" />
+                          <span>View on Maps</span>
                         </div>
                       </div>
-                    ))}
+                    </a>
+                  </div>
+
+                  {/* Social Links */}
+                  <div className="mt-8 pt-6 border-t border-gray-100">
+                    <p className="text-sm font-medium text-gray-500 mb-3">Follow Us</p>
+                    <div className="flex gap-2">
+                      <a 
+                        href={contactInfo.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 p-2 rounded-lg bg-gray-100 hover:bg-pink-100 transition-colors text-gray-700 hover:text-pink-600 flex items-center justify-center"
+                      >
+                        <Instagram className="w-4 h-4" />
+                      </a>
+                      <a 
+                        href={contactInfo.facebook}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 p-2 rounded-lg bg-gray-100 hover:bg-blue-100 transition-colors text-gray-700 hover:text-blue-600 flex items-center justify-center"
+                      >
+                        <Facebook className="w-4 h-4" />
+                      </a>
+                      <a 
+                        href={contactInfo.youtube}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 p-2 rounded-lg bg-gray-100 hover:bg-red-100 transition-colors text-gray-700 hover:text-red-600 flex items-center justify-center"
+                      >
+                        <Youtube className="w-4 h-4" />
+                      </a>
+                    </div>
                   </div>
                 </motion.div>
 
+                {/* Stats Card */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.1 }}
-                  className="bg-blue-600 rounded-3xl p-8 text-white shadow-xl shadow-blue-200 relative overflow-hidden"
+                  className="bg-blue-600 rounded-xl p-6 text-white"
                 >
-                  <div className="relative z-10">
-                    <h3 className="text-xl font-bold mb-4">
-                      Confidential Consultation
-                    </h3>
-                    <p className="text-blue-100 mb-6">
-                      Your data is protected by high-level encryption and HIPAA
-                      standards.
-                    </p>
-                    <div className="flex items-center gap-3 bg-white/10 p-4 rounded-2xl backdrop-blur-sm">
-                      <Shield className="w-6 h-6" />
-                      <span className="font-semibold">Privacy Guaranteed</span>
+                  <h3 className="text-lg font-bold mb-4">Our Achievements</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-blue-500/30">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                          <GraduationCap className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-sm opacity-90">Students Guided</div>
+                          <div className="text-xl font-bold">15,000+</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pb-3 border-b border-blue-500/30">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                          <BookOpen className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-sm opacity-90">Success Rate</div>
+                          <div className="text-xl font-bold">98%</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                          <Users className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-sm opacity-90">Expert Counselors</div>
+                          <div className="text-xl font-bold">50+</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
                 </motion.div>
               </div>
 
+              {/* Right Side - Form */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 className="lg:col-span-8"
               >
-                <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl p-8 md:p-12">
-                  <div className="mb-10">
-                    <h2 className="text-3xl font-bold text-slate-900 mb-2">
-                      Request Your Roadmap
-                    </h2>
-                    <p className="text-slate-500">
-                      Please provide accurate details for a tailored counseling
-                      session.
-                    </p>
+                <div className="bg-white rounded-xl border border-gray-200 p-6 md:p-8">
+                  {/* Form Header */}
+                  <div className="mb-8">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                        <MessageCircle className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-900">
+                          Free Career Consultation Request
+                        </h2>
+                        <p className="text-gray-600">
+                          Fill the form below to get personalized guidance
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
+                  {/* Success Message */}
                   <AnimatePresence>
                     {isSubmitted && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="mb-8 overflow-hidden"
+                        className="mb-6 overflow-hidden"
                       >
-                        <div className="bg-emerald-50 border border-emerald-200 p-6 rounded-2xl flex items-center gap-4">
-                          <div className="p-3 bg-emerald-500 rounded-full text-white">
-                            <CheckCircle className="w-6 h-6" />
-                          </div>
+                        <div className="bg-green-50 border border-green-200 p-4 rounded-lg flex items-center gap-3">
+                          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                           <div>
-                            <h4 className="font-bold text-emerald-900">
-                              Application Received!
-                            </h4>
-                            <p className="text-emerald-700">
-                              One of our specialists will call you within 24
-                              hours.
+                            <h4 className="font-semibold text-green-900">Request Submitted Successfully!</h4>
+                            <p className="text-green-700 text-sm mt-1">
+                              Our counselor will contact you within 24 hours.
                             </p>
                           </div>
                         </div>
@@ -656,59 +646,57 @@ const Contact = () => {
                     )}
                   </AnimatePresence>
 
-                  <form onSubmit={handleSubmit} className="space-y-10">
+                  {/* Form */}
+                  <form onSubmit={handleSubmit} className="space-y-8">
+                    {/* Section 1: Personal Details */}
                     <div>
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
-                          1
-                        </div>
-                        <h3 className="text-lg font-bold text-slate-800">
-                          Personal Details
-                        </h3>
-                      </div>
-                      <div className="grid md:grid-cols-2 gap-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        {/* Full Name */}
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-slate-700">
+                          <label className="text-sm font-medium text-gray-700">
                             Full Name <span className="text-red-500">*</span>
                           </label>
                           <div className="relative">
-                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
                               type="text"
                               name="fullName"
                               required
                               value={formData.fullName}
                               onChange={handleChange}
-                              className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                              placeholder="John Doe"
+                              className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                              placeholder="Enter your full name"
                             />
                           </div>
                         </div>
+
+                        {/* Email */}
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-slate-700">
-                            Email Address{" "}
-                            <span className="text-red-500">*</span>
+                          <label className="text-sm font-medium text-gray-700">
+                            Email Address <span className="text-red-500">*</span>
                           </label>
                           <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
                               type="email"
                               name="email"
                               required
                               value={formData.email}
                               onChange={handleChange}
-                              className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                              placeholder="john@example.com"
+                              className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                              placeholder="Enter your email"
                             />
                           </div>
                         </div>
 
+                        {/* Phone Number */}
                         <div className="space-y-2 md:col-span-2">
-                          <label className="text-sm font-semibold text-slate-700">
+                          <label className="text-sm font-medium text-gray-700">
                             Phone Number <span className="text-red-500">*</span>
                           </label>
                           <div className="flex flex-col sm:flex-row gap-3">
-                            <div className="w-full sm:w-48 shrink-0">
+                            <div className="w-full sm:w-40">
                               <SearchableSelect
                                 isPhoneSelector
                                 options={countriesData}
@@ -716,11 +704,11 @@ const Contact = () => {
                                 onChange={(val) =>
                                   setFormData({ ...formData, countryCode: val })
                                 }
-                                placeholder="Select Code"
+                                placeholder="Code"
                               />
                             </div>
                             <div className="flex-1 relative">
-                              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                               <input
                                 type="tel"
                                 name="phone"
@@ -730,30 +718,33 @@ const Contact = () => {
                                   const val = e.target.value.replace(/\D/g, "");
                                   setFormData({ ...formData, phone: val });
                                 }}
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold tracking-wider"
-                                placeholder="Enter number"
+                                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                placeholder="Enter phone number"
                               />
                             </div>
                           </div>
                         </div>
 
+                        {/* Date of Birth & Age */}
                         <div className="grid grid-cols-2 gap-4 md:col-span-2">
                           <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">
-                              Date of Birth{" "}
-                              <span className="text-red-500">*</span>
+                            <label className="text-sm font-medium text-gray-700">
+                              Date of Birth <span className="text-red-500">*</span>
                             </label>
-                            <input
-                              type="date"
-                              name="dob"
-                              required
-                              value={formData.dob}
-                              onChange={handleChange}
-                              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                            />
+                            <div className="relative">
+                              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                              <input
+                                type="date"
+                                name="dob"
+                                required
+                                value={formData.dob}
+                                onChange={handleChange}
+                                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                              />
+                            </div>
                           </div>
                           <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">
+                            <label className="text-sm font-medium text-gray-700">
                               Age
                             </label>
                             <input
@@ -761,94 +752,83 @@ const Contact = () => {
                               name="age"
                               readOnly
                               value={formData.age}
-                              className="w-full px-4 py-3 rounded-xl border border-slate-100 bg-slate-50 text-slate-500 font-bold"
-                              placeholder="---"
+                              className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-700"
+                              placeholder="Auto-calculated"
                             />
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Section 2: Location (Country is Select, State/City are Manual) */}
+                    {/* Section 2: Location */}
                     <div>
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
-                          2
-                        </div>
-                        <h3 className="text-lg font-bold text-slate-800">
-                          Location Details
-                        </h3>
-                      </div>
-                      <div className="grid md:grid-cols-3 gap-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Location Details</h3>
+                      <div className="grid md:grid-cols-3 gap-4">
+                        {/* Country */}
                         <SearchableSelect
                           label="Country"
                           options={countriesData.map((c) => c.name)}
                           value={formData.country}
-                          placeholder="Search country..."
+                          placeholder="Select country"
                           icon={Globe}
                           onChange={handleCountryChange}
                         />
 
+                        {/* State */}
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-slate-700">
+                          <label className="text-sm font-medium text-gray-700">
                             State / Province
                           </label>
                           <div className="relative">
-                            <Map className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <MapIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
                               type="text"
                               name="state"
                               value={formData.state}
                               onChange={handleChange}
-                              className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
-                              placeholder="Type your state"
+                              className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                              placeholder="Enter state"
                             />
                           </div>
                         </div>
 
+                        {/* City */}
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-slate-700">
+                          <label className="text-sm font-medium text-gray-700">
                             City / Town
                           </label>
                           <div className="relative">
-                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
                               type="text"
                               name="city"
                               value={formData.city}
                               onChange={handleChange}
-                              className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
-                              placeholder="Type your city"
+                              className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                              placeholder="Enter city"
                             />
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Section 3: Educational Interests */}
+                    {/* Section 3: Academic Goals */}
                     <div>
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center font-bold">
-                          3
-                        </div>
-                        <h3 className="text-lg font-bold text-slate-800">
-                          Academic Goals
-                        </h3>
-                      </div>
-                      <div className="grid md:grid-cols-2 gap-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Academic Information</h3>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        {/* Education Level */}
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-slate-700">
-                            Current Education Level{" "}
-                            <span className="text-red-500">*</span>
+                          <label className="text-sm font-medium text-gray-700">
+                            Current Education Level <span className="text-red-500">*</span>
                           </label>
                           <select
                             name="eduLevel"
                             value={formData.eduLevel}
                             onChange={handleChange}
                             required
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500"
+                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                           >
-                            <option value="">Choose Current Level *</option>
+                            <option value="">Select your level</option>
                             {eduLevels.map((e) => (
                               <option key={e} value={e}>
                                 {e}
@@ -857,19 +837,19 @@ const Contact = () => {
                           </select>
                         </div>
 
+                        {/* Domain */}
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-slate-700">
-                            Interested Domain{" "}
-                            <span className="text-red-500">*</span>
+                          <label className="text-sm font-medium text-gray-700">
+                            Interested Domain <span className="text-red-500">*</span>
                           </label>
                           <select
                             name="domain"
                             required
                             value={formData.domain}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500"
+                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                           >
-                            <option value="">Select Career Domain *</option>
+                            <option value="">Select domain</option>
                             {Object.keys(domainData).map((d) => (
                               <option key={d} value={d}>
                                 {d}
@@ -878,10 +858,10 @@ const Contact = () => {
                           </select>
                         </div>
 
+                        {/* Course Selection */}
                         <div className="md:col-span-2 space-y-2">
-                          <label className="text-sm font-semibold text-slate-700">
-                            Interested Course{" "}
-                            <span className="text-red-500">*</span>
+                          <label className="text-sm font-medium text-gray-700">
+                            Interested Course <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="hidden"
@@ -890,11 +870,13 @@ const Contact = () => {
                             required
                           />
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {!formData.domain ? (
-                              <p className="col-span-full text-slate-400 text-sm italic py-2">
-                                Please select a domain first to view courses...
-                              </p>
+                              <div className="col-span-full bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                                <p className="text-gray-500">
+                                  Select a domain to view available courses
+                                </p>
+                              </div>
                             ) : (
                               domainData[formData.domain].map((course) => (
                                 <button
@@ -903,10 +885,10 @@ const Contact = () => {
                                   onClick={() =>
                                     setFormData({ ...formData, course })
                                   }
-                                  className={`px-4 py-3 rounded-xl border text-sm font-medium transition-all text-left ${
+                                  className={`px-4 py-3 rounded-lg border text-sm font-medium transition-all text-left ${
                                     formData.course === course
-                                      ? "bg-blue-600 border-blue-600 text-white shadow-md"
-                                      : "bg-white border-slate-200 text-slate-600 hover:border-blue-300"
+                                      ? "bg-blue-600 border-blue-600 text-white"
+                                      : "bg-white border-gray-300 text-gray-700 hover:border-blue-500"
                                   }`}
                                 >
                                   {course}
@@ -914,19 +896,13 @@ const Contact = () => {
                               ))
                             )}
                           </div>
-
-                          {formData.domain && !formData.course && (
-                            <p className="text-red-500 text-sm mt-2">
-                              ⚠️ Please select a course
-                            </p>
-                          )}
                         </div>
                       </div>
                     </div>
 
                     {/* Section 4: Message */}
-                    <div className="space-y-4">
-                      <label className="text-sm font-semibold text-slate-700">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">
                         Additional Message
                       </label>
                       <textarea
@@ -934,16 +910,22 @@ const Contact = () => {
                         value={formData.message}
                         onChange={handleChange}
                         rows="4"
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
-                        placeholder="Share any specific requirements or questions..."
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
+                        placeholder="Any specific requirements or questions..."
                       />
                     </div>
 
-                    {/* Submit Button */}
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-slate-100">
-                      <div className="flex items-center gap-2 text-slate-500 text-sm">
-                        <Shield className="w-4 h-4 text-emerald-500" />
-                        Secure Form Processing
+                    {/* Submit Section */}
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-gray-100">
+                      <div className="flex items-center gap-3 text-sm text-gray-600">
+                        <div className="flex items-center gap-2">
+                          <Shield className="w-4 h-4 text-green-500" />
+                          <span>Secure & Confidential</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-blue-500" />
+                          <span>24-hour response</span>
+                        </div>
                       </div>
                       <button
                         type="submit"
@@ -953,21 +935,24 @@ const Contact = () => {
                           !formData.domain ||
                           !formData.course
                         }
-                        className={`w-full md:w-auto px-10 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all ${
+                        className={`w-full md:w-auto px-8 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all ${
                           isLoading ||
                           !formData.eduLevel ||
                           !formData.domain ||
                           !formData.course
-                            ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                            : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-xl hover:-translate-y-1"
+                            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
                         }`}
                       >
                         {isLoading ? (
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span>Processing...</span>
+                          </>
                         ) : (
                           <>
-                            <Send className="w-5 h-5" />
-                            Confirm Request
+                            <Send className="w-4 h-4" />
+                            <span>Submit Request</span>
                           </>
                         )}
                       </button>
@@ -979,28 +964,29 @@ const Contact = () => {
           </div>
         </section>
 
-        {/* Trust Badges */}
-        <section className="py-20 bg-slate-900 text-white">
+        {/* Footer Section */}
+        <section className="py-12 bg-gray-900 text-white">
           <div className="container mx-auto px-6">
-            <div className="grid md:grid-cols-4 gap-8">
-              {[
-                { label: "Verified Experts", val: "500+", icon: <Users /> },
-                { label: "Success Rate", val: "98%", icon: <CheckCircle /> },
-                {
-                  label: "Partnered Universities",
-                  val: "2k+",
-                  icon: <BookOpen />,
-                },
-                { label: "Global Offices", val: "24", icon: <Map /> },
-              ].map((stat, i) => (
-                <div key={i} className="text-center space-y-2">
-                  <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-400">
-                    {stat.icon}
-                  </div>
-                  <div className="text-3xl font-bold">{stat.val}</div>
-                  <div className="text-slate-400 text-sm">{stat.label}</div>
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-4">SS Admission Wala</h2>
+              <p className="text-gray-400 max-w-2xl mx-auto mb-8">
+                Your trusted partner for career guidance and admission counseling since 2015.
+              </p>
+              
+              <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-400 mb-2">10+</div>
+                  <div className="text-gray-300">Years Experience</div>
                 </div>
-              ))}
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-400 mb-2">15000</div>
+                  <div className="text-gray-300">Students Guided</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-400 mb-2">200+</div>
+                  <div className="text-gray-300">Partner Colleges</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
