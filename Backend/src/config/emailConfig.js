@@ -25,10 +25,10 @@ const EMAIL_CONFIG = {
   socketTimeout: 10000
 };
 
-// ==================== EMAIL TEMPLATES (NO CHANGE NEEDED) ====================
+
 const EMAIL_TEMPLATES = {
   careerConfirmation: (userName, mobileNumber, city, problem) => ({
-    subject: "Career Assistance Request Confirmation - HerStudent",
+    subject: "Career Assistance Request Confirmation -SS ADMISSION VALA",
     html: `
       <!DOCTYPE html>
       <html lang="en">
@@ -107,7 +107,7 @@ const EMAIL_TEMPLATES = {
           
           <!-- Header -->
           <div class="header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center;">
-            <h1 style="margin: 0; font-size: 28px;" class="mobile-text-lg">HerStudent</h1>
+            <h1 style="margin: 0; font-size: 28px;" class="mobile-text-lg">SS ADMISSION VALA</h1>
             <p style="margin: 5px 0 0; opacity: 0.9;" class="mobile-text-sm mobile-mt-4">Career Guidance & Professional Development</p>
           </div>
           
