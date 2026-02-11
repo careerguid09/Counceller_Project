@@ -110,5 +110,13 @@
     "userName": "Jagdeesh Kushwah",
     "messageId": "<0ef52d9d-c492-8749-d182-a57da25a4e59@gmail.com>",
     "duration": "3989ms"
+  },
+  {
+    "timestamp": "5:57:12 pm",
+    "type": "SENT",
+    "userEmail": "kunallokhande3969@gmail.com",
+    "userName": "Kunal Lokhande",
+    "messageId": "<bfd374e3-22b8-9e89-1fb9-695d7e7164af@gmail.com>",
+    "duration": "6857ms"
   }
 ]

@@ -348,7 +348,7 @@ const Navbar = () => {
                   <FaUserGraduate className="text-white text-lg" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">CareerGuide</h1>
+                  <h1 className="text-xl font-bold text-gray-900"> SS ADMISSION VALA</h1>
                   <p className="text-xs text-gray-500 font-medium">Expert Admissions Counseling</p>
                 </div>
               </Link>
