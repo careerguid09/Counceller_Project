@@ -143,9 +143,9 @@ exports.getClientsByCategory = async (req, res) => {
    GET CLIENTS BY DOMAIN (Protected)
 ================================ */
 exports.getClientsByDomain = async (req, res) => {
-  console.log("hii") ;
   const { domain } = req.params;
-   
+   console.log("hello");
+
   const allowedDomains = [
     "MEDICAL",
     "PHARMACY", 
@@ -172,6 +172,9 @@ exports.getClientsByDomain = async (req, res) => {
     const clients = await Client.find({ domain }).sort({
       createdAt: -1,
     });
+
+    console.log(clients);
+    
 
     res.status(200).json({
       success: true,
@@ -541,8 +544,8 @@ exports.getClientsByCourse = async (req, res) => {
     }
 
     const clients = await Client.find({ course })
-      .select('fullName email phone domain status eduLevel city course dob age message createdAt domainViewed courseViewed studentViewed isNew newAt')
-      .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 });
+      
 
     res.status(200).json({
       success: true,
@@ -587,7 +590,6 @@ exports.getClientsByDynamicFilter = async (req, res) => {
     query[filterField] = filterValue;
 
     const clients = await Client.find(query)
-      .select('fullName email phone domain status eduLevel city course dob age message createdAt domainViewed courseViewed studentViewed isNew newAt')
       .sort({ createdAt: -1 });
 
     res.status(200).json({
