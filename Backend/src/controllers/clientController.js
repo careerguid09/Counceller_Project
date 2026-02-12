@@ -820,9 +820,7 @@ exports.getUnviewedCounts = async (req, res) => {
   }
 };
 
-/* ===============================
-   AUTO MARK OLD AS VIEWED (CRON JOB)
-================================ */
+
 exports.autoMarkOldAsViewed = async (req, res) => {
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
