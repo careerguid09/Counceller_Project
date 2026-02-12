@@ -380,7 +380,6 @@ const BlogContent = () => {
     },
   ];
 
-  // Google search handler
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -393,7 +392,7 @@ const BlogContent = () => {
 
   return (
     <div className="bg-gradient-to-b  from-slate-50 to-white min-h-screen">
-      {/* Hero Section with Admission Open Banner */}
+     
       <section className="relative pt-10 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
