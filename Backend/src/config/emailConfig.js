@@ -3,15 +3,15 @@ const fs = require("fs");
 const path = require("path");
 require("dotenv").config();
 
-// ==================== OPTIMIZED EMAIL CONFIGURATION ====================
+
 const EMAIL_CONFIG = {
   service: "gmail",
   auth: {
-    user: process.env.COMPANY_EMAIL || "careerguid09@gmail.com",
-    pass: process.env.COMPANY_EMAIL_PASS || "wtty bdjf xkzy gres",
+    user: process.env.COMPANY_EMAIL,
+    pass: process.env.COMPANY_EMAIL_PASS,
   },
-  // ⚡ FAST SETTINGS FOR INSTANT DELIVERY
-  pool: true, // Reuse connections (IMPORTANT)
+
+  pool: true, 
   maxConnections: 5, // Multiple connections at once
   maxMessages: 100, // Messages per connection
   rateDelta: 1000, // Rate limiting
