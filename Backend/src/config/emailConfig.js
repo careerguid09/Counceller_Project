@@ -12,11 +12,11 @@ const EMAIL_CONFIG = {
   },
 
   pool: true, 
-  maxConnections: 5, // Multiple connections at once
-  maxMessages: 100, // Messages per connection
-  rateDelta: 1000, // Rate limiting
-  rateLimit: 10, // 10 emails per second
-  secure: true, // Use SSL
+  maxConnections: 5, 
+  maxMessages: 100, 
+  rateDelta: 1000,
+  rateLimit: 10, 
+  secure: true, 
   tls: {
     rejectUnauthorized: false, // Bypass certificate validation for speed
   },
